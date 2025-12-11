@@ -1,61 +1,146 @@
-# Live Football Scores
+# ⚽ Live Football Scores
 
-A React + TypeScript application for tracking live football matches, scores, and match details using TheSportsDB API.
+A modern React application for tracking live football matches, scores, and detailed match statistics.
 
-## Tech Stack
+![React](https://img.shields.io/badge/React-19.1-61DAFB?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript)
+![Vite](https://img.shields.io/badge/Vite-6.3-646CFF?logo=vite)
+![Tailwind](https://img.shields.io/badge/Tailwind-3.4-06B6D4?logo=tailwindcss)
 
-- React 19 + TypeScript
-- Vite (build tool)
-- React Router (navigation)
-- Tailwind CSS (styling)
-- Axios (API requests)
-- date-fns (date formatting)
-- Lucide React (icons)
+## 📋 Table of Contents
 
-## Prerequisites
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Prerequisites](#-prerequisites)
+- [Installation](#-installation)
+- [Environment Variables](#-environment-variables)
+- [Running the Project](#-running-the-project)
+- [Project Structure](#-project-structure)
+- [Available Scripts](#-available-scripts)
 
-- Node.js (v18 or higher recommended)
-- npm or yarn
+## ✨ Features
 
-## Installation
+- **Live Dashboard** - View upcoming and live matches with real-time score updates
+- **Match Details** - Comprehensive match information including events, lineups, and statistics
+- **Date Navigation** - Browse matches by date with an intuitive date picker
+- **Auto-Polling** - Automatic score updates every 20 seconds
+- **Responsive Design** - Optimized for mobile and desktop devices
+- **Dark Theme** - Modern dark UI design
 
-1. Clone or extract the project:
-```bash
-cd <project-folder>
+## 🛠 Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| React 19 | UI Framework |
+| TypeScript | Type Safety |
+| Vite | Build Tool & Dev Server |
+| React Router | Client-side Routing |
+| Tailwind CSS | Styling |
+| Axios | HTTP Client |
+| date-fns | Date Formatting |
+| Lucide React | Icons |
+
+## 📦 Prerequisites
+
+- **Node.js** v18.0.0 or higher
+- **npm** v9.0.0+ or **yarn** v1.22.0+
+
+## 🚀 Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd <project-folder>
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   ```
+
+## 🔐 Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+# API Configuration
+VITE_API_BASE_URL=/api/v1/json/3
+
+# League IDs
+VITE_PREMIER_LEAGUE_ID=4328
 ```
 
-2. Install dependencies:
-```bash
-npm install
-```
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `VITE_API_BASE_URL` | TheSportsDB API base URL | `/api/v1/json/3` |
+| `VITE_PREMIER_LEAGUE_ID` | Default league ID (Premier League) | `4328` |
 
-## Running the Project
+## ▶️ Running the Project
 
-Start the development server:
+**Development mode:**
 ```bash
 npm run dev
 ```
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-The app will be available at `http://localhost:5173`
+**Production build:**
+```bash
+npm run build
+npm run preview
+```
 
-## Available Scripts
+## 📁 Project Structure
+
+```
+src/
+├── api/           # API client configuration
+├── components/    # Reusable UI components
+│   ├── MatchCard.tsx
+│   ├── MatchDetails.tsx
+│   ├── MatchEvents.tsx
+│   ├── MatchHeader.tsx
+│   ├── MatchLineups.tsx
+│   ├── MatchStats.tsx
+│   ├── MatchTabs.tsx
+│   └── Navbar.tsx
+├── hooks/         # Custom React hooks
+│   ├── useMatchDetails.ts
+│   └── useMatches.ts
+├── lib/           # Utility functions
+├── pages/         # Page components
+│   ├── Dashboard.tsx
+│   └── MatchDetailsPage.tsx
+├── services/      # API service layer
+├── types.ts       # TypeScript type definitions
+├── constants.ts   # App constants
+└── main.tsx       # App entry point
+```
+
+## 📜 Available Scripts
 
 | Command | Description |
 |---------|-------------|
 | `npm run dev` | Start development server |
 | `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm run lint` | Run ESLint |
+| `npm run preview` | Preview production build locally |
+| `npm run lint` | Run ESLint for code quality |
 
-## Features
+## 🌐 API Reference
 
-- Dashboard with live/upcoming matches
-- Date picker to browse matches by date
-- Match details with Events, Lineups, Stats tabs
-- Auto-polling for live score updates (20s interval)
-- Responsive design (mobile & desktop)
-- Dark theme UI
+This project uses [TheSportsDB](https://www.thesportsdb.com/api.php) free API.
 
-## API
+**Endpoints used:**
+- `GET /eventsnextleague.php?id={leagueId}` - Upcoming matches
+- `GET /eventspastleague.php?id={leagueId}` - Past matches
+- `GET /lookupevent.php?id={eventId}` - Match details
 
-Uses [TheSportsDB](https://www.thesportsdb.com/) free API for match data.
+---
+
+Built with ❤️ using React + TypeScript
