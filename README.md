@@ -172,7 +172,7 @@ See [CHANGELOG.md](CHANGELOG.md) for a list of changes and version history.
 
 - [TheSportsDB](https://www.thesportsdb.com/) for providing the free sports API
 - [Lucide](https://lucide.dev/) for the beautiful icons
-- All contributors who help improve this project
+- All [contributors](AUTHORS.md) who help improve this project
 
 ## 📞 Support
 
