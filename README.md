@@ -6,6 +6,8 @@ A modern React application for tracking live football matches, scores, and detai
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript)
 ![Vite](https://img.shields.io/badge/Vite-6.3-646CFF?logo=vite)
 ![Tailwind](https://img.shields.io/badge/Tailwind-3.4-06B6D4?logo=tailwindcss)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 
 ## 📋 Table of Contents
 
@@ -17,6 +19,8 @@ A modern React application for tracking live football matches, scores, and detai
 - [Running the Project](#-running-the-project)
 - [Project Structure](#-project-structure)
 - [Available Scripts](#-available-scripts)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ## ✨ Features
 
