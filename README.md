@@ -145,6 +145,41 @@ This project uses [TheSportsDB](https://www.thesportsdb.com/api.php) free API.
 - `GET /eventspastleague.php?id={leagueId}` - Past matches
 - `GET /lookupevent.php?id={eventId}` - Match details
 
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
+
+- How to submit bug reports and feature requests
+- Development setup and workflow
+- Coding standards and best practices
+- Pull request process
+
+Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before contributing.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🔒 Security
+
+For security concerns, please review our [Security Policy](SECURITY.md).
+
+## 📝 Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a list of changes and version history.
+
+## 🙏 Acknowledgments
+
+- [TheSportsDB](https://www.thesportsdb.com/) for providing the free sports API
+- [Lucide](https://lucide.dev/) for the beautiful icons
+- All contributors who help improve this project
+
+## 📞 Support
+
+- 📫 Create an [issue](https://github.com/yourusername/live-football-scores/issues) for bug reports or feature requests
+- 💬 Start a [discussion](https://github.com/yourusername/live-football-scores/discussions) for questions
+- ⭐ Star this repo if you find it helpful!
+
 ---
 
 Built with ❤️ using React + TypeScript
