@@ -13,27 +13,6 @@ export const TeamProfilePage = () => {
   const navigate = useNavigate();
   const { team, nextMatches, lastMatches, players, loading, error } = useTeamDetails(id);
 
-  if (loading) {
-    return (
-      <div className="flex flex-col gap-4">
-        <Skeleton className="w-32 h-5" />
-        <Skeleton className="w-full h-48 rounded-xl" />
-        <Skeleton className="w-full h-64 rounded-xl" />
-      </div>
-    );
-  }
-
-  if (error || !team) {
-    return (
-      <div className="flex flex-col gap-4">
-        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors self-start">
-          <ArrowLeft className="w-4 h-4" /><span className="text-sm">Back</span>
-        </button>
-        <EmptyState variant="error" description={error || 'Team not found'} />
-      </div>
-    );
-  }
-
   const groupedPlayers = useMemo(() => {
     const groups: Record<string, typeof players> = {
       Goalkeepers: [],
@@ -60,6 +39,27 @@ export const TeamProfilePage = () => {
 
     return Object.fromEntries(Object.entries(groups).filter(([_, list]) => list.length > 0));
   }, [players]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-4">
+        <Skeleton className="w-32 h-5" />
+        <Skeleton className="w-full h-48 rounded-xl" />
+        <Skeleton className="w-full h-64 rounded-xl" />
+      </div>
+    );
+  }
+
+  if (error || !team) {
+    return (
+      <div className="flex flex-col gap-4">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors self-start">
+          <ArrowLeft className="w-4 h-4" /><span className="text-sm">Back</span>
+        </button>
+        <EmptyState variant="error" description={error || 'Team not found'} />
+      </div>
+    );
+  }
 
   const bannerUrl = team.strTeamBanner || team.strTeamFanart1;
 
