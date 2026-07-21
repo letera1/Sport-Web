@@ -54,7 +54,6 @@ export const useStandings = (leagueId: string, season?: string) => {
         return;
       }
 
-      const tableTeamIds = new Set(realTable.map(entry => entry.idTeam));
       const remainingTeams = allTeams.filter(team => !tableTeamIds.has(team.idTeam));
 
       const fullList: StandingsEntry[] = [...realTable];
