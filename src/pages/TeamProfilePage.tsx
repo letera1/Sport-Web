@@ -34,6 +34,33 @@ export const TeamProfilePage = () => {
     );
   }
 
+  const groupedPlayers = useMemo(() => {
+    const groups: Record<string, typeof players> = {
+      Goalkeepers: [],
+      Defenders: [],
+      Midfielders: [],
+      Forwards: [],
+      'Staff / Others': []
+    };
+
+    players.forEach(p => {
+      const pos = (p.strPosition || '').toLowerCase();
+      if (pos.includes('goalkeeper')) {
+        groups.Goalkeepers.push(p);
+      } else if (pos.includes('back') || pos.includes('defender')) {
+        groups.Defenders.push(p);
+      } else if (pos.includes('midfield') || pos.includes('midfielder')) {
+        groups.Midfielders.push(p);
+      } else if (pos.includes('forward') || pos.includes('winger') || pos.includes('striker')) {
+        groups.Forwards.push(p);
+      } else {
+        groups['Staff / Others'].push(p);
+      }
+    });
+
+    return Object.fromEntries(Object.entries(groups).filter(([_, list]) => list.length > 0));
+  }, [players]);
+
   const bannerUrl = team.strTeamBanner || team.strTeamFanart1;
 
   return (
@@ -179,6 +206,51 @@ export const TeamProfilePage = () => {
                 </div>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {/* Squad */}
+      {Object.keys(groupedPlayers).length > 0 && (
+        <div className="flex flex-col gap-4">
+          <h2 className="text-text-primary font-semibold text-base px-1">Squad</h2>
+          <div className="flex flex-col gap-6">
+            {Object.entries(groupedPlayers).map(([groupName, groupPlayers]) => (
+              <div key={groupName} className="flex flex-col gap-3">
+                <h3 className="text-text-secondary font-medium text-xs uppercase tracking-wider px-1">
+                  {groupName} ({groupPlayers.length})
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {groupPlayers.map((player) => (
+                    <Link
+                      to={`/player/${player.idPlayer}`}
+                      key={player.idPlayer}
+                      className="bg-surface border border-divider/30 hover:border-accent/40 rounded-xl p-3 flex items-center gap-3 hover:bg-surface-hover transition-all group cursor-pointer"
+                    >
+                      <div className="w-10 h-10 rounded-full overflow-hidden bg-surface-hover border border-divider/30 flex items-center justify-center shrink-0">
+                        <img
+                          src={player.strCutout || player.strThumb ? getProxiedImageUrl(player.strCutout || player.strThumb) : FALLBACK_BADGE}
+                          alt={player.strPlayer}
+                          className="w-full h-full object-cover"
+                          onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-text-primary text-sm font-semibold truncate group-hover:text-accent transition-colors">
+                          {player.strPlayer}
+                        </p>
+                        <p className="text-text-muted text-xs truncate">{player.strPosition}</p>
+                      </div>
+                      {player.strNumber && (
+                        <span className="text-text-secondary text-sm font-bold opacity-60">
+                          #{player.strNumber}
+                        </span>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
