@@ -135,7 +135,11 @@ export async function lookupTeam(teamId: string): Promise<TeamDetails | null> {
   const data = await deduplicatedGet<{ teams: TeamDetails[] | null }>(
     API_ENDPOINTS.LOOKUP_TEAM, { id: teamId }, CACHE_TTL.TEAM
   );
-  return data?.teams?.[0] || null;
+  const team = data?.teams?.[0] || null;
+  if (team) {
+    team.strTeamBadge = team.strBadge || team.strTeamBadge || '';
+  }
+  return team;
 }
 
 export async function lookupPlayer(playerId: string): Promise<PlayerDetails | null> {
