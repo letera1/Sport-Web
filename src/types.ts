@@ -92,7 +92,8 @@ export interface StandingsEntry {
   intRank: string;
   idTeam: string;
   strTeam: string;
-  strTeamBadge: string;
+  strTeamBadge?: string;
+  strBadge?: string;
   idLeague: string;
   strLeague: string;
   strSeason: string;

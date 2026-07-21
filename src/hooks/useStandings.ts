@@ -18,7 +18,12 @@ export const useStandings = (leagueId: string, season?: string) => {
         getAllTeamsInLeague(leagueId)
       ]);
 
-      const realTable = tableRes.status === 'fulfilled' ? tableRes.value : [];
+      const realTable = tableRes.status === 'fulfilled' 
+        ? tableRes.value.map(entry => ({
+            ...entry,
+            strTeamBadge: entry.strBadge || entry.strTeamBadge || ''
+          }))
+        : [];
       const allTeams = allTeamsRes.status === 'fulfilled' ? allTeamsRes.value : [];
 
       if (realTable.length === 0 && allTeams.length === 0) {
