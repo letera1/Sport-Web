@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTeamDetails } from '../hooks/useTeamDetails';
 import { getProxiedImageUrl, FALLBACK_BADGE } from '../services/sportsApi';
 import { cn, isMatchCompleted } from '../lib/utils';
@@ -6,11 +6,12 @@ import { Skeleton } from '../components/Skeleton';
 import { EmptyState } from '../components/EmptyState';
 import { ArrowLeft, MapPin, Calendar, Users, Globe, ExternalLink } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
+import { useMemo } from 'react';
 
 export const TeamProfilePage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { team, nextMatches, lastMatches, loading, error } = useTeamDetails(id);
+  const { team, nextMatches, lastMatches, players, loading, error } = useTeamDetails(id);
 
   if (loading) {
     return (
