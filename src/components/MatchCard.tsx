@@ -1,18 +1,19 @@
 import { memo } from 'react';
-import { MoreVertical } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MatchEvent } from '../types';
 import { cn, isMatchLive, isMatchCompleted } from '../lib/utils';
-import { api } from '../services/api';
+import { getTeamBadgeUrl, FALLBACK_BADGE } from '../services/sportsApi';
+import { useFavorites } from '../contexts/FavoritesContext';
 
 interface MatchCardProps {
   match: MatchEvent;
-  isFavorite?: boolean;
-  onToggleFavorite?: (id: string) => void;
 }
 
 export const MatchCard = memo(({ match }: MatchCardProps) => {
   const navigate = useNavigate();
+  const { isMatchFavorite, toggleMatchFavorite } = useFavorites();
+  const isFav = isMatchFavorite(match.idEvent);
 
   const isLive = isMatchLive(match.strStatus);
   const isFinished = isMatchCompleted(match.strStatus, match.intHomeScore, match.intAwayScore, match.dateEvent);
@@ -28,7 +29,7 @@ export const MatchCard = memo(({ match }: MatchCardProps) => {
     <div 
       onClick={() => navigate(`/match/${match.idEvent}`, { state: { match } })}
       className={cn(
-        "flex items-center gap-3 sm:gap-4 px-3 sm:px-4 py-3 hover:bg-white/5 transition-colors cursor-pointer border-l-[3px]",
+        "flex items-center gap-3 sm:gap-4 px-3 sm:px-4 py-3 hover:bg-surface-hover transition-all cursor-pointer border-l-[3px] group",
         borderColor
       )}
     >
@@ -38,7 +39,9 @@ export const MatchCard = memo(({ match }: MatchCardProps) => {
           {displayStatus}
         </span>
         {isLive && (
-          <div className="h-0.5 w-6 bg-accent mx-auto mt-1 rounded-full" />
+          <div className="flex items-center justify-center mt-1">
+            <div className="live-dot" />
+          </div>
         )}
       </div>
 
@@ -47,46 +50,42 @@ export const MatchCard = memo(({ match }: MatchCardProps) => {
         {/* Home Team */}
         <div className="flex items-center gap-2">
           <img 
-            src={match.strHomeTeamBadge || api.getTeamBadge(match.strHomeTeam)}
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "https://www.thesportsdb.com/images/icons/user/anon.png";
-            }}
+            src={match.strHomeTeamBadge || getTeamBadgeUrl(match.strHomeTeam)}
+            onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_BADGE; }}
             alt={match.strHomeTeam} 
             className="w-5 h-5 object-contain shrink-0" 
           />
-          <span className="text-white text-sm truncate flex-1">{match.strHomeTeam}</span>
+          <span className="text-text-primary text-sm truncate flex-1">{match.strHomeTeam}</span>
         </div>
 
         {/* Away Team */}
         <div className="flex items-center gap-2">
           <img 
-            src={match.strAwayTeamBadge || api.getTeamBadge(match.strAwayTeam)}
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "https://www.thesportsdb.com/images/icons/user/anon.png";
-            }}
+            src={match.strAwayTeamBadge || getTeamBadgeUrl(match.strAwayTeam)}
+            onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_BADGE; }}
             alt={match.strAwayTeam} 
             className="w-5 h-5 object-contain shrink-0" 
           />
-          <span className="text-white text-sm truncate flex-1">{match.strAwayTeam}</span>
+          <span className="text-text-primary text-sm truncate flex-1">{match.strAwayTeam}</span>
         </div>
       </div>
 
       {/* Scores */}
       <div className="flex flex-col gap-2 items-end shrink-0">
-        <span className="text-white font-bold text-sm w-6 text-right">
+        <span className="text-text-primary font-bold text-sm w-6 text-right">
           {match.intHomeScore ?? "-"}
         </span>
-        <span className="text-white font-bold text-sm w-6 text-right">
+        <span className="text-text-primary font-bold text-sm w-6 text-right">
           {match.intAwayScore ?? "-"}
         </span>
       </div>
 
-      {/* More Button */}
+      {/* Favorite Button */}
       <button 
-        onClick={(e) => e.stopPropagation()}
-        className="p-1 hover:bg-white/10 rounded text-text-secondary transition-colors shrink-0"
+        onClick={(e) => { e.stopPropagation(); toggleMatchFavorite(match.idEvent); }}
+        className="p-1 hover:bg-surface-hover rounded text-text-muted transition-colors shrink-0"
       >
-        <MoreVertical className="w-4 h-4" />
+        <Heart className={cn("w-4 h-4 transition-colors", isFav ? "fill-danger text-danger" : "group-hover:text-text-secondary")} />
       </button>
     </div>
   );

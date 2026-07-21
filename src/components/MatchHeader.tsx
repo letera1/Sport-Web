@@ -1,5 +1,5 @@
 import { MatchDetails } from '../types';
-import { api } from '../services/api';
+import { getTeamBadgeUrl, FALLBACK_BADGE } from '../services/sportsApi';
 import { cn, isMatchLive, isMatchCompleted } from '../lib/utils';
 import { format, parseISO } from 'date-fns';
 
