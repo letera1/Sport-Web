@@ -55,7 +55,7 @@ export const TeamProfilePage = () => {
             src={team.strTeamBadge ? `${team.strTeamBadge}/small` : FALLBACK_BADGE}
             alt={team.strTeam}
             className="w-20 h-20 sm:w-28 sm:h-28 object-contain"
-            onError={(e) => (e.target as HTMLImageElement).src = FALLBACK_BADGE}
+            onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
           />
           <div className="flex flex-col items-center sm:items-start gap-1">
             <h1 className="text-2xl sm:text-3xl font-bold text-text-primary font-display">{team.strTeam}</h1>

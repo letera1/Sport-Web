@@ -256,4 +256,4 @@ export function getTeamBadgeUrl(teamName: string): string {
   return `https://www.thesportsdb.com/images/media/team/badge/${teamName.replace(/\s+/g, '_')}.png`;
 }
 
-export const FALLBACK_BADGE = 'https://www.thesportsdb.com/images/icons/user/anon.png';
+export const FALLBACK_BADGE = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="%23938F99" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>';

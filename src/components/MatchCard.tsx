@@ -51,7 +51,11 @@ export const MatchCard = memo(({ match }: MatchCardProps) => {
         <div className="flex items-center gap-2">
           <img 
             src={match.strHomeTeamBadge || getTeamBadgeUrl(match.strHomeTeam)}
-            onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_BADGE; }}
+            onError={(e) => { 
+              const img = e.currentTarget;
+              img.onerror = null;
+              img.src = FALLBACK_BADGE; 
+            }}
             alt={match.strHomeTeam} 
             className="w-5 h-5 object-contain shrink-0" 
           />
@@ -62,7 +66,11 @@ export const MatchCard = memo(({ match }: MatchCardProps) => {
         <div className="flex items-center gap-2">
           <img 
             src={match.strAwayTeamBadge || getTeamBadgeUrl(match.strAwayTeam)}
-            onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_BADGE; }}
+            onError={(e) => { 
+              const img = e.currentTarget;
+              img.onerror = null;
+              img.src = FALLBACK_BADGE; 
+            }}
             alt={match.strAwayTeam} 
             className="w-5 h-5 object-contain shrink-0" 
           />

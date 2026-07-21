@@ -100,7 +100,7 @@ export const StandingsPage = ({ leagueId, leagueName }: StandingsPageProps) => {
                       src={row.strTeamBadge ? `${row.strTeamBadge}/tiny` : FALLBACK_BADGE}
                       alt={row.strTeam}
                       className="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0"
-                      onError={(e) => (e.target as HTMLImageElement).src = FALLBACK_BADGE}
+                      onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
                     />
                     <span className="text-text-primary font-medium truncate text-xs sm:text-sm">{row.strTeam}</span>
                     <ChevronRight className="w-3 h-3 text-text-muted shrink-0 hidden sm:block" />

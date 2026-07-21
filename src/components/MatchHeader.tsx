@@ -49,7 +49,7 @@ export const MatchHeader = ({ match, loading }: MatchHeaderProps) => {
             <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
               <img 
                 src={match.strHomeTeamBadge || getTeamBadgeUrl(match.strHomeTeam)}
-                onError={(e) => (e.target as HTMLImageElement).src = FALLBACK_BADGE}
+                onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
                 alt={match.strHomeTeam} 
                 className="w-full h-full object-contain"
               />
@@ -97,7 +97,7 @@ export const MatchHeader = ({ match, loading }: MatchHeaderProps) => {
             <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
               <img 
                 src={match.strAwayTeamBadge || getTeamBadgeUrl(match.strAwayTeam)}
-                onError={(e) => (e.target as HTMLImageElement).src = FALLBACK_BADGE}
+                onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
                 alt={match.strAwayTeam} 
                 className="w-full h-full object-contain"
               />

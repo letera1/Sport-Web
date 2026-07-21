@@ -164,7 +164,7 @@ export const PlayerProfilePage = () => {
             {formerTeams.map((ft, idx) => (
               <div key={idx} className="flex items-center gap-3">
                 {ft.strTeamBadge ? (
-                  <img src={`${ft.strTeamBadge}/tiny`} alt="" className="w-6 h-6 object-contain shrink-0" onError={(e) => (e.target as HTMLImageElement).src = FALLBACK_BADGE} />
+                  <img src={`${ft.strTeamBadge}/tiny`} alt="" className="w-6 h-6 object-contain shrink-0" onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }} />
                 ) : (
                   <div className="w-6 h-6 rounded-full bg-surface-hover shrink-0" />
                 )}

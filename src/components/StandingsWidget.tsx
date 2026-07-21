@@ -67,7 +67,7 @@ export const StandingsWidget = ({ leagueId }: StandingsWidgetProps) => {
                 src={row.strTeamBadge ? `${row.strTeamBadge}/tiny` : FALLBACK_BADGE}
                 alt={row.strTeam}
                 className="w-5 h-5 object-contain shrink-0"
-                onError={(e) => (e.target as HTMLImageElement).src = FALLBACK_BADGE}
+                onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
               />
               <span className="text-text-primary text-sm flex-1 truncate">{row.strTeam}</span>
               <span className="text-text-primary text-sm font-bold w-8 text-right">{row.intPoints}</span>

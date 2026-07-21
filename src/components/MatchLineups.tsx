@@ -97,7 +97,7 @@ export const MatchLineups = ({ match, error }: MatchLineupsProps) => {
             <img 
               src={homeBadge}
               alt={match.strHomeTeam}
-              onError={(e) => (e.target as HTMLImageElement).src = FALLBACK_BADGE}
+              onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
               className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
             />
             <span className="text-white font-medium text-sm sm:text-base">{match.strHomeTeam}</span>
@@ -114,7 +114,7 @@ export const MatchLineups = ({ match, error }: MatchLineupsProps) => {
             <img 
               src={awayBadge}
               alt={match.strAwayTeam}
-              onError={(e) => (e.target as HTMLImageElement).src = FALLBACK_BADGE}
+              onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
               className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
             />
             <span className="text-white font-medium text-sm sm:text-base">{match.strAwayTeam}</span>
