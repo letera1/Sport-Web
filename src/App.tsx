@@ -1,7 +1,8 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { Dashboard } from './pages/Dashboard';
 import { MatchDetailsPage } from './pages/MatchDetailsPage';
 import { StandingsPage } from './pages/StandingsPage';
@@ -10,7 +11,6 @@ import { PlayerProfilePage } from './pages/PlayerProfilePage';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { FavoritesProvider } from './contexts/FavoritesContext';
 import { DEFAULT_LEAGUE_ID, LEAGUES } from './constants';
-import { PageSkeleton } from './components/Skeleton';
 
 // ScrollToTop helper
 const ScrollToTop = () => {
@@ -56,13 +56,15 @@ function AppContent() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <ThemeProvider>
-        <FavoritesProvider>
-          <AppContent />
-        </FavoritesProvider>
-      </ThemeProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <ThemeProvider>
+          <FavoritesProvider>
+            <AppContent />
+          </FavoritesProvider>
+        </BrowserRouter>
+      </ErrorBoundary>
+    </ErrorBoundary>
   );
 }
 

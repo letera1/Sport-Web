@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, Wifi, Heart, ChevronRight as ChevronRightIcon, Trophy } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Wifi, Heart, Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { MatchCard } from '../components/MatchCard';
 import { MatchCardSkeleton } from '../components/Skeleton';
@@ -212,7 +212,7 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
                 {/* League Header */}
                 <div className="px-4 py-3 flex items-center justify-between border-b border-divider/30">
                   <h3 className="text-text-primary font-medium text-sm">{league}</h3>
-                  <ChevronRightIcon className="w-4 h-4 text-text-muted" />
+                  <ChevronRight className="w-4 h-4 text-text-muted" />
                 </div>
                 
                 {/* Matches */}
