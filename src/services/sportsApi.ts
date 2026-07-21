@@ -264,7 +264,8 @@ export function getProxiedImageUrl(url: string | null | undefined): string {
   try {
     const u = new URL(url);
     if (u.hostname.endsWith('thesportsdb.com')) {
-      return `/images-proxy${u.pathname}`;
+      const cleanPath = u.pathname.replace(/\/(tiny|small|medium|preview)$/i, '');
+      return `/images-proxy${cleanPath}`;
     }
   } catch (e) {}
   return url;
