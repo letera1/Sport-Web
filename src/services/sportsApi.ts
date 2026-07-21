@@ -296,10 +296,15 @@ export function getProxiedImageUrl(url: string | null | undefined): string {
   if (!url) return FALLBACK_BADGE;
   try {
     const u = new URL(url);
+    if (u.hostname === 'r2.thesportsdb.com') {
+      const cleanPath = u.pathname.replace(/\/(tiny|small|medium|preview)$/i, '');
+      return `/images-r2${cleanPath}`;
+    }
     if (u.hostname.endsWith('thesportsdb.com')) {
       const cleanPath = u.pathname.replace(/\/(tiny|small|medium|preview)$/i, '');
-      return `/images-proxy${cleanPath}`;
+      return `/images-www${cleanPath}`;
     }
+    return url;
   } catch (e) {}
   return url;
 }

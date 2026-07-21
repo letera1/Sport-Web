@@ -10,6 +10,18 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/images-r2': {
+        target: 'https://r2.thesportsdb.com',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/images-r2/, '')
+      },
+      '/images-www': {
+        target: 'https://www.thesportsdb.com',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/images-www/, '')
+      },
       '/images-proxy': {
         target: 'https://r2.thesportsdb.com',
         changeOrigin: true,
