@@ -243,11 +243,20 @@ export async function getAllTeamsInLeague(leagueId: string): Promise<TeamDetails
   }));
 }
 
-export async function lookupAllPlayers(teamId: string): Promise<PlayerDetails[]> {
+export async function lookupAllPlayers(teamId: string, teamName?: string): Promise<PlayerDetails[]> {
   const data = await deduplicatedGet<{ player: PlayerDetails[] | null }>(
     '/lookup_all_players.php', { id: teamId }, CACHE_TTL.TEAM
   );
-  return data?.player || [];
+  if (data?.player && data.player.length > 0) {
+    return data.player;
+  }
+  if (teamName) {
+    const searchData = await deduplicatedGet<{ player: PlayerDetails[] | null }>(
+      API_ENDPOINTS.SEARCH_PLAYERS, { t: teamName }, CACHE_TTL.TEAM
+    );
+    return searchData?.player || [];
+  }
+  return [];
 }
 
 // ========================

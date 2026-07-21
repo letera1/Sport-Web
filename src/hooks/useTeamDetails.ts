@@ -28,11 +28,20 @@ export const useTeamDetails = (teamId: string | undefined) => {
         lookupAllPlayers(teamId),
       ]);
 
-      if (teamData.status === 'fulfilled') setTeam(teamData.value);
+      let fetchedTeam: TeamDetails | null = null;
+      if (teamData.status === 'fulfilled') {
+        fetchedTeam = teamData.value;
+        setTeam(fetchedTeam);
+      }
       if (equipData.status === 'fulfilled') setEquipment(equipData.value);
       if (nextData.status === 'fulfilled') setNextMatches(nextData.value);
       if (lastData.status === 'fulfilled') setLastMatches(lastData.value);
-      if (playersData.status === 'fulfilled') setPlayers(playersData.value);
+
+      let fetchedPlayers = playersData.status === 'fulfilled' ? playersData.value : [];
+      if (fetchedPlayers.length === 0 && fetchedTeam?.strTeam) {
+        fetchedPlayers = await lookupAllPlayers(teamId, fetchedTeam.strTeam);
+      }
+      setPlayers(fetchedPlayers);
 
       setError(null);
     } catch (err) {
