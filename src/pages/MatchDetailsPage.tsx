@@ -48,6 +48,9 @@ export const MatchDetailsPage = () => {
     );
   }
 
+import { MatchOdds } from '../components/MatchOdds';
+import { MatchStandingsTab } from '../components/MatchStandingsTab';
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'details':
@@ -59,12 +62,9 @@ export const MatchDetailsPage = () => {
       case 'stats':
         return <MatchStats match={match} error={error} />;
       case 'odds':
+        return <MatchOdds match={match} error={error} />;
       case 'standings':
-        return (
-          <div className="p-6 min-h-[200px] flex items-center justify-center text-text-secondary text-sm">
-            Coming soon
-          </div>
-        );
+        return <MatchStandingsTab match={match} error={error} />;
       default:
         return <MatchEvents match={match} timeline={timeline} lineup={lineup} error={error} />;
     }
