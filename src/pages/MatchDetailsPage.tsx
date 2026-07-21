@@ -15,7 +15,7 @@ export const MatchDetailsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const initialMatch = (location.state as { match?: Partial<MatchDetails> } | null)?.match;
-  const { match, loading, error } = useMatchDetails(id, initialMatch);
+  const { match, lineup, timeline, loading, error } = useMatchDetails(id, initialMatch);
   const [activeTab, setActiveTab] = useState<MatchTab>('events');
 
   if (!loading && !match && !error) {
@@ -53,9 +53,9 @@ export const MatchDetailsPage = () => {
       case 'details':
         return <MatchDetailsTab match={match} error={error} />;
       case 'lineups':
-        return <MatchLineups match={match} error={error} />;
+        return <MatchLineups match={match} lineup={lineup} error={error} />;
       case 'events':
-        return <MatchEvents match={match} error={error} />;
+        return <MatchEvents match={match} timeline={timeline} lineup={lineup} error={error} />;
       case 'stats':
         return <MatchStats match={match} error={error} />;
       case 'odds':
@@ -66,7 +66,7 @@ export const MatchDetailsPage = () => {
           </div>
         );
       default:
-        return <MatchEvents match={match} error={error} />;
+        return <MatchEvents match={match} timeline={timeline} lineup={lineup} error={error} />;
     }
   };
 
