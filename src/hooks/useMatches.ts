@@ -1,69 +1,54 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { addDays, subDays, parseISO } from 'date-fns';
-import { getNextLeagueEvents, getPastLeagueEvents, getSeasonEvents } from '../services/sportsApi';
-import { POLLING_INTERVAL, getCurrentSeason } from '../constants';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { addDays, subDays, parseISO, format } from 'date-fns';
+import { getNextLeagueEvents, getPastLeagueEvents, getEventsOnDay } from '../services/sportsApi';
+import { POLLING_INTERVAL } from '../constants';
 import type { MatchEvent } from '../types';
 
-export const useMatches = (leagueId: string) => {
-  const [matches, setMatches] = useState<MatchEvent[]>([]);
+export const useMatches = (leagueId: string, selectedDate: Date) => {
+  const [preloadedMatches, setPreloadedMatches] = useState<MatchEvent[]>([]);
+  const [dayMatches, setDayMatches] = useState<MatchEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const fetchMatches = useCallback(async () => {
+  // 1. Fetch next & past matches when leagueId changes
+  const fetchPreloaded = useCallback(async () => {
     try {
-      const currentSeason = getCurrentSeason();
-
-      const [nextEvents, pastEvents, seasonEvents] = await Promise.allSettled([
+      const [nextEvents, pastEvents] = await Promise.allSettled([
         getNextLeagueEvents(leagueId),
         getPastLeagueEvents(leagueId),
-        getSeasonEvents(leagueId, currentSeason),
       ]);
 
-      const next: MatchEvent[] = nextEvents.status === 'fulfilled' ? nextEvents.value : [];
-      const past: MatchEvent[] = pastEvents.status === 'fulfilled' ? pastEvents.value : [];
-      const season: MatchEvent[] = seasonEvents.status === 'fulfilled' ? seasonEvents.value : [];
-
-      // Merge and deduplicate by idEvent
-      const allEvents = [...past, ...next, ...season];
-      const uniqueEvents = Array.from(new Map(allEvents.map(item => [item.idEvent, item])).values());
-
-      // Sort by date/time
-      const sortedEvents = uniqueEvents.sort((a, b) =>
-        new Date(a.dateEvent + 'T' + a.strTime).getTime() - new Date(b.dateEvent + 'T' + b.strTime).getTime()
-      );
-
-      // Keep a reasonable window
-      const now = new Date();
-      const windowStart = subDays(now, 60);
-      const windowEnd = addDays(now, 60);
-      const currentYear = now.getFullYear();
-
-      const filteredEvents = sortedEvents.filter((evt) => {
-        const d = parseISO(evt.dateEvent);
-        if (isNaN(d.getTime())) return false;
-        const matchYear = d.getFullYear();
-        if (matchYear < currentYear - 1) return false;
-        return d >= windowStart && d <= windowEnd;
-      });
-
-      setMatches(filteredEvents);
+      const next = nextEvents.status === 'fulfilled' ? nextEvents.value : [];
+      const past = pastEvents.status === 'fulfilled' ? pastEvents.value : [];
+      setPreloadedMatches([...past, ...next]);
       setError(null);
     } catch (err) {
-      console.error('Error fetching fixtures:', err);
+      console.error('Error fetching preloaded league fixtures:', err);
       setError('Failed to fetch matches');
-    } finally {
-      setLoading(false);
     }
   }, [leagueId]);
 
-  useEffect(() => {
-    setLoading(true);
-    setMatches([]);
-    setError(null);
-    fetchMatches();
+  // 2. Fetch matches for selectedDate when leagueId or selectedDate changes
+  const fetchDayMatches = useCallback(async () => {
+    try {
+      const dateStr = format(selectedDate, 'yyyy-MM-dd');
+      const events = await getEventsOnDay(dateStr, leagueId);
+      setDayMatches(events);
+    } catch (err) {
+      console.error('Error fetching matches for day:', err);
+    }
+  }, [leagueId, selectedDate]);
 
-    timerRef.current = setInterval(fetchMatches, POLLING_INTERVAL);
+  const fetchAll = useCallback(async () => {
+    setLoading(true);
+    await Promise.all([fetchPreloaded(), fetchDayMatches()]);
+    setLoading(false);
+  }, [fetchPreloaded, fetchDayMatches]);
+
+  useEffect(() => {
+    fetchAll();
+    timerRef.current = setInterval(fetchAll, POLLING_INTERVAL);
 
     return () => {
       if (timerRef.current) {
@@ -71,7 +56,17 @@ export const useMatches = (leagueId: string) => {
         timerRef.current = null;
       }
     };
-  }, [fetchMatches]);
+  }, [fetchAll]);
 
-  return { matches, loading, error };
+  // Merge and sort all matches
+  const matches = useMemo(() => {
+    const all = [...preloadedMatches, ...dayMatches];
+    const unique = Array.from(new Map(all.map(item => [item.idEvent, item])).values());
+    
+    return unique.sort((a, b) =>
+      new Date(a.dateEvent + 'T' + a.strTime).getTime() - new Date(b.dateEvent + 'T' + b.strTime).getTime()
+    );
+  }, [preloadedMatches, dayMatches]);
+
+  return { matches, loading, error, preloadedMatches };
 };

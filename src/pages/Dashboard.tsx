@@ -52,31 +52,37 @@ const generateDates = (centerDate: Date, range: number = 3) => {
 };
 
 export const Dashboard = ({ leagueId }: { leagueId: string }) => {
-  const { matches, loading, error } = useMatches(leagueId);
+  const [selectedDate, setSelectedDate] = useState(() => startOfDay(new Date()));
+  const { matches, loading, error, preloadedMatches } = useMatches(leagueId, selectedDate);
   const { isMatchFavorite } = useFavorites();
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const [filterMode, setFilterMode] = useState<'all' | 'live' | 'favorites'>('all');
   const dateScrollRef = useRef<HTMLDivElement>(null);
 
   const dates = useMemo(() => generateDates(selectedDate, 3), [selectedDate]);
 
-  // Always start from today, or the nearest match date if no matches today
+  // Jump to nearest match date when league changes and preloadedMatches are loaded
   useEffect(() => {
-    if (matches.length > 0) {
+    if (preloadedMatches.length > 0) {
       const today = startOfDay(new Date());
-      const hasMatchToday = matches.some(m => isSameDay(parseISO(m.dateEvent), today));
+      const hasMatchToday = preloadedMatches.some(m => isSameDay(parseISO(m.dateEvent), today));
       
       if (!hasMatchToday) {
         // Find nearest future match
-        const futureMatches = matches.filter(m => parseISO(m.dateEvent) >= today);
+        const futureMatches = preloadedMatches.filter(m => parseISO(m.dateEvent) >= today);
         if (futureMatches.length > 0) {
           setSelectedDate(startOfDay(parseISO(futureMatches[0].dateEvent)));
+          return;
+        }
+        // If no future matches, find nearest past match
+        const pastMatches = preloadedMatches.filter(m => parseISO(m.dateEvent) < today);
+        if (pastMatches.length > 0) {
+          setSelectedDate(startOfDay(parseISO(pastMatches[pastMatches.length - 1].dateEvent)));
           return;
         }
       }
     }
     setSelectedDate(startOfDay(new Date()));
-  }, [leagueId, matches.length]);
+  }, [leagueId, preloadedMatches.length]);
 
   const filteredMatches = useMemo(() => {
     return matches.filter(match => {

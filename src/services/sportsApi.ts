@@ -256,7 +256,7 @@ export function getProxiedImageUrl(url: string | null | undefined): string {
   if (!url) return FALLBACK_BADGE;
   try {
     const u = new URL(url);
-    if (u.hostname === 'r2.thesportsdb.com') {
+    if (u.hostname.endsWith('thesportsdb.com')) {
       return `/api-images${u.pathname}`;
     }
   } catch (e) {}
