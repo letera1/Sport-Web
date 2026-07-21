@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePlayerDetails } from '../hooks/usePlayerDetails';
-import { FALLBACK_BADGE } from '../services/sportsApi';
+import { FALLBACK_BADGE, getProxiedImageUrl } from '../services/sportsApi';
 import { Skeleton } from '../components/Skeleton';
 import { EmptyState } from '../components/EmptyState';
 import { ArrowLeft, Trophy, Briefcase, MapPin, Calendar, Ruler, Weight, Flag } from 'lucide-react';
@@ -164,7 +164,7 @@ export const PlayerProfilePage = () => {
             {formerTeams.map((ft, idx) => (
               <div key={idx} className="flex items-center gap-3">
                 {ft.strTeamBadge ? (
-                  <img src={`${ft.strTeamBadge}/tiny`} alt="" className="w-6 h-6 object-contain shrink-0" onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }} />
+                  <img src={`${getProxiedImageUrl(ft.strTeamBadge)}/tiny`} alt="" className="w-6 h-6 object-contain shrink-0" onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }} />
                 ) : (
                   <div className="w-6 h-6 rounded-full bg-surface-hover shrink-0" />
                 )}
