@@ -5,7 +5,7 @@
       "destination": "https://www.thesportsdb.com/api/:path*"
     },
     {
-      "source": "/api-images/:path*",
+      "source": "/images-proxy/:path*",
       "destination": "https://r2.thesportsdb.com/:path*"
     }
   ]

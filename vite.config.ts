@@ -10,11 +10,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
-      '/api-images': {
+      '/images-proxy': {
         target: 'https://r2.thesportsdb.com',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api-images/, '')
+        rewrite: (path) => path.replace(/^\/images-proxy/, '')
       },
     },
   },

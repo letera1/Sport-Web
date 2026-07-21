@@ -235,6 +235,13 @@ export async function getAllTeamsInLeague(leagueId: string): Promise<TeamDetails
   return data?.teams || [];
 }
 
+export async function lookupAllPlayers(teamId: string): Promise<PlayerDetails[]> {
+  const data = await deduplicatedGet<{ player: PlayerDetails[] | null }>(
+    '/lookup_all_players.php', { id: teamId }, CACHE_TTL.TEAM
+  );
+  return data?.player || [];
+}
+
 // ========================
 // Video Endpoints
 // ========================
@@ -257,7 +264,7 @@ export function getProxiedImageUrl(url: string | null | undefined): string {
   try {
     const u = new URL(url);
     if (u.hostname.endsWith('thesportsdb.com')) {
-      return `/api-images${u.pathname}`;
+      return `/images-proxy${u.pathname}`;
     }
   } catch (e) {}
   return url;
