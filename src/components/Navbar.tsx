@@ -62,6 +62,11 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
 
       {/* Right: Icons & Selectors */}
       <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Flag */}
+        <button className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/10 flex items-center justify-center text-sm">
+          🇬🇧
+        </button>
+
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
