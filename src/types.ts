@@ -151,7 +151,6 @@ export interface Equipment {
   strEquipment?: string;
   strSeason?: string;
   strType?: string;
-  strEquipment?: string;
 }
 
 // ========================
@@ -194,7 +193,6 @@ export interface PlayerDetails {
   strStatus?: string;
   strKit?: string;
   strWage?: string;
-  strBirthLocation?: string;
   strOutfitter?: string;
   intLoved?: string;
 }
