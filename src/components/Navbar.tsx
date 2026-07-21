@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, Menu, X, Sun, Moon, Search, Trophy, Heart } from 'lucide-react';
+import { Menu, X, Sun, Moon, Search, Trophy, Heart } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { LEAGUES } from '../constants';
@@ -24,15 +24,14 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Navigate to search results or handle search
       setSearchOpen(false);
     }
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-navbar border-b border-border/80 shadow-nav">
-      {/* Top Main Navigation Bar */}
-      <div className="max-w-app mx-auto px-3 sm:px-6 h-13 sm:h-14 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-[100] bg-surface border-b border-border shadow-md">
+      {/* Top Main Navigation Bar - 100% Opaque Solid */}
+      <div className="max-w-app mx-auto px-3 sm:px-6 h-13 sm:h-14 flex items-center justify-between gap-4 bg-surface">
         {/* Left: Brand & Main Navigation */}
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2 group">
@@ -91,7 +90,7 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
                   onChange={(e) => setSearchQuery(e.target.value)}
                   autoFocus
                   onBlur={() => !searchQuery && setSearchOpen(false)}
-                  className="w-44 sm:w-60 bg-surface border border-border rounded-full px-3 py-1 text-xs text-white placeholder:text-text-muted focus:outline-none focus:border-accent"
+                  className="w-44 sm:w-60 bg-surface-hover border border-border rounded-full px-3 py-1 text-xs text-white placeholder:text-text-muted focus:outline-none focus:border-accent"
                 />
                 <button type="submit" className="absolute right-2 text-text-muted hover:text-white">
                   <Search className="w-3.5 h-3.5" />
@@ -100,7 +99,7 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
             ) : (
               <button
                 onClick={() => setSearchOpen(true)}
-                className="w-8 h-8 rounded-full bg-surface hover:bg-surface-hover border border-border/50 flex items-center justify-center text-text-secondary hover:text-white transition-colors"
+                className="w-8 h-8 rounded-full bg-surface-hover hover:bg-border/60 border border-border/50 flex items-center justify-center text-text-secondary hover:text-white transition-colors"
                 title="Search"
               >
                 <Search className="w-4 h-4" />
@@ -111,7 +110,7 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className="w-8 h-8 rounded-full bg-surface hover:bg-surface-hover border border-border/50 flex items-center justify-center text-text-secondary hover:text-white transition-colors"
+            className="w-8 h-8 rounded-full bg-surface-hover hover:bg-border/60 border border-border/50 flex items-center justify-center text-text-secondary hover:text-white transition-colors"
             title={isDark ? 'Light Mode' : 'Dark Mode'}
           >
             {isDark ? <Sun className="w-4 h-4 text-warning" /> : <Moon className="w-4 h-4 text-info" />}
@@ -131,15 +130,15 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden w-8 h-8 rounded-lg bg-surface flex items-center justify-center text-text-secondary hover:text-white"
+            className="md:hidden w-8 h-8 rounded-lg bg-surface-hover flex items-center justify-center text-text-secondary hover:text-white"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
-      {/* Sub-Header: Horizontal League Scroller (BeSoccer/FlashScore style) */}
-      <div className="border-t border-border/60 bg-surface/80 glass">
+      {/* Sub-Header: Horizontal League Scroller - 100% Solid Opaque Background */}
+      <div className="border-t border-border/60 bg-surface shadow-inner">
         <div className="max-w-app mx-auto px-3 sm:px-6">
           <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-2">
             {leagues.map((league) => {
@@ -152,7 +151,7 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
                     "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all shrink-0 border",
                     isSelected
                       ? "bg-accent text-black font-bold border-accent shadow-glow-accent"
-                      : "bg-surface-hover/40 text-text-secondary border-border/40 hover:text-white hover:bg-surface-hover"
+                      : "bg-surface-hover/60 text-text-secondary border-border/40 hover:text-white hover:bg-surface-hover"
                   )}
                 >
                   <span className="text-xs leading-none">{league.flag}</span>
@@ -164,16 +163,16 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
         </div>
       </div>
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile Drawer Menu - 100% Solid Opaque */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-surface border-b border-border animate-slide-up p-4 space-y-4">
+        <div className="md:hidden bg-surface border-b border-border animate-slide-up p-4 space-y-4 shadow-xl">
           <nav className="flex flex-col gap-2">
             <Link
               to="/"
               onClick={() => setMobileMenuOpen(false)}
               className={cn(
                 "px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-between",
-                location.pathname === '/' ? "bg-accent/15 text-accent font-bold" : "text-text-secondary"
+                location.pathname === '/' ? "bg-accent/15 text-accent font-bold" : "text-text-secondary hover:text-white"
               )}
             >
               <span>Matches & Scores</span>
@@ -183,7 +182,7 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
               onClick={() => setMobileMenuOpen(false)}
               className={cn(
                 "px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-between",
-                location.pathname === '/standings' ? "bg-accent/15 text-accent font-bold" : "text-text-secondary"
+                location.pathname === '/standings' ? "bg-accent/15 text-accent font-bold" : "text-text-secondary hover:text-white"
               )}
             >
               <span>Standings</span>
