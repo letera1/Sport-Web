@@ -62,8 +62,8 @@ function App() {
           <FavoritesProvider>
             <AppContent />
           </FavoritesProvider>
-        </BrowserRouter>
-      </ErrorBoundary>
+        </ThemeProvider>
+      </BrowserRouter>
     </ErrorBoundary>
   );
 }
