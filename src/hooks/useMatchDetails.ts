@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { lookupEvent } from '../services/sportsApi';
+import { lookupEvent, lookupEventLineup, lookupEventTimeline } from '../services/sportsApi';
 import { POLLING_INTERVAL } from '../constants';
-import type { MatchDetails } from '../types';
+import type { MatchDetails, EventLineup, EventTimeline } from '../types';
 
 export const useMatchDetails = (id: string | undefined, initialMatch?: Partial<MatchDetails> | null) => {
   const [match, setMatch] = useState<MatchDetails | null>(initialMatch ? (initialMatch as MatchDetails) : null);
+  const [lineup, setLineup] = useState<EventLineup[]>([]);
+  const [timeline, setTimeline] = useState<EventTimeline[]>([]);
   const [loading, setLoading] = useState(!initialMatch);
   const [error, setError] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -18,9 +20,14 @@ export const useMatchDetails = (id: string | undefined, initialMatch?: Partial<M
     }
 
     try {
-      const data = await lookupEvent(id);
+      const [eventRes, lineupRes, timelineRes] = await Promise.allSettled([
+        lookupEvent(id),
+        lookupEventLineup(id),
+        lookupEventTimeline(id),
+      ]);
 
-      if (data) {
+      if (eventRes.status === 'fulfilled' && eventRes.value) {
+        const data = eventRes.value;
         if (data.idEvent && String(data.idEvent) !== String(id)) {
           console.error(`Server returned wrong match: requested ${id}, got ${data.idEvent}`);
           setError('Server returned incorrect data. Please try again.');
@@ -33,6 +40,13 @@ export const useMatchDetails = (id: string | undefined, initialMatch?: Partial<M
           setMatch(null);
           setError('No details available for this match');
         }
+      }
+
+      if (lineupRes.status === 'fulfilled') {
+        setLineup(lineupRes.value);
+      }
+      if (timelineRes.status === 'fulfilled') {
+        setTimeline(timelineRes.value);
       }
     } catch (err) {
       console.error('Error fetching match details:', err);
@@ -72,5 +86,5 @@ export const useMatchDetails = (id: string | undefined, initialMatch?: Partial<M
     };
   }, [id, fetchDetails]);
 
-  return { match, loading, error };
+  return { match, lineup, timeline, loading, error };
 };
