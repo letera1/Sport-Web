@@ -67,6 +67,7 @@ export const API_ENDPOINTS = {
   SEARCH_TEAMS: '/searchteams.php',
   SEARCH_PLAYERS: '/searchplayers.php',
   SEARCH_ALL_LEAGUES: '/search_all_leagues.php',
+  SEARCH_ALL_TEAMS: '/search_all_teams.php',
 
   // List
   LOOKUP_ALL_TEAMS: '/lookup_all_teams.php',

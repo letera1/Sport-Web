@@ -13,8 +13,13 @@ export const useStandings = (leagueId: string, season?: string) => {
       setLoading(true);
       const s = season || getCurrentSeason();
       
-      const [tableRes, allTeamsRes] = await Promise.allSettled([
+      // Calculate previous season e.g. 2024-2025 if current is 2025-2026
+      const [startYear] = s.split('-').map(Number);
+      const prevSeason = startYear ? `${startYear - 1}-${startYear}` : undefined;
+
+      const [tableRes, prevTableRes, allTeamsRes] = await Promise.allSettled([
         lookupStandings(leagueId, s),
+        prevSeason ? lookupStandings(leagueId, prevSeason) : Promise.resolve([]),
         getAllTeamsInLeague(leagueId)
       ]);
 
@@ -24,7 +29,24 @@ export const useStandings = (leagueId: string, season?: string) => {
             strTeamBadge: entry.strBadge || entry.strTeamBadge || ''
           }))
         : [];
+      
+      const prevTable = prevTableRes.status === 'fulfilled' ? prevTableRes.value : [];
       const allTeams = allTeamsRes.status === 'fulfilled' ? allTeamsRes.value : [];
+
+      // Combine teams from prev season table that are missing from realTable
+      const tableTeamIds = new Set(realTable.map(entry => entry.idTeam));
+      
+      prevTable.forEach(entry => {
+        if (entry.idTeam && !tableTeamIds.has(entry.idTeam)) {
+          allTeams.push({
+            idTeam: entry.idTeam,
+            strTeam: entry.strTeam,
+            strTeamBadge: entry.strBadge || entry.strTeamBadge || '',
+            strLeague: entry.strLeague || '',
+            idLeague: leagueId,
+          } as any);
+        }
+      });
 
       if (realTable.length === 0 && allTeams.length === 0) {
         setStandings([]);

@@ -233,14 +233,30 @@ export async function lookupEventResults(eventId: string): Promise<EventResult[]
 // ========================
 
 export async function getAllTeamsInLeague(leagueId: string): Promise<TeamDetails[]> {
-  const data = await deduplicatedGet<{ teams: TeamDetails[] | null }>(
-    API_ENDPOINTS.LOOKUP_ALL_TEAMS, { id: leagueId }, CACHE_TTL.LEAGUE
-  );
-  const teams = data?.teams || [];
-  return teams.map(team => ({
-    ...team,
-    strTeamBadge: team.strBadge || team.strTeamBadge || ''
-  }));
+  const [searchRes, lookupRes] = await Promise.allSettled([
+    deduplicatedGet<{ teams: TeamDetails[] | null }>(
+      API_ENDPOINTS.SEARCH_ALL_TEAMS, { id: leagueId }, CACHE_TTL.LEAGUE
+    ),
+    deduplicatedGet<{ teams: TeamDetails[] | null }>(
+      API_ENDPOINTS.LOOKUP_ALL_TEAMS, { id: leagueId }, CACHE_TTL.LEAGUE
+    ),
+  ]);
+
+  const searchTeams = (searchRes.status === 'fulfilled' && searchRes.value?.teams) || [];
+  const lookupTeams = (lookupRes.status === 'fulfilled' && lookupRes.value?.teams) || [];
+
+  const teamMap = new Map<string, TeamDetails>();
+
+  [...searchTeams, ...lookupTeams].forEach(t => {
+    if (t.idTeam && !teamMap.has(t.idTeam)) {
+      teamMap.set(t.idTeam, {
+        ...t,
+        strTeamBadge: t.strBadge || t.strTeamBadge || ''
+      });
+    }
+  });
+
+  return Array.from(teamMap.values());
 }
 
 export async function lookupAllPlayers(teamId: string, teamName?: string): Promise<PlayerDetails[]> {
