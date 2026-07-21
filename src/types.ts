@@ -136,6 +136,7 @@ export interface TeamDetails {
   strDescriptionEN?: string;
   strCountry?: string;
   strTeamBadge?: string;
+  strBadge?: string;
   strTeamJersey?: string;
   strTeamLogo?: string;
   strTeamFanart1?: string;
