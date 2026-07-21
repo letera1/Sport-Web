@@ -252,8 +252,19 @@ export async function getHighlights(date: string, leagueId?: string): Promise<Vi
 // Team badge helper
 // ========================
 
+export function getProxiedImageUrl(url: string | null | undefined): string {
+  if (!url) return FALLBACK_BADGE;
+  try {
+    const u = new URL(url);
+    if (u.hostname === 'r2.thesportsdb.com') {
+      return `/api-images${u.pathname}`;
+    }
+  } catch (e) {}
+  return url;
+}
+
 export function getTeamBadgeUrl(teamName: string): string {
-  return `https://www.thesportsdb.com/images/media/team/badge/${teamName.replace(/\s+/g, '_')}.png`;
+  return FALLBACK_BADGE; // The old name-based API is deprecated and returns 404
 }
 
 export const FALLBACK_BADGE = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="%23938F99" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>';

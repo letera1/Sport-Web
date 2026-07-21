@@ -3,6 +3,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://www.thesportsdb.com/api/:path*"
+    },
+    {
+      "source": "/api-images/:path*",
+      "destination": "https://r2.thesportsdb.com/:path*"
     }
   ]
 }

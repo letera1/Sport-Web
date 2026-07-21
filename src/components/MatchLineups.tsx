@@ -1,5 +1,5 @@
 import { MatchDetails } from '../types';
-import { getTeamBadgeUrl, FALLBACK_BADGE } from '../services/sportsApi';
+import { getProxiedImageUrl, FALLBACK_BADGE } from '../services/sportsApi';
 import { Users } from 'lucide-react';
 
 interface MatchLineupsProps {
@@ -85,8 +85,8 @@ export const MatchLineups = ({ match, error }: MatchLineupsProps) => {
     );
   }
 
-  const homeBadge = match.strHomeTeamBadge || getTeamBadgeUrl(match.strHomeTeam);
-  const awayBadge = match.strAwayTeamBadge || getTeamBadgeUrl(match.strAwayTeam);
+  const homeBadge = getProxiedImageUrl(match.strHomeTeamBadge);
+  const awayBadge = getProxiedImageUrl(match.strAwayTeamBadge);
 
   return (
     <div className="bg-surface rounded-b-lg p-4 sm:p-6">

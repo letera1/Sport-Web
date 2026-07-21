@@ -19,7 +19,7 @@ export const StandingsWidget = ({ leagueId }: StandingsWidgetProps) => {
           <Skeleton className="w-36 h-5" />
         </div>
         <div className="divide-y divide-divider/20">
-          {[1,2,3,4,5].map(i => (
+          {Array.from({ length: 20 }).map((_, i) => (
             <div key={i} className="px-4 py-2.5 flex items-center gap-3">
               <Skeleton className="w-5 h-4" />
               <Skeleton className="w-5 h-5 rounded-full" />
@@ -46,7 +46,7 @@ export const StandingsWidget = ({ leagueId }: StandingsWidgetProps) => {
         </Link>
       </div>
 
-      <div className="divide-y divide-divider/20 max-h-[500px] overflow-y-auto">
+      <div className="divide-y divide-divider/20">
         {standings.map((row) => {
           const rank = parseInt(row.intRank);
           return (

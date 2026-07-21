@@ -3,7 +3,7 @@ import { Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MatchEvent } from '../types';
 import { cn, isMatchLive, isMatchCompleted } from '../lib/utils';
-import { getTeamBadgeUrl, FALLBACK_BADGE } from '../services/sportsApi';
+import { getProxiedImageUrl, FALLBACK_BADGE } from '../services/sportsApi';
 import { useFavorites } from '../contexts/FavoritesContext';
 
 interface MatchCardProps {
@@ -50,7 +50,7 @@ export const MatchCard = memo(({ match }: MatchCardProps) => {
         {/* Home Team */}
         <div className="flex items-center gap-2">
           <img 
-            src={match.strHomeTeamBadge || getTeamBadgeUrl(match.strHomeTeam)}
+            src={getProxiedImageUrl(match.strHomeTeamBadge)}
             onError={(e) => { 
               const img = e.currentTarget;
               img.onerror = null;
@@ -65,7 +65,7 @@ export const MatchCard = memo(({ match }: MatchCardProps) => {
         {/* Away Team */}
         <div className="flex items-center gap-2">
           <img 
-            src={match.strAwayTeamBadge || getTeamBadgeUrl(match.strAwayTeam)}
+            src={getProxiedImageUrl(match.strAwayTeamBadge)}
             onError={(e) => { 
               const img = e.currentTarget;
               img.onerror = null;

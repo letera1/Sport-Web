@@ -35,8 +35,8 @@ export const useMatches = (leagueId: string) => {
 
       // Keep a reasonable window
       const now = new Date();
-      const windowStart = subDays(now, 7);
-      const windowEnd = addDays(now, 30);
+      const windowStart = subDays(now, 60);
+      const windowEnd = addDays(now, 60);
       const currentYear = now.getFullYear();
 
       const filteredEvents = sortedEvents.filter((evt) => {

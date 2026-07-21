@@ -60,10 +60,23 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
 
   const dates = useMemo(() => generateDates(selectedDate, 3), [selectedDate]);
 
-  // Always start from today when league changes
+  // Always start from today, or the nearest match date if no matches today
   useEffect(() => {
+    if (matches.length > 0) {
+      const today = startOfDay(new Date());
+      const hasMatchToday = matches.some(m => isSameDay(parseISO(m.dateEvent), today));
+      
+      if (!hasMatchToday) {
+        // Find nearest future match
+        const futureMatches = matches.filter(m => parseISO(m.dateEvent) >= today);
+        if (futureMatches.length > 0) {
+          setSelectedDate(startOfDay(parseISO(futureMatches[0].dateEvent)));
+          return;
+        }
+      }
+    }
     setSelectedDate(startOfDay(new Date()));
-  }, [leagueId]);
+  }, [leagueId, matches.length]);
 
   const filteredMatches = useMemo(() => {
     return matches.filter(match => {
