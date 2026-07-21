@@ -236,7 +236,11 @@ export async function getAllTeamsInLeague(leagueId: string): Promise<TeamDetails
   const data = await deduplicatedGet<{ teams: TeamDetails[] | null }>(
     API_ENDPOINTS.LOOKUP_ALL_TEAMS, { id: leagueId }, CACHE_TTL.LEAGUE
   );
-  return data?.teams || [];
+  const teams = data?.teams || [];
+  return teams.map(team => ({
+    ...team,
+    strTeamBadge: team.strBadge || team.strTeamBadge || ''
+  }));
 }
 
 export async function lookupAllPlayers(teamId: string): Promise<PlayerDetails[]> {
