@@ -6,6 +6,8 @@ import { MatchEvents } from '../components/MatchEvents';
 import { MatchLineups } from '../components/MatchLineups';
 import { MatchStats } from '../components/MatchStats';
 import { MatchDetailsTab } from '../components/MatchDetails';
+import { MatchOdds } from '../components/MatchOdds';
+import { MatchStandingsTab } from '../components/MatchStandingsTab';
 import { useMatchDetails } from '../hooks/useMatchDetails';
 import { MatchDetails } from '../types';
 import { ArrowLeft } from 'lucide-react';
@@ -47,9 +49,6 @@ export const MatchDetailsPage = () => {
       </div>
     );
   }
-
-import { MatchOdds } from '../components/MatchOdds';
-import { MatchStandingsTab } from '../components/MatchStandingsTab';
 
   const renderTabContent = () => {
     switch (activeTab) {
