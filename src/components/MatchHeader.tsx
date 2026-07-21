@@ -48,8 +48,8 @@ export const MatchHeader = ({ match, loading }: MatchHeaderProps) => {
             )}
             <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
               <img 
-                src={match.strHomeTeamBadge || api.getTeamBadge(match.strHomeTeam)}
-                onError={(e) => (e.target as HTMLImageElement).src = "https://www.thesportsdb.com/images/icons/user/anon.png"}
+                src={match.strHomeTeamBadge || getTeamBadgeUrl(match.strHomeTeam)}
+                onError={(e) => (e.target as HTMLImageElement).src = FALLBACK_BADGE}
                 alt={match.strHomeTeam} 
                 className="w-full h-full object-contain"
               />
@@ -96,8 +96,8 @@ export const MatchHeader = ({ match, loading }: MatchHeaderProps) => {
             )}
             <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
               <img 
-                src={match.strAwayTeamBadge || api.getTeamBadge(match.strAwayTeam)}
-                onError={(e) => (e.target as HTMLImageElement).src = "https://www.thesportsdb.com/images/icons/user/anon.png"}
+                src={match.strAwayTeamBadge || getTeamBadgeUrl(match.strAwayTeam)}
+                onError={(e) => (e.target as HTMLImageElement).src = FALLBACK_BADGE}
                 alt={match.strAwayTeam} 
                 className="w-full h-full object-contain"
               />
