@@ -85,8 +85,8 @@ export const MatchLineups = ({ match, error }: MatchLineupsProps) => {
     );
   }
 
-  const homeBadge = match.strHomeTeamBadge || api.getTeamBadge(match.strHomeTeam);
-  const awayBadge = match.strAwayTeamBadge || api.getTeamBadge(match.strAwayTeam);
+  const homeBadge = match.strHomeTeamBadge || getTeamBadgeUrl(match.strHomeTeam);
+  const awayBadge = match.strAwayTeamBadge || getTeamBadgeUrl(match.strAwayTeam);
 
   return (
     <div className="bg-surface rounded-b-lg p-4 sm:p-6">
@@ -97,7 +97,7 @@ export const MatchLineups = ({ match, error }: MatchLineupsProps) => {
             <img 
               src={homeBadge}
               alt={match.strHomeTeam}
-              onError={(e) => (e.target as HTMLImageElement).src = "https://www.thesportsdb.com/images/icons/user/anon.png"}
+              onError={(e) => (e.target as HTMLImageElement).src = FALLBACK_BADGE}
               className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
             />
             <span className="text-white font-medium text-sm sm:text-base">{match.strHomeTeam}</span>
@@ -114,7 +114,7 @@ export const MatchLineups = ({ match, error }: MatchLineupsProps) => {
             <img 
               src={awayBadge}
               alt={match.strAwayTeam}
-              onError={(e) => (e.target as HTMLImageElement).src = "https://www.thesportsdb.com/images/icons/user/anon.png"}
+              onError={(e) => (e.target as HTMLImageElement).src = FALLBACK_BADGE}
               className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
             />
             <span className="text-white font-medium text-sm sm:text-base">{match.strAwayTeam}</span>

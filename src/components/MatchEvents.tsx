@@ -148,7 +148,10 @@ export const MatchEvents = ({ match, error }: MatchEventsProps) => {
     timeline.push(...secondHalfEvents);
     
     if (secondHalfEvents.length > 0 && firstHalfEvents.length > 0) {
-      timeline.push({ isDivider: true, label: 'Halftime', score: '1 - 0' });
+      // Compute halftime score from first-half goals
+      const htHomeGoals = homeGoals.filter(g => g.minute <= 45).length;
+      const htAwayGoals = awayGoals.filter(g => g.minute <= 45).length;
+      timeline.push({ isDivider: true, label: 'Halftime', score: `${htHomeGoals} - ${htAwayGoals}` });
     }
     
     timeline.push(...firstHalfEvents);
