@@ -34,22 +34,20 @@ export const StandingsWidget = ({ leagueId }: StandingsWidgetProps) => {
 
   if (standings.length === 0) return null;
 
-  const top5 = standings.slice(0, 5);
-
   return (
     <div className="bg-surface rounded-xl overflow-hidden border border-divider/30">
       <div className="px-4 py-3 flex items-center justify-between border-b border-divider/30">
         <div className="flex items-center gap-2">
           <Trophy className="w-4 h-4 text-accent" />
-          <h3 className="text-text-primary font-medium text-sm">Standings</h3>
+          <h3 className="text-text-primary font-medium text-sm">League Table ({standings.length} Teams)</h3>
         </div>
         <Link to="/standings" className="text-accent text-xs font-medium hover:underline flex items-center gap-0.5">
-          View All <ChevronRight className="w-3 h-3" />
+          Full Table <ChevronRight className="w-3 h-3" />
         </Link>
       </div>
 
-      <div className="divide-y divide-divider/20">
-        {top5.map((row) => {
+      <div className="divide-y divide-divider/20 max-h-[500px] overflow-y-auto">
+        {standings.map((row) => {
           const rank = parseInt(row.intRank);
           return (
             <Link

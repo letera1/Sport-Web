@@ -23,6 +23,15 @@ export const LEAGUES: { id: string; name: string; code: string; country: string;
   { id: '4332', name: 'Serie A', code: 'SA', country: 'Italy', flag: '🇮🇹' },
   { id: '4331', name: 'Bundesliga', code: 'BL', country: 'Germany', flag: '🇩🇪' },
   { id: '4334', name: 'Ligue 1', code: 'L1', country: 'France', flag: '🇫🇷' },
+  { id: '4387', name: 'Champions League', code: 'UCL', country: 'Europe', flag: '🏆' },
+  { id: '4388', name: 'Europa League', code: 'UEL', country: 'Europe', flag: '🏆' },
+  { id: '4337', name: 'Eredivisie', code: 'ERE', country: 'Netherlands', flag: '🇳🇱' },
+  { id: '4344', name: 'Primeira Liga', code: 'POR', country: 'Portugal', flag: '🇵🇹' },
+  { id: '4329', name: 'Championship', code: 'CHA', country: 'England', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+  { id: '4346', name: 'MLS', code: 'MLS', country: 'USA', flag: '🇺🇸' },
+  { id: '4668', name: 'Saudi Pro League', code: 'SPL', country: 'Saudi Arabia', flag: '🇸🇦' },
+  { id: '4351', name: 'Brasileirão', code: 'BRA', country: 'Brazil', flag: '🇧🇷' },
+  { id: '4350', name: 'Primera División', code: 'ARG', country: 'Argentina', flag: '🇦🇷' },
 ];
 
 // ========================
