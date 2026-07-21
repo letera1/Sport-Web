@@ -5,8 +5,20 @@
       "destination": "https://www.thesportsdb.com/api/:path*"
     },
     {
+      "source": "/images-r2/:path*",
+      "destination": "https://r2.thesportsdb.com/:path*"
+    },
+    {
+      "source": "/images-www/:path*",
+      "destination": "https://www.thesportsdb.com/:path*"
+    },
+    {
       "source": "/images-proxy/:path*",
       "destination": "https://r2.thesportsdb.com/:path*"
+    },
+    {
+      "source": "/((?!api|images-r2|images-www|images-proxy).*)",
+      "destination": "/index.html"
     }
   ]
 }
