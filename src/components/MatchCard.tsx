@@ -17,83 +17,104 @@ export const MatchCard = memo(({ match }: MatchCardProps) => {
 
   const isLive = isMatchLive(match.strStatus);
   const isFinished = isMatchCompleted(match.strStatus, match.intHomeScore, match.intAwayScore, match.dateEvent);
-  
+
   const displayStatus = isLive 
-    ? (match.strProgress || match.strStatus) 
+    ? (match.strProgress || match.strStatus || 'LIVE') 
     : (isFinished ? "FT" : match.strTime?.slice(0, 5) || '--:--');
-  
-  const statusColor = isLive ? "text-accent" : (isFinished ? "text-danger" : "text-text-secondary");
-  const borderColor = isLive ? "border-l-accent" : (isFinished ? "border-l-danger" : "border-l-transparent");
 
   return (
     <div 
       onClick={() => navigate(`/match/${match.idEvent}`, { state: { match } })}
       className={cn(
-        "flex items-center gap-3 sm:gap-4 px-3 sm:px-4 py-3 hover:bg-surface-hover transition-all cursor-pointer border-l-[3px] group",
-        borderColor
+        "group flex items-center gap-3 px-3.5 py-2.5 hover:bg-surface-hover/70 transition-all cursor-pointer border-l-2 select-none",
+        isLive ? "border-l-live bg-live/5" : "border-l-transparent"
       )}
     >
-      {/* Status */}
-      <div className="w-12 sm:w-14 shrink-0 text-center">
-        <span className={cn("text-xs sm:text-sm font-semibold", statusColor)}>
+      {/* Time / Status Column */}
+      <div className="w-12 sm:w-14 shrink-0 flex flex-col items-center justify-center text-center border-r border-border/40 pr-2">
+        <span className={cn(
+          "text-xs font-bold font-score",
+          isLive ? "text-live" : isFinished ? "text-text-muted" : "text-text-secondary"
+        )}>
           {displayStatus}
         </span>
         {isLive && (
-          <div className="flex items-center justify-center mt-1">
-            <div className="live-dot" />
+          <div className="mt-0.5">
+            <span className="live-dot" />
           </div>
         )}
       </div>
 
-      {/* Teams */}
-      <div className="flex-1 flex flex-col gap-2 min-w-0">
-        {/* Home Team */}
-        <div className="flex items-center gap-2">
-          <img 
-            src={getProxiedImageUrl(match.strHomeTeamBadge)}
-            onError={(e) => { 
-              const img = e.currentTarget;
-              img.onerror = null;
-              img.src = FALLBACK_BADGE; 
-            }}
-            alt={match.strHomeTeam} 
-            className="w-5 h-5 object-contain shrink-0" 
-          />
-          <span className="text-text-primary text-sm truncate flex-1">{match.strHomeTeam}</span>
+      {/* Teams Column */}
+      <div className="flex-1 flex flex-col gap-1.5 min-w-0">
+        {/* Home Team Row */}
+        <div className="flex items-center justify-between gap-2 min-w-0">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <img 
+              src={getProxiedImageUrl(match.strHomeTeamBadge)}
+              onError={(e) => { 
+                const img = e.currentTarget;
+                img.onerror = null;
+                img.src = FALLBACK_BADGE; 
+              }}
+              alt={match.strHomeTeam} 
+              className="w-4 h-4 sm:w-5 sm:h-5 object-contain shrink-0" 
+            />
+            <span className={cn(
+              "text-xs sm:text-sm truncate font-medium",
+              isFinished && match.intHomeScore !== null && match.intAwayScore !== null && Number(match.intHomeScore) > Number(match.intAwayScore)
+                ? "text-white font-bold"
+                : "text-text-primary"
+            )}>
+              {match.strHomeTeam}
+            </span>
+          </div>
+          <span className={cn(
+            "text-xs sm:text-sm font-bold font-score shrink-0 w-5 text-right",
+            isLive ? "text-live" : "text-white"
+          )}>
+            {match.intHomeScore ?? "-"}
+          </span>
         </div>
 
-        {/* Away Team */}
-        <div className="flex items-center gap-2">
-          <img 
-            src={getProxiedImageUrl(match.strAwayTeamBadge)}
-            onError={(e) => { 
-              const img = e.currentTarget;
-              img.onerror = null;
-              img.src = FALLBACK_BADGE; 
-            }}
-            alt={match.strAwayTeam} 
-            className="w-5 h-5 object-contain shrink-0" 
-          />
-          <span className="text-text-primary text-sm truncate flex-1">{match.strAwayTeam}</span>
+        {/* Away Team Row */}
+        <div className="flex items-center justify-between gap-2 min-w-0">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <img 
+              src={getProxiedImageUrl(match.strAwayTeamBadge)}
+              onError={(e) => { 
+                const img = e.currentTarget;
+                img.onerror = null;
+                img.src = FALLBACK_BADGE; 
+              }}
+              alt={match.strAwayTeam} 
+              className="w-4 h-4 sm:w-5 sm:h-5 object-contain shrink-0" 
+            />
+            <span className={cn(
+              "text-xs sm:text-sm truncate font-medium",
+              isFinished && match.intHomeScore !== null && match.intAwayScore !== null && Number(match.intAwayScore) > Number(match.intHomeScore)
+                ? "text-white font-bold"
+                : "text-text-primary"
+            )}>
+              {match.strAwayTeam}
+            </span>
+          </div>
+          <span className={cn(
+            "text-xs sm:text-sm font-bold font-score shrink-0 w-5 text-right",
+            isLive ? "text-live" : "text-white"
+          )}>
+            {match.intAwayScore ?? "-"}
+          </span>
         </div>
       </div>
 
-      {/* Scores */}
-      <div className="flex flex-col gap-2 items-end shrink-0">
-        <span className="text-text-primary font-bold text-sm w-6 text-right">
-          {match.intHomeScore ?? "-"}
-        </span>
-        <span className="text-text-primary font-bold text-sm w-6 text-right">
-          {match.intAwayScore ?? "-"}
-        </span>
-      </div>
-
-      {/* Favorite Button */}
+      {/* Favorite Action */}
       <button 
         onClick={(e) => { e.stopPropagation(); toggleMatchFavorite(match.idEvent); }}
-        className="p-1 hover:bg-surface-hover rounded text-text-muted transition-colors shrink-0"
+        className="p-1.5 hover:bg-surface-hover rounded-full text-text-muted hover:text-danger transition-colors shrink-0 ml-1"
+        title={isFav ? "Remove favorite" : "Add favorite"}
       >
-        <Heart className={cn("w-4 h-4 transition-colors", isFav ? "fill-danger text-danger" : "group-hover:text-text-secondary")} />
+        <Heart className={cn("w-3.5 h-3.5 transition-all", isFav ? "fill-danger text-danger scale-110" : "group-hover:text-text-secondary")} />
       </button>
     </div>
   );

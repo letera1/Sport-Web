@@ -7,24 +7,25 @@ import { Trophy, ChevronRight } from 'lucide-react';
 
 interface StandingsWidgetProps {
   leagueId: string;
+  limit?: number;
 }
 
-export const StandingsWidget = ({ leagueId }: StandingsWidgetProps) => {
+export const StandingsWidget = ({ leagueId, limit = 8 }: StandingsWidgetProps) => {
   const { standings, loading } = useStandings(leagueId);
 
   if (loading) {
     return (
-      <div className="bg-surface rounded-xl overflow-hidden border border-divider/30">
-        <div className="px-4 py-3 border-b border-divider/30">
-          <Skeleton className="w-36 h-5" />
+      <div className="bg-surface rounded-xl overflow-hidden border border-border/50">
+        <div className="px-4 py-3 border-b border-border/40">
+          <Skeleton className="w-36 h-4" />
         </div>
-        <div className="divide-y divide-divider/20">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <div key={i} className="px-4 py-2.5 flex items-center gap-3">
-              <Skeleton className="w-5 h-4" />
+        <div className="divide-y divide-border/30 p-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="py-2 px-2 flex items-center gap-3">
+              <Skeleton className="w-4 h-4" />
               <Skeleton className="w-5 h-5 rounded-full" />
               <Skeleton className="w-24 h-4 flex-1" />
-              <Skeleton className="w-8 h-4" />
+              <Skeleton className="w-6 h-4" />
             </div>
           ))}
         </div>
@@ -34,54 +35,73 @@ export const StandingsWidget = ({ leagueId }: StandingsWidgetProps) => {
 
   if (standings.length === 0) return null;
 
+  const displayStandings = limit ? standings.slice(0, limit) : standings;
+
   return (
-    <div className="bg-surface rounded-xl overflow-hidden border border-divider/30">
-      <div className="px-4 py-3 flex items-center justify-between border-b border-divider/30">
+    <div className="bg-surface rounded-xl overflow-hidden border border-border/50 shadow-card">
+      {/* Widget Header */}
+      <div className="px-4 py-3 flex items-center justify-between border-b border-border/40 bg-surface-hover/30">
         <div className="flex items-center gap-2">
           <Trophy className="w-4 h-4 text-accent" />
-          <h3 className="text-text-primary font-medium text-sm">League Table ({standings.length} Teams)</h3>
+          <h3 className="text-white font-semibold text-xs uppercase tracking-wider font-display">
+            League Standings
+          </h3>
         </div>
-        <Link to="/standings" className="text-accent text-xs font-medium hover:underline flex items-center gap-0.5">
+        <Link 
+          to="/standings" 
+          className="text-accent text-xs font-bold hover:underline flex items-center gap-0.5"
+        >
           Full Table <ChevronRight className="w-3 h-3" />
         </Link>
       </div>
 
-      <div className="divide-y divide-divider/20">
-        {standings.map((row) => {
+      {/* Mini Table Header */}
+      <div className="grid grid-cols-[1.5rem_1fr_2rem_2rem_2.5rem] px-3 py-1.5 text-[10px] font-bold text-text-muted uppercase border-b border-border/30 bg-surface-hover/20">
+        <span className="text-center">#</span>
+        <span>Team</span>
+        <span className="text-center">P</span>
+        <span className="text-center">GD</span>
+        <span className="text-right">PTS</span>
+      </div>
+
+      {/* Rows */}
+      <div className="divide-y divide-border/20">
+        {displayStandings.map((row) => {
           const rank = parseInt(row.intRank);
+          const isChampionsLeague = rank <= 4;
+          const isRelegation = rank >= standings.length - 2;
+
           return (
             <Link
               to={`/team/${row.idTeam}`}
-              key={row.idTeam}
-              className="flex items-center gap-3 px-4 py-2.5 hover:bg-surface-hover transition-colors"
+              key={row.idTeam || row.intRank}
+              className="grid grid-cols-[1.5rem_1fr_2rem_2rem_2.5rem] items-center px-3 py-2 text-xs hover:bg-surface-hover/60 transition-colors group"
             >
               <span className={cn(
-                "w-5 text-center text-xs font-bold",
-                rank <= 4 ? "text-accent" : "text-text-secondary"
+                "text-center font-bold text-[11px]",
+                isChampionsLeague ? "text-accent" : isRelegation ? "text-danger" : "text-text-muted"
               )}>
                 {row.intRank}
               </span>
-              <img
-                src={row.strTeamBadge ? `${getProxiedImageUrl(row.strTeamBadge)}/tiny` : FALLBACK_BADGE}
-                alt={row.strTeam}
-                className="w-5 h-5 object-contain shrink-0"
-                onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
-              />
-              <span className="text-text-primary text-sm flex-1 truncate">{row.strTeam}</span>
-              <span className="text-text-primary text-sm font-bold w-8 text-right">{row.intPoints}</span>
-              
-              {/* Form dots */}
-              <div className="hidden sm:flex items-center gap-0.5">
-                {row.strForm?.split('').slice(-5).map((c, i) => (
-                  <span key={i} className={cn(
-                    "w-2 h-2 rounded-full",
-                    c === 'W' ? "bg-accent" :
-                    c === 'D' ? "bg-text-muted/40" :
-                    c === 'L' ? "bg-danger" :
-                    "bg-surface-hover"
-                  )} />
-                ))}
+              <div className="flex items-center gap-2 min-w-0 pr-1">
+                <img
+                  src={getProxiedImageUrl(row.strTeamBadge || row.strBadge)}
+                  alt={row.strTeam}
+                  className="w-4 h-4 object-contain shrink-0"
+                  onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
+                />
+                <span className="text-text-primary group-hover:text-white truncate font-medium text-xs">
+                  {row.strTeam}
+                </span>
               </div>
+              <span className="text-center text-text-secondary">{row.intPlayed}</span>
+              <span className={cn(
+                "text-center font-medium text-[11px]",
+                Number(row.intGoalDifference) > 0 ? "text-accent" : Number(row.intGoalDifference) < 0 ? "text-danger" : "text-text-muted"
+              )}>
+                {Number(row.intGoalDifference) > 0 ? `+${row.intGoalDifference}` : row.intGoalDifference}
+              </span>
+              <span className="text-right font-bold text-white">{row.intPoints}</span>
             </Link>
           );
         })}

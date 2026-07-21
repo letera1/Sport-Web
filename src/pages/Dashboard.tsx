@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, Wifi, Heart, Trophy } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, Calendar, Wifi, Heart, Trophy, Sparkles } from 'lucide-react';
 import { MatchCard } from '../components/MatchCard';
 import { MatchCardSkeleton } from '../components/Skeleton';
 import { EmptyState } from '../components/EmptyState';
@@ -10,37 +9,7 @@ import { format, addDays, subDays, isSameDay, parseISO, startOfDay } from 'date-
 import { useMatches } from '../hooks/useMatches';
 import { useFavorites } from '../contexts/FavoritesContext';
 import { MatchEvent } from '../types';
-
-const FilterButton = ({ 
-  active, 
-  label, 
-  count, 
-  icon: Icon,
-  onClick
-}: { 
-  active?: boolean; 
-  label: string; 
-  count: number; 
-  icon?: React.ElementType;
-  onClick?: () => void;
-}) => (
-  <button 
-    onClick={onClick}
-    className={cn(
-      "flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap",
-      active 
-        ? "bg-accent text-black" 
-        : "bg-transparent text-text-secondary hover:bg-surface-hover"
-    )}
-  >
-    {Icon && <Icon className="w-4 h-4" />}
-    {label}
-    <span className={cn(
-      "ml-1 text-xs px-1.5 py-0.5 rounded-full min-w-[20px]",
-      active ? "bg-black/20" : "bg-surface-hover"
-    )}>{count}</span>
-  </button>
-);
+import { LEAGUES } from '../constants';
 
 // Generate array of dates for horizontal picker
 const generateDates = (centerDate: Date, range: number = 3) => {
@@ -58,6 +27,7 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
   const [filterMode, setFilterMode] = useState<'all' | 'live' | 'favorites'>('all');
   const dateScrollRef = useRef<HTMLDivElement>(null);
 
+  const currentLeague = useMemo(() => LEAGUES.find(l => l.id === leagueId) || LEAGUES[0], [leagueId]);
   const dates = useMemo(() => generateDates(selectedDate, 3), [selectedDate]);
 
   // Jump to nearest match date when league changes and preloadedMatches are loaded
@@ -67,13 +37,11 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
       const hasMatchToday = preloadedMatches.some(m => isSameDay(parseISO(m.dateEvent), today));
       
       if (!hasMatchToday) {
-        // Find nearest future match
         const futureMatches = preloadedMatches.filter(m => parseISO(m.dateEvent) >= today);
         if (futureMatches.length > 0) {
           setSelectedDate(startOfDay(parseISO(futureMatches[0].dateEvent)));
           return;
         }
-        // If no future matches, find nearest past match
         const pastMatches = preloadedMatches.filter(m => parseISO(m.dateEvent) < today);
         if (pastMatches.length > 0) {
           setSelectedDate(startOfDay(parseISO(pastMatches[pastMatches.length - 1].dateEvent)));
@@ -132,110 +100,152 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
   }
 
   return (
-    <div className="flex flex-col gap-4 sm:gap-6">
-      {/* Page Title */}
-      <h1 className="text-xl sm:text-2xl font-semibold text-text-primary">Matches</h1>
-
-      {/* Horizontal Date Picker */}
-      <div className="bg-surface rounded-xl overflow-hidden border border-divider/30">
-        <div className="flex items-center">
-          <button 
-            onClick={handlePrevDay} 
-            className="p-3 sm:p-4 hover:bg-surface-hover text-text-secondary transition-colors shrink-0"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          
-          <div 
-            ref={dateScrollRef}
-            className="flex-1 flex items-center justify-center gap-1 sm:gap-2 overflow-x-auto scrollbar-hide py-2"
-          >
-            {dates.map((date) => {
-              const isToday = isSameDay(date, new Date());
-              const isSelected = isSameDay(date, selectedDate);
-              
-              return (
-                <button
-                  key={date.toISOString()}
-                  onClick={() => setSelectedDate(startOfDay(date))}
-                  className={cn(
-                    "flex flex-col items-center px-3 sm:px-4 py-2 rounded-lg transition-all min-w-[60px] sm:min-w-[70px]",
-                    isSelected 
-                      ? "bg-accent text-black" 
-                      : "text-text-secondary hover:bg-surface-hover"
-                  )}
-                >
-                  <span className="text-[10px] sm:text-xs uppercase font-medium">
-                    {format(date, 'EEE')}
-                  </span>
-                  <span className={cn(
-                    "text-xs sm:text-sm",
-                    isSelected ? "font-bold" : "font-medium"
-                  )}>
-                    {isToday ? 'Today' : format(date, 'd MMM')}
-                  </span>
-                </button>
-              );
-            })}
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      {/* Main Column (Left - 8 cols) */}
+      <div className="lg:col-span-8 flex flex-col gap-4">
+        
+        {/* Header Title & Date Bar */}
+        <div className="bg-surface rounded-xl p-4 border border-border/50 shadow-card space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">{currentLeague.flag}</span>
+              <h1 className="text-lg font-bold text-white font-display">
+                {currentLeague.name} Matches
+              </h1>
+            </div>
+            <span className="text-xs text-text-muted px-2.5 py-1 bg-surface-hover rounded-full border border-border/40">
+              {format(selectedDate, 'EEEE, d MMMM')}
+            </span>
           </div>
 
-          <button 
-            onClick={handleNextDay} 
-            className="p-3 sm:p-4 hover:bg-surface-hover text-text-secondary transition-colors shrink-0"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+          {/* Date Selector Strip */}
+          <div className="flex items-center gap-1.5 bg-background/60 p-1.5 rounded-xl border border-border/40">
+            <button 
+              onClick={handlePrevDay} 
+              className="p-2 hover:bg-surface-hover rounded-lg text-text-secondary hover:text-white transition-colors shrink-0"
+              title="Previous day"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            
+            <div 
+              ref={dateScrollRef}
+              className="flex-1 flex items-center justify-between gap-1 overflow-x-auto scrollbar-hide px-1"
+            >
+              {dates.map((date) => {
+                const isToday = isSameDay(date, new Date());
+                const isSelected = isSameDay(date, selectedDate);
+                
+                return (
+                  <button
+                    key={date.toISOString()}
+                    onClick={() => setSelectedDate(startOfDay(date))}
+                    className={cn(
+                      "flex-1 flex flex-col items-center py-1.5 px-2 rounded-lg transition-all min-w-[55px] text-center border",
+                      isSelected 
+                        ? "bg-accent text-black font-bold border-accent shadow-glow-accent" 
+                        : "bg-transparent text-text-secondary border-transparent hover:bg-surface-hover hover:text-white"
+                    )}
+                  >
+                    <span className="text-[10px] uppercase font-semibold">
+                      {format(date, 'EEE')}
+                    </span>
+                    <span className="text-xs font-score font-bold">
+                      {isToday ? 'Today' : format(date, 'd MMM')}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
 
-          <button className="p-3 sm:p-4 hover:bg-surface-hover text-accent transition-colors shrink-0 border-l border-divider">
-            <Calendar className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
-        <FilterButton 
-          active={filterMode === 'all'} 
-          label="All" 
-          count={allCount} 
-          onClick={() => setFilterMode('all')}
-        />
-        <FilterButton 
-          active={filterMode === 'live'} 
-          label="Live" 
-          count={liveCount} 
-          icon={Wifi} 
-          onClick={() => setFilterMode('live')}
-        />
-        <FilterButton 
-          active={filterMode === 'favorites'} 
-          label="Favorites" 
-          count={favoritesCount} 
-          icon={Heart} 
-          onClick={() => setFilterMode('favorites')}
-        />
-      </div>
-
-      {/* Match Lists */}
-      {loading ? (
-        <div className="bg-surface rounded-xl overflow-hidden border border-divider/30">
-          <div className="divide-y divide-divider/30">
-            {[1,2,3,4,5].map(i => <MatchCardSkeleton key={i} />)}
+            <button 
+              onClick={handleNextDay} 
+              className="p-2 hover:bg-surface-hover rounded-lg text-text-secondary hover:text-white transition-colors shrink-0"
+              title="Next day"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
-      ) : (
-        Object.keys(groupedMatches).length > 0 ? (
+
+        {/* Filter Bar (All / Live / Favorites) */}
+        <div className="flex items-center justify-between gap-2 border-b border-border/40 pb-2">
+          <div className="flex items-center gap-1 bg-surface p-1 rounded-xl border border-border/50">
+            <button
+              onClick={() => setFilterMode('all')}
+              className={cn(
+                "px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5",
+                filterMode === 'all'
+                  ? "bg-surface-hover text-white shadow-sm"
+                  : "text-text-secondary hover:text-white"
+              )}
+            >
+              <span>All Matches</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 text-white font-mono">
+                {allCount}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setFilterMode('live')}
+              className={cn(
+                "px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5",
+                filterMode === 'live'
+                  ? "bg-live/20 text-live border border-live/40 shadow-glow-live"
+                  : "text-text-secondary hover:text-white"
+              )}
+            >
+              <Wifi className="w-3.5 h-3.5" />
+              <span>LIVE</span>
+              {liveCount > 0 && (
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-live text-black font-bold animate-pulse">
+                  {liveCount}
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={() => setFilterMode('favorites')}
+              className={cn(
+                "px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5",
+                filterMode === 'favorites'
+                  ? "bg-danger/20 text-danger border border-danger/40"
+                  : "text-text-secondary hover:text-white"
+              )}
+            >
+              <Heart className="w-3.5 h-3.5" />
+              <span>Favorites</span>
+              {favoritesCount > 0 && (
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-danger/20 text-danger font-bold">
+                  {favoritesCount}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Matches List */}
+        {loading ? (
+          <div className="bg-surface rounded-xl overflow-hidden border border-border/50 divide-y divide-border/30">
+            {[1,2,3,4,5,6].map(i => <MatchCardSkeleton key={i} />)}
+          </div>
+        ) : Object.keys(groupedMatches).length > 0 ? (
           <div className="flex flex-col gap-4 stagger-children">
             {Object.entries(groupedMatches).map(([league, leagueMatches]) => (
-              <div key={league} className="flex flex-col rounded-xl overflow-hidden bg-surface border border-divider/30">
+              <div key={league} className="rounded-xl overflow-hidden bg-surface border border-border/50 shadow-card">
                 {/* League Header */}
-                <div className="px-4 py-3 flex items-center justify-between border-b border-divider/30">
-                  <h3 className="text-text-primary font-medium text-sm">{league}</h3>
-                  <ChevronRight className="w-4 h-4 text-text-muted" />
+                <div className="px-4 py-2.5 bg-surface-hover/40 flex items-center justify-between border-b border-border/40">
+                  <div className="flex items-center gap-2">
+                    <Trophy className="w-3.5 h-3.5 text-accent" />
+                    <h3 className="text-white font-bold text-xs font-display">{league}</h3>
+                  </div>
+                  <span className="text-[10px] text-text-muted font-medium">
+                    {leagueMatches.length} {leagueMatches.length === 1 ? 'match' : 'matches'}
+                  </span>
                 </div>
-                
-                {/* Matches */}
-                <div className="flex flex-col divide-y divide-divider/20">
+
+                {/* Match Cards List */}
+                <div className="divide-y divide-border/30">
                   {leagueMatches.map((match) => (
                     <MatchCard key={match.idEvent} match={match} />
                   ))}
@@ -245,11 +255,32 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
           </div>
         ) : (
           <EmptyState variant="no-matches" />
-        )
-      )}
+        )}
+      </div>
 
-      {/* Standings Widget */}
-      <StandingsWidget leagueId={leagueId} />
+      {/* Sidebar Column (Right - 4 cols) */}
+      <div className="lg:col-span-4 flex flex-col gap-4">
+        {/* League Standings Sidebar Widget */}
+        <StandingsWidget leagueId={leagueId} limit={10} />
+
+        {/* Quick Stats Banner */}
+        <div className="bg-surface p-4 rounded-xl border border-border/50 shadow-card space-y-3">
+          <div className="flex items-center gap-2 text-accent">
+            <Sparkles className="w-4 h-4" />
+            <h4 className="text-white text-xs font-bold uppercase tracking-wider">League Overview</h4>
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="p-2.5 bg-surface-hover/50 rounded-lg border border-border/30">
+              <span className="text-text-muted text-[10px] block">League Code</span>
+              <span className="text-white font-bold">{currentLeague.code}</span>
+            </div>
+            <div className="p-2.5 bg-surface-hover/50 rounded-lg border border-border/30">
+              <span className="text-text-muted text-[10px] block">Country</span>
+              <span className="text-white font-bold">{currentLeague.country}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
