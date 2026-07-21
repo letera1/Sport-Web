@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useStandings } from '../hooks/useStandings';
 import { cn } from '../lib/utils';
-import { FALLBACK_BADGE } from '../services/sportsApi';
+import { getProxiedImageUrl, FALLBACK_BADGE } from '../services/sportsApi';
 import { Skeleton } from '../components/Skeleton';
 import { EmptyState } from '../components/EmptyState';
 import { Trophy, ChevronRight } from 'lucide-react';
@@ -97,7 +97,7 @@ export const StandingsPage = ({ leagueId, leagueName }: StandingsPageProps) => {
 
                   <div className="flex items-center gap-2 min-w-0">
                     <img
-                      src={row.strTeamBadge ? `${row.strTeamBadge}/tiny` : FALLBACK_BADGE}
+                      src={row.strTeamBadge ? `${getProxiedImageUrl(row.strTeamBadge)}/tiny` : FALLBACK_BADGE}
                       alt={row.strTeam}
                       className="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0"
                       onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}

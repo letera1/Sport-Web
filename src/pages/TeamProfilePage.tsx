@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTeamDetails } from '../hooks/useTeamDetails';
-import { FALLBACK_BADGE } from '../services/sportsApi';
+import { getProxiedImageUrl, FALLBACK_BADGE } from '../services/sportsApi';
 import { cn, isMatchCompleted } from '../lib/utils';
 import { Skeleton } from '../components/Skeleton';
 import { EmptyState } from '../components/EmptyState';
@@ -52,7 +52,7 @@ export const TeamProfilePage = () => {
         )}
         <div className="relative p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
           <img
-            src={team.strTeamBadge ? `${team.strTeamBadge}/small` : FALLBACK_BADGE}
+            src={team.strTeamBadge ? `${getProxiedImageUrl(team.strTeamBadge)}/small` : FALLBACK_BADGE}
             alt={team.strTeam}
             className="w-20 h-20 sm:w-28 sm:h-28 object-contain"
             onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
