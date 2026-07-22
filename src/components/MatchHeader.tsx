@@ -33,16 +33,14 @@ export const MatchHeader = ({ match, loading }: MatchHeaderProps) => {
     statusBadgeClass = "bg-surface-hover text-text-secondary border-border/50";
   } else if (isLive) {
     statusText = match.strProgress || match.strStatus || 'LIVE';
-    statusBadgeClass = "bg-live/20 text-live border-live/40 shadow-glow-live animate-pulse";
+    statusBadgeClass = "bg-live/20 text-live border-live/40 font-bold animate-pulse";
   } else if (isUpcoming) {
     statusText = match.strTime?.slice(0, 5) || "Upcoming";
     statusBadgeClass = "bg-accent/15 text-accent border-accent/30";
   }
 
   return (
-    <div className="w-full bg-surface rounded-xl p-4 sm:p-6 border border-border/60 shadow-card space-y-4 relative overflow-hidden">
-      {/* Background Subtle Gradient Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-32 bg-accent/5 blur-3xl pointer-events-none rounded-full" />
+    <div className="w-full bg-surface rounded-xl p-4 sm:p-6 border border-border/60 shadow-sm space-y-4 relative overflow-hidden">
 
       {/* Top Competition Bar */}
       <div className="flex items-center justify-between text-xs border-b border-border/40 pb-3">

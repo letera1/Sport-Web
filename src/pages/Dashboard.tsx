@@ -143,7 +143,7 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
                     className={cn(
                       "flex-1 flex flex-col items-center py-1.5 px-2 rounded-lg transition-all min-w-[55px] text-center border",
                       isSelected 
-                        ? "bg-accent text-black font-bold border-accent shadow-glow-accent" 
+                        ? "bg-accent text-black font-bold border-accent shadow-sm" 
                         : "bg-transparent text-text-secondary border-transparent hover:bg-surface-hover hover:text-text-primary"
                     )}
                   >
@@ -191,7 +191,7 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
               className={cn(
                 "px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5",
                 filterMode === 'live'
-                  ? "bg-live/20 text-live border border-live/40 shadow-glow-live"
+                  ? "bg-live/20 text-live border border-live/40 font-bold"
                   : "text-text-secondary hover:text-text-primary"
               )}
             >
@@ -262,24 +262,6 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
       <div className="lg:col-span-4 flex flex-col gap-4">
         {/* League Standings Sidebar Widget */}
         <StandingsWidget leagueId={leagueId} limit={10} />
-
-        {/* Quick Stats Banner */}
-        <div className="bg-surface p-4 rounded-xl border border-border/50 shadow-card space-y-3">
-          <div className="flex items-center gap-2 text-accent">
-            <Sparkles className="w-4 h-4" />
-            <h4 className="text-text-primary text-xs font-bold uppercase tracking-wider">League Overview</h4>
-          </div>
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="p-2.5 bg-surface-hover/50 rounded-lg border border-border/30">
-              <span className="text-text-muted text-[10px] block">League Code</span>
-              <span className="text-text-primary font-bold">{currentLeague.code}</span>
-            </div>
-            <div className="p-2.5 bg-surface-hover/50 rounded-lg border border-border/30">
-              <span className="text-text-muted text-[10px] block">Country</span>
-              <span className="text-text-primary font-bold">{currentLeague.country}</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
