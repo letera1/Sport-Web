@@ -7,8 +7,8 @@ import { useMemo } from 'react';
 
 // Icons
 const GoalIcon = () => (
-  <div className="w-4 h-4 rounded-full border-2 border-white flex items-center justify-center bg-white/10 shrink-0">
-    <div className="w-1.5 h-1.5 bg-white rounded-full" />
+  <div className="w-4 h-4 rounded-full border-2 border-text-primary flex items-center justify-center bg-surface-hover shrink-0">
+    <div className="w-1.5 h-1.5 bg-text-primary rounded-full" />
   </div>
 );
 
@@ -208,7 +208,7 @@ export const MatchEvents = ({ match, timeline, lineup, error }: MatchEventsProps
           <div className="w-12 h-12 mx-auto bg-danger/10 rounded-full flex items-center justify-center border border-danger/30">
             <span className="text-danger text-lg">!</span>
           </div>
-          <h3 className="text-white font-medium text-sm">Server Error</h3>
+          <h3 className="text-text-primary font-medium text-sm">Server Error</h3>
           <p className="text-text-secondary text-xs max-w-[200px]">{error}</p>
         </div>
       </div>
@@ -228,7 +228,7 @@ export const MatchEvents = ({ match, timeline, lineup, error }: MatchEventsProps
           <div className="w-12 h-12 mx-auto bg-white/5 rounded-full flex items-center justify-center border border-divider">
             <Flag className="w-5 h-5 text-text-secondary" />
           </div>
-          <h3 className="text-white font-medium text-sm">Match Not Started</h3>
+          <h3 className="text-text-primary font-medium text-sm">Match Not Started</h3>
           <p className="text-text-secondary text-xs">
             {format(parseISO(match.dateEvent), 'EEE, d MMM')} at {match.strTime?.slice(0, 5)}
           </p>
@@ -309,7 +309,7 @@ export const MatchEvents = ({ match, timeline, lineup, error }: MatchEventsProps
 
   return (
     <div className="p-4">
-      <h2 className="text-white font-medium text-sm mb-4">Events Timeline</h2>
+      <h2 className="text-text-primary font-medium text-sm mb-4">Events Timeline</h2>
 
       <div className="relative">
         <div className="absolute left-1/2 top-0 bottom-0 w-px bg-divider/50 -translate-x-1/2" />
@@ -319,7 +319,7 @@ export const MatchEvents = ({ match, timeline, lineup, error }: MatchEventsProps
             if ('isDivider' in item) {
               return (
                 <div key={`divider-${index}`} className="relative flex items-center justify-center py-1.5 z-10">
-                  <div className="bg-[#181921] px-3 py-1.5 text-[10px] text-text-secondary border border-divider/50 rounded-full font-medium shadow-md">
+                  <div className="bg-surface px-3 py-1.5 text-[10px] text-text-secondary border border-divider/50 rounded-full font-medium shadow-md">
                     {item.label} {item.score && <span className="text-accent ml-1.5 font-bold">{item.score}</span>}
                   </div>
                 </div>
@@ -337,7 +337,7 @@ export const MatchEvents = ({ match, timeline, lineup, error }: MatchEventsProps
                   !isHome && "opacity-0 pointer-events-none"
                 )}>
                   <div className="flex flex-col items-end">
-                    <span className="text-xs text-white leading-tight font-medium">{event.player}</span>
+                    <span className="text-xs text-text-primary leading-tight font-medium">{event.player}</span>
                     {event.assist && <span className="text-[9px] text-text-muted">assist: {event.assist}</span>}
                   </div>
                   <div className="w-4 h-4 flex items-center justify-center shrink-0">
@@ -366,7 +366,7 @@ export const MatchEvents = ({ match, timeline, lineup, error }: MatchEventsProps
                     {getEventIcon(event.type)}
                   </div>
                   <div className="flex flex-col items-start">
-                    <span className="text-xs text-white leading-tight font-medium">{event.player}</span>
+                    <span className="text-xs text-text-primary leading-tight font-medium">{event.player}</span>
                     {event.assist && <span className="text-[9px] text-text-muted">assist: {event.assist}</span>}
                   </div>
                 </div>

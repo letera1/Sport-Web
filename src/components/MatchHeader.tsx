@@ -26,7 +26,7 @@ export const MatchHeader = ({ match, loading }: MatchHeaderProps) => {
   const formattedDate = match.dateEvent ? format(parseISO(match.dateEvent), 'EEE, d MMM yyyy') : '';
 
   let statusText = match.strStatus;
-  let statusBadgeClass = "bg-white/10 text-white border-white/20";
+  let statusBadgeClass = "bg-surface-hover text-text-primary border-border/50";
   
   if (isFinished) {
     statusText = "Full Time";
@@ -48,7 +48,7 @@ export const MatchHeader = ({ match, loading }: MatchHeaderProps) => {
       <div className="flex items-center justify-between text-xs border-b border-border/40 pb-3">
         <div className="flex items-center gap-2">
           <Trophy className="w-4 h-4 text-accent" />
-          <span className="text-white font-bold font-display">{match.strLeague}</span>
+          <span className="text-text-primary font-bold font-display">{match.strLeague}</span>
           {match.strSeason && <span className="text-text-muted">({match.strSeason})</span>}
           {match.intRound && (
             <span className="text-[10px] px-2 py-0.5 rounded bg-surface-hover text-text-secondary font-medium">
@@ -77,7 +77,7 @@ export const MatchHeader = ({ match, loading }: MatchHeaderProps) => {
               className="w-full h-full object-contain filter drop-shadow"
             />
           </div>
-          <span className="text-white font-bold text-xs sm:text-base text-center leading-tight group-hover:text-accent transition-colors">
+          <span className="text-text-primary font-bold text-xs sm:text-base text-center leading-tight group-hover:text-accent transition-colors">
             {match.strHomeTeam}
           </span>
         </div>
@@ -86,7 +86,7 @@ export const MatchHeader = ({ match, loading }: MatchHeaderProps) => {
         <div className="flex flex-col items-center gap-2 shrink-0 px-2">
           {isUpcoming ? (
             <div className="flex flex-col items-center">
-              <span className="text-2xl sm:text-4xl font-extrabold text-white font-display tracking-tight">
+              <span className="text-2xl sm:text-4xl font-extrabold text-text-primary font-display tracking-tight">
                 {match.strTime?.slice(0, 5) || 'VS'}
               </span>
               <span className="text-[11px] text-text-muted mt-1">Kick-off</span>
@@ -95,14 +95,14 @@ export const MatchHeader = ({ match, loading }: MatchHeaderProps) => {
             <div className="flex items-center gap-2 sm:gap-4">
               <span className={cn(
                 "text-3xl sm:text-5xl font-extrabold font-score tracking-tight",
-                isFinished && Number(match.intHomeScore) > Number(match.intAwayScore) ? "text-accent" : "text-white"
+                isFinished && Number(match.intHomeScore) > Number(match.intAwayScore) ? "text-accent" : "text-text-primary"
               )}>
                 {match.intHomeScore ?? 0}
               </span>
               <span className="text-xl sm:text-3xl text-text-muted font-bold">-</span>
               <span className={cn(
                 "text-3xl sm:text-5xl font-extrabold font-score tracking-tight",
-                isFinished && Number(match.intAwayScore) > Number(match.intHomeScore) ? "text-accent" : "text-white"
+                isFinished && Number(match.intAwayScore) > Number(match.intHomeScore) ? "text-accent" : "text-text-primary"
               )}>
                 {match.intAwayScore ?? 0}
               </span>
@@ -130,7 +130,7 @@ export const MatchHeader = ({ match, loading }: MatchHeaderProps) => {
               className="w-full h-full object-contain filter drop-shadow"
             />
           </div>
-          <span className="text-white font-bold text-xs sm:text-base text-center leading-tight group-hover:text-accent transition-colors">
+          <span className="text-text-primary font-bold text-xs sm:text-base text-center leading-tight group-hover:text-accent transition-colors">
             {match.strAwayTeam}
           </span>
         </div>

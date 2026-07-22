@@ -24,7 +24,7 @@ const LineupSection = ({ title, players }: LineupSectionProps) => (
         {players.map((player, idx) => (
           <span 
             key={idx}
-            className="px-2 sm:px-3 py-1 sm:py-1.5 bg-white/5 rounded-lg text-xs sm:text-sm text-white border border-divider/50"
+            className="px-2 sm:px-3 py-1 sm:py-1.5 bg-surface-hover/60 rounded-lg text-xs sm:text-sm text-text-primary border border-divider/50"
           >
             {player.trim()}
           </span>
@@ -37,7 +37,7 @@ const LineupSection = ({ title, players }: LineupSectionProps) => (
 );
 
 const LineupPlayerCard = ({ player }: { player: EventLineup }) => (
-  <div className="flex items-center gap-2.5 px-3 py-2 bg-white/5 rounded-xl border border-divider/50 hover:bg-surface-hover/50 transition-colors">
+  <div className="flex items-center gap-2.5 px-3 py-2 bg-surface-hover/40 rounded-xl border border-divider/50 hover:bg-surface-hover/70 transition-colors">
     <div className="w-8 h-8 rounded-full overflow-hidden bg-surface-hover shrink-0 flex items-center justify-center border border-divider">
       <img
         src={player.strPlayerCutout || player.strPlayerThumb ? getProxiedImageUrl(player.strPlayerCutout || player.strPlayerThumb) : FALLBACK_BADGE}
@@ -47,7 +47,7 @@ const LineupPlayerCard = ({ player }: { player: EventLineup }) => (
       />
     </div>
     <div className="flex-1 min-w-0">
-      <p className="text-white text-xs font-semibold truncate">{player.strPlayer}</p>
+      <p className="text-text-primary text-xs font-semibold truncate">{player.strPlayer}</p>
       <p className="text-text-secondary text-[10px] truncate">{player.strPosition || 'Player'}</p>
     </div>
     {player.intSquadNumber && (
@@ -79,7 +79,7 @@ export const MatchLineups = ({ match, lineup, error }: MatchLineupsProps) => {
           <div className="w-12 mx-auto bg-danger/10 rounded-full flex items-center justify-center border border-danger/30">
             <span className="text-danger text-lg">!</span>
           </div>
-          <h3 className="text-white font-medium text-sm">Server Error</h3>
+          <h3 className="text-text-primary font-medium text-sm">Server Error</h3>
           <p className="text-text-secondary text-xs max-w-[200px]">{error}</p>
         </div>
       </div>
@@ -114,7 +114,7 @@ export const MatchLineups = ({ match, lineup, error }: MatchLineupsProps) => {
           <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto bg-white/5 rounded-full flex items-center justify-center border border-divider">
             <Users className="w-6 h-6 sm:w-8 sm:h-8 text-text-secondary" />
           </div>
-          <h3 className="text-white font-medium text-base sm:text-lg">Lineups Not Available</h3>
+          <h3 className="text-text-primary font-medium text-base sm:text-lg">Lineups Not Available</h3>
           <p className="text-text-secondary text-xs sm:text-sm">
             Lineup information will be available closer to event start.
           </p>
@@ -136,7 +136,7 @@ export const MatchLineups = ({ match, lineup, error }: MatchLineupsProps) => {
               onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
               className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
             />
-            <span className="text-white font-semibold text-sm sm:text-base">{match.strHomeTeam}</span>
+            <span className="text-text-primary font-semibold text-sm sm:text-base">{match.strHomeTeam}</span>
           </div>
 
           {groupedLineup ? (
@@ -182,7 +182,7 @@ export const MatchLineups = ({ match, lineup, error }: MatchLineupsProps) => {
               onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
               className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
             />
-            <span className="text-white font-semibold text-sm sm:text-base">{match.strAwayTeam}</span>
+            <span className="text-text-primary font-semibold text-sm sm:text-base">{match.strAwayTeam}</span>
           </div>
 
           {groupedLineup ? (

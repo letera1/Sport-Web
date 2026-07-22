@@ -18,7 +18,7 @@ export const StandingsPage = ({ leagueId, leagueName }: StandingsPageProps) => {
   if (error) {
     return (
       <div className="flex flex-col gap-4">
-        <h1 className="text-xl sm:text-2xl font-bold font-display text-white">Standings</h1>
+        <h1 className="text-xl sm:text-2xl font-bold font-display text-text-primary">Standings</h1>
         <EmptyState variant="error" description={error} action={
           <button onClick={() => window.location.reload()} className="px-4 py-2 bg-accent text-black rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors">Retry</button>
         } />
@@ -35,7 +35,7 @@ export const StandingsPage = ({ leagueId, leagueName }: StandingsPageProps) => {
             <Trophy className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-lg sm:text-2xl font-bold font-display text-white">
+            <h1 className="text-lg sm:text-2xl font-bold font-display text-text-primary">
               {leagueName || 'League'} Standings
             </h1>
             <p className="text-xs text-text-muted">Season standings & live form guide</p>
@@ -116,7 +116,7 @@ export const StandingsPage = ({ leagueId, leagueName }: StandingsPageProps) => {
                       className="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0"
                       onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
                     />
-                    <span className="text-white font-medium truncate text-xs sm:text-sm">{row.strTeam}</span>
+                    <span className="text-text-primary font-medium truncate text-xs sm:text-sm">{row.strTeam}</span>
                     <ChevronRight className="w-3 h-3 text-text-muted shrink-0 hidden sm:block" />
                   </div>
 
@@ -133,7 +133,7 @@ export const StandingsPage = ({ leagueId, leagueName }: StandingsPageProps) => {
                   )}>
                     {gd > 0 ? `+${gd}` : gd}
                   </span>
-                  <span className="text-center font-bold text-white font-score text-sm">{row.intPoints}</span>
+                  <span className="text-center font-bold text-text-primary font-score text-sm">{row.intPoints}</span>
 
                   {/* Form Indicator Dots (Desktop) */}
                   <div className="hidden sm:flex items-center justify-center gap-1">

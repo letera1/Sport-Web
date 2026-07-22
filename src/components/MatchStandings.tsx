@@ -41,7 +41,7 @@ export const MatchStandings = ({ leagueId, homeTeamId, awayTeamId }: MatchStandi
 
   return (
     <div className="p-3 sm:p-4">
-      <h3 className="text-white font-medium text-sm mb-4">League Standings</h3>
+      <h3 className="text-text-primary font-medium text-sm mb-4">League Standings</h3>
       
       <div className="border border-divider/30 rounded-xl overflow-hidden">
         {/* Header */}
@@ -75,7 +75,7 @@ export const MatchStandings = ({ leagueId, homeTeamId, awayTeamId }: MatchStandi
               >
                 <span className={cn(
                   "text-center font-bold text-xs",
-                  isMatchTeam ? "text-white" : "text-text-secondary"
+                  isMatchTeam ? "text-accent font-bold" : "text-text-secondary"
                 )}>
                   {row.intRank}
                 </span>
@@ -89,7 +89,7 @@ export const MatchStandings = ({ leagueId, homeTeamId, awayTeamId }: MatchStandi
                   />
                   <span className={cn(
                     "truncate font-medium text-xs sm:text-sm",
-                    isMatchTeam ? "text-white font-bold" : "text-text-primary"
+                    isMatchTeam ? "text-accent font-bold" : "text-text-primary"
                   )}>
                     {row.strTeam}
                   </span>

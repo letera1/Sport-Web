@@ -10,7 +10,7 @@ export const Footer = () => {
             <div className="w-6 h-6 rounded bg-accent/20 border border-accent/40 flex items-center justify-center font-bold text-accent text-xs">
               S
             </div>
-            <span className="font-bold text-sm text-white font-display">
+            <span className="font-bold text-sm text-text-primary font-display">
               stat<span className="text-accent">score</span>
             </span>
             <span className="text-text-muted hidden sm:inline">•</span>
@@ -21,7 +21,7 @@ export const Footer = () => {
           <div className="flex items-center gap-4 text-xs font-medium">
             <Link to="/" className="hover:text-accent transition-colors">Scores</Link>
             <Link to="/standings" className="hover:text-accent transition-colors">Standings</Link>
-            <a href="https://www.thesportsdb.com" target="_blank" rel="noopener noreferrer" className="text-text-muted hover:text-white transition-colors">
+            <a href="https://www.thesportsdb.com" target="_blank" rel="noopener noreferrer" className="text-text-muted hover:text-text-primary transition-colors">
               Data: TheSportsDB
             </a>
           </div>

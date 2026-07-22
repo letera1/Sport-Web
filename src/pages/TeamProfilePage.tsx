@@ -72,7 +72,7 @@ export const TeamProfilePage = () => {
   if (error || !team) {
     return (
       <div className="flex flex-col gap-4">
-        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-text-secondary hover:text-white transition-colors self-start">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors self-start">
           <ArrowLeft className="w-4 h-4" /><span className="text-sm">Back</span>
         </button>
         <EmptyState variant="error" description={error || 'Team not found'} />
@@ -85,7 +85,7 @@ export const TeamProfilePage = () => {
   return (
     <div className="flex flex-col gap-4 sm:gap-6 pb-8">
       {/* Back Button */}
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-text-secondary hover:text-white transition-colors self-start">
+      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors self-start">
         <ArrowLeft className="w-4 h-4" /><span className="text-sm">{team.strLeague || 'Back'}</span>
       </button>
 
@@ -107,7 +107,7 @@ export const TeamProfilePage = () => {
             />
           </div>
           <div className="flex flex-col items-center sm:items-start gap-1">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-display">{team.strTeam}</h1>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-text-primary font-display">{team.strTeam}</h1>
             
             {/* Display cleaned alternate nickname if distinct */}
             {cleanedAlternateName && (
@@ -172,7 +172,7 @@ export const TeamProfilePage = () => {
         ].map(card => (
           <div key={card.label} className="bg-surface rounded-xl p-4 border border-border/50 shadow-card">
             <p className="text-[10px] text-text-muted uppercase tracking-wider font-semibold mb-1">{card.label}</p>
-            <p className="text-white font-bold text-sm truncate">{card.value}</p>
+            <p className="text-text-primary font-bold text-sm truncate">{card.value}</p>
             {card.sub && <p className="text-accent text-[11px] mt-0.5 font-medium">{card.sub}</p>}
           </div>
         ))}
@@ -182,7 +182,7 @@ export const TeamProfilePage = () => {
       {lastMatches.length > 0 && (
         <div className="bg-surface rounded-xl overflow-hidden border border-border/50 shadow-card">
           <div className="px-4 py-3 border-b border-border/40 bg-surface-hover/30 flex items-center justify-between">
-            <h2 className="text-white font-bold text-xs uppercase tracking-wider font-display">Recent Results</h2>
+            <h2 className="text-text-primary font-bold text-xs uppercase tracking-wider font-display">Recent Results</h2>
             <span className="text-text-muted text-[11px]">Last {lastMatches.length} Matches</span>
           </div>
           <div className="divide-y divide-border/20">
@@ -205,10 +205,10 @@ export const TeamProfilePage = () => {
                   <span className={cn('w-6 h-6 rounded-full flex items-center justify-center text-[10px] shrink-0', resultColor)}>
                     {resultText}
                   </span>
-                  <span className="text-white font-medium text-xs sm:text-sm flex-1 truncate">
+                  <span className="text-text-primary font-medium text-xs sm:text-sm flex-1 truncate">
                     {isHome ? 'vs' : '@'} {opponent}
                   </span>
-                  <span className="text-white font-bold font-score text-sm">{homeScore} - {awayScore}</span>
+                  <span className="text-text-primary font-bold font-score text-sm">{homeScore} - {awayScore}</span>
                   <span className="text-text-muted text-[11px] font-score">
                     {match.dateEvent ? format(parseISO(match.dateEvent), 'd MMM') : ''}
                   </span>
@@ -223,7 +223,7 @@ export const TeamProfilePage = () => {
       {nextMatches.length > 0 && (
         <div className="bg-surface rounded-xl overflow-hidden border border-border/50 shadow-card">
           <div className="px-4 py-3 border-b border-border/40 bg-surface-hover/30 flex items-center justify-between">
-            <h2 className="text-white font-bold text-xs uppercase tracking-wider font-display">Upcoming Fixtures</h2>
+            <h2 className="text-text-primary font-bold text-xs uppercase tracking-wider font-display">Upcoming Fixtures</h2>
             <span className="text-text-muted text-[11px]">Next {nextMatches.length} Matches</span>
           </div>
           <div className="divide-y divide-border/20">
@@ -239,7 +239,7 @@ export const TeamProfilePage = () => {
                   <span className="w-6 h-6 rounded-full bg-surface-hover flex items-center justify-center text-[10px] font-bold text-accent shrink-0 border border-border/40">
                     {isHome ? 'H' : 'A'}
                   </span>
-                  <span className="text-white font-medium text-xs sm:text-sm flex-1 truncate">
+                  <span className="text-text-primary font-medium text-xs sm:text-sm flex-1 truncate">
                     {isHome ? 'vs' : '@'} {opponent}
                   </span>
                   <span className="text-text-secondary text-xs font-score">
@@ -256,7 +256,7 @@ export const TeamProfilePage = () => {
       {Object.keys(groupedPlayers).length > 0 && (
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between px-1">
-            <h2 className="text-white font-bold text-base font-display flex items-center gap-2">
+            <h2 className="text-text-primary font-bold text-base font-display flex items-center gap-2">
               <Shield className="w-4 h-4 text-accent" /> Squad Roster
             </h2>
             <span className="text-xs text-text-muted">{players.length} Players</span>
@@ -284,7 +284,7 @@ export const TeamProfilePage = () => {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-white text-xs sm:text-sm font-bold truncate group-hover:text-accent transition-colors">
+                        <p className="text-text-primary text-xs sm:text-sm font-bold truncate group-hover:text-accent transition-colors">
                           {player.strPlayer}
                         </p>
                         <p className="text-text-muted text-[11px] truncate">{player.strPosition}</p>
@@ -306,7 +306,7 @@ export const TeamProfilePage = () => {
       {/* Description / About */}
       {team.strDescriptionEN && (
         <div className="bg-surface rounded-xl p-4 sm:p-6 border border-border/50 shadow-card space-y-2">
-          <h2 className="text-white font-bold text-xs uppercase tracking-wider font-display">About {team.strTeam}</h2>
+          <h2 className="text-text-primary font-bold text-xs uppercase tracking-wider font-display">About {team.strTeam}</h2>
           <p className="text-text-secondary text-xs sm:text-sm leading-relaxed max-h-48 overflow-y-auto pr-1">
             {team.strDescriptionEN}
           </p>

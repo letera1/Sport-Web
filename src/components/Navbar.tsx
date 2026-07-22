@@ -80,8 +80,8 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
                 className={cn(
                   "px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 relative group",
                   location.pathname === '/'
-                    ? "text-white"
-                    : "text-text-secondary hover:text-white hover:bg-white/[0.06]"
+                    ? "text-text-primary"
+                    : "text-text-secondary hover:text-text-primary hover:bg-surface-hover"
                 )}
               >
                 {location.pathname === '/' && (
@@ -111,8 +111,8 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
                 className={cn(
                   "px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 relative group",
                   location.pathname === '/standings'
-                    ? "text-white"
-                    : "text-text-secondary hover:text-white hover:bg-white/[0.06]"
+                    ? "text-text-primary"
+                    : "text-text-secondary hover:text-text-primary hover:bg-surface-hover"
                 )}
               >
                 {location.pathname === '/standings' && (
@@ -160,14 +160,14 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
                       color: isDark ? '#f0f6fc' : '#1f2328',
                     }}
                   />
-                  <button type="submit" className="absolute right-3 text-text-muted hover:text-white transition-colors">
+                  <button type="submit" className="absolute right-3 text-text-muted hover:text-text-primary transition-colors">
                     <Search className="w-4 h-4" />
                   </button>
                 </form>
               ) : (
                 <button
                   onClick={() => setSearchOpen(true)}
-                  className="w-10 h-10 rounded-xl flex items-center justify-center text-text-secondary hover:text-white transition-all duration-200 hover:scale-105"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary transition-all duration-200 hover:scale-105"
                   style={{
                     background: isDark ? 'rgba(33,38,45,0.6)' : 'rgba(246,248,250,0.8)',
                     border: '1px solid rgba(var(--color-border), 0.3)',
@@ -182,7 +182,7 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-text-secondary hover:text-white transition-all duration-200 hover:scale-105"
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary transition-all duration-200 hover:scale-105"
               style={{
                 background: isDark ? 'rgba(33,38,45,0.6)' : 'rgba(246,248,250,0.8)',
                 border: '1px solid rgba(var(--color-border), 0.3)',
@@ -210,7 +210,7 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden w-10 h-10 rounded-xl flex items-center justify-center text-text-secondary hover:text-white transition-all duration-200"
+              className="md:hidden w-10 h-10 rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary transition-all duration-200"
               style={{
                 background: isDark ? 'rgba(33,38,45,0.6)' : 'rgba(246,248,250,0.8)',
                 border: '1px solid rgba(var(--color-border), 0.3)',
@@ -245,7 +245,7 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
                     "flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 shrink-0 hover:scale-[1.03]",
                     isSelected
                       ? "text-black font-bold shadow-lg"
-                      : "text-text-secondary hover:text-white"
+                      : "text-text-secondary hover:text-text-primary"
                   )}
                   style={
                     isSelected
@@ -288,7 +288,7 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
               onClick={() => setMobileMenuOpen(false)}
               className={cn(
                 "px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-all duration-200",
-                location.pathname === '/' ? "text-white" : "text-text-secondary hover:text-white"
+                location.pathname === '/' ? "text-text-primary" : "text-text-secondary hover:text-text-primary"
               )}
               style={
                 location.pathname === '/'
@@ -311,7 +311,7 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
               onClick={() => setMobileMenuOpen(false)}
               className={cn(
                 "px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-all duration-200",
-                location.pathname === '/standings' ? "text-white" : "text-text-secondary hover:text-white"
+                location.pathname === '/standings' ? "text-text-primary" : "text-text-secondary hover:text-text-primary"
               )}
               style={
                 location.pathname === '/standings'

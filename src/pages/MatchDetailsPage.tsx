@@ -35,7 +35,7 @@ export const MatchDetailsPage = () => {
         <div className="flex gap-3 mt-4">
           <button 
             onClick={() => navigate(-1)}
-            className="px-4 py-2 bg-surface rounded-lg hover:bg-white/5 transition-colors"
+            className="px-4 py-2 bg-surface rounded-lg hover:bg-surface-hover transition-colors text-text-primary"
           >
             Go Back
           </button>
@@ -74,7 +74,7 @@ export const MatchDetailsPage = () => {
       {/* Back Header with League Name */}
       <button 
         onClick={() => navigate(-1)}
-        className="flex items-center gap-2 text-text-secondary hover:text-white transition-colors self-start"
+        className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors self-start"
       >
         <ArrowLeft className="w-4 h-4" />
         <span className="text-sm">{match?.strLeague || 'English Premier League'}</span>

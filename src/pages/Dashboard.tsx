@@ -109,7 +109,7 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-xl">{currentLeague.flag}</span>
-              <h1 className="text-lg font-bold text-white font-display">
+              <h1 className="text-lg font-bold text-text-primary font-display">
                 {currentLeague.name} Matches
               </h1>
             </div>
@@ -122,7 +122,7 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
           <div className="flex items-center gap-1.5 bg-background/60 p-1.5 rounded-xl border border-border/40">
             <button 
               onClick={handlePrevDay} 
-              className="p-2 hover:bg-surface-hover rounded-lg text-text-secondary hover:text-white transition-colors shrink-0"
+              className="p-2 hover:bg-surface-hover rounded-lg text-text-secondary hover:text-text-primary transition-colors shrink-0"
               title="Previous day"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -144,7 +144,7 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
                       "flex-1 flex flex-col items-center py-1.5 px-2 rounded-lg transition-all min-w-[55px] text-center border",
                       isSelected 
                         ? "bg-accent text-black font-bold border-accent shadow-glow-accent" 
-                        : "bg-transparent text-text-secondary border-transparent hover:bg-surface-hover hover:text-white"
+                        : "bg-transparent text-text-secondary border-transparent hover:bg-surface-hover hover:text-text-primary"
                     )}
                   >
                     <span className="text-[10px] uppercase font-semibold">
@@ -160,7 +160,7 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
 
             <button 
               onClick={handleNextDay} 
-              className="p-2 hover:bg-surface-hover rounded-lg text-text-secondary hover:text-white transition-colors shrink-0"
+              className="p-2 hover:bg-surface-hover rounded-lg text-text-secondary hover:text-text-primary transition-colors shrink-0"
               title="Next day"
             >
               <ChevronRight className="w-4 h-4" />
@@ -176,12 +176,12 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
               className={cn(
                 "px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5",
                 filterMode === 'all'
-                  ? "bg-surface-hover text-white shadow-sm"
-                  : "text-text-secondary hover:text-white"
+                  ? "bg-surface-hover text-text-primary shadow-sm"
+                  : "text-text-secondary hover:text-text-primary"
               )}
             >
               <span>All Matches</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 text-white font-mono">
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-surface-hover text-text-primary font-mono">
                 {allCount}
               </span>
             </button>
@@ -192,7 +192,7 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
                 "px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5",
                 filterMode === 'live'
                   ? "bg-live/20 text-live border border-live/40 shadow-glow-live"
-                  : "text-text-secondary hover:text-white"
+                  : "text-text-secondary hover:text-text-primary"
               )}
             >
               <Wifi className="w-3.5 h-3.5" />
@@ -210,7 +210,7 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
                 "px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5",
                 filterMode === 'favorites'
                   ? "bg-danger/20 text-danger border border-danger/40"
-                  : "text-text-secondary hover:text-white"
+                  : "text-text-secondary hover:text-text-primary"
               )}
             >
               <Heart className="w-3.5 h-3.5" />
@@ -237,7 +237,7 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
                 <div className="px-4 py-2.5 bg-surface-hover/40 flex items-center justify-between border-b border-border/40">
                   <div className="flex items-center gap-2">
                     <Trophy className="w-3.5 h-3.5 text-accent" />
-                    <h3 className="text-white font-bold text-xs font-display">{league}</h3>
+                    <h3 className="text-text-primary font-bold text-xs font-display">{league}</h3>
                   </div>
                   <span className="text-[10px] text-text-muted font-medium">
                     {leagueMatches.length} {leagueMatches.length === 1 ? 'match' : 'matches'}
@@ -267,16 +267,16 @@ export const Dashboard = ({ leagueId }: { leagueId: string }) => {
         <div className="bg-surface p-4 rounded-xl border border-border/50 shadow-card space-y-3">
           <div className="flex items-center gap-2 text-accent">
             <Sparkles className="w-4 h-4" />
-            <h4 className="text-white text-xs font-bold uppercase tracking-wider">League Overview</h4>
+            <h4 className="text-text-primary text-xs font-bold uppercase tracking-wider">League Overview</h4>
           </div>
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className="p-2.5 bg-surface-hover/50 rounded-lg border border-border/30">
               <span className="text-text-muted text-[10px] block">League Code</span>
-              <span className="text-white font-bold">{currentLeague.code}</span>
+              <span className="text-text-primary font-bold">{currentLeague.code}</span>
             </div>
             <div className="p-2.5 bg-surface-hover/50 rounded-lg border border-border/30">
               <span className="text-text-muted text-[10px] block">Country</span>
-              <span className="text-white font-bold">{currentLeague.country}</span>
+              <span className="text-text-primary font-bold">{currentLeague.country}</span>
             </div>
           </div>
         </div>

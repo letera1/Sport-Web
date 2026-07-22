@@ -43,7 +43,7 @@ export const StandingsWidget = ({ leagueId, limit = 8 }: StandingsWidgetProps) =
       <div className="px-4 py-3 flex items-center justify-between border-b border-border/40 bg-surface-hover/30">
         <div className="flex items-center gap-2">
           <Trophy className="w-4 h-4 text-accent" />
-          <h3 className="text-white font-semibold text-xs uppercase tracking-wider font-display">
+          <h3 className="text-text-primary font-semibold text-xs uppercase tracking-wider font-display">
             League Standings
           </h3>
         </div>
@@ -90,7 +90,7 @@ export const StandingsWidget = ({ leagueId, limit = 8 }: StandingsWidgetProps) =
                   className="w-4 h-4 object-contain shrink-0"
                   onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
                 />
-                <span className="text-text-primary group-hover:text-white truncate font-medium text-xs">
+                <span className="text-text-primary group-hover:text-accent truncate font-medium text-xs">
                   {row.strTeam}
                 </span>
               </div>
@@ -101,7 +101,7 @@ export const StandingsWidget = ({ leagueId, limit = 8 }: StandingsWidgetProps) =
               )}>
                 {Number(row.intGoalDifference) > 0 ? `+${row.intGoalDifference}` : row.intGoalDifference}
               </span>
-              <span className="text-right font-bold text-white">{row.intPoints}</span>
+              <span className="text-right font-bold text-text-primary">{row.intPoints}</span>
             </Link>
           );
         })}

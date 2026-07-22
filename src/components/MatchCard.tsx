@@ -63,7 +63,7 @@ export const MatchCard = memo(({ match }: MatchCardProps) => {
             <span className={cn(
               "text-xs sm:text-sm truncate font-medium",
               isFinished && match.intHomeScore !== null && match.intAwayScore !== null && Number(match.intHomeScore) > Number(match.intAwayScore)
-                ? "text-white font-bold"
+                ? "text-text-primary font-bold"
                 : "text-text-primary"
             )}>
               {match.strHomeTeam}
@@ -71,7 +71,7 @@ export const MatchCard = memo(({ match }: MatchCardProps) => {
           </div>
           <span className={cn(
             "text-xs sm:text-sm font-bold font-score shrink-0 w-5 text-right",
-            isLive ? "text-live" : "text-white"
+            isLive ? "text-live" : "text-text-primary"
           )}>
             {match.intHomeScore ?? "-"}
           </span>
@@ -93,7 +93,7 @@ export const MatchCard = memo(({ match }: MatchCardProps) => {
             <span className={cn(
               "text-xs sm:text-sm truncate font-medium",
               isFinished && match.intHomeScore !== null && match.intAwayScore !== null && Number(match.intAwayScore) > Number(match.intHomeScore)
-                ? "text-white font-bold"
+                ? "text-text-primary font-bold"
                 : "text-text-primary"
             )}>
               {match.strAwayTeam}
@@ -101,7 +101,7 @@ export const MatchCard = memo(({ match }: MatchCardProps) => {
           </div>
           <span className={cn(
             "text-xs sm:text-sm font-bold font-score shrink-0 w-5 text-right",
-            isLive ? "text-live" : "text-white"
+            isLive ? "text-live" : "text-text-primary"
           )}>
             {match.intAwayScore ?? "-"}
           </span>

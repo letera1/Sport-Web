@@ -30,7 +30,7 @@ export const MatchOdds = ({ match, error }: MatchOddsProps) => {
           <div className="w-12 h-12 mx-auto bg-danger/10 rounded-full flex items-center justify-center border border-danger/30">
             <span className="text-danger text-lg">!</span>
           </div>
-          <h3 className="text-white font-medium text-sm">Server Error</h3>
+          <h3 className="text-text-primary font-medium text-sm">Server Error</h3>
           <p className="text-text-secondary text-xs max-w-[200px]">{error}</p>
         </div>
       </div>
@@ -108,11 +108,11 @@ export const MatchOdds = ({ match, error }: MatchOddsProps) => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-divider">
         <div className="flex items-center gap-2">
           <TrendingUp className="w-5 h-5 text-accent" />
-          <h2 className="text-white font-semibold text-base">Match Odds & Markets</h2>
+          <h2 className="text-text-primary font-semibold text-base">Match Odds & Markets</h2>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-text-secondary text-xs">Provider:</span>
-          <div className="flex bg-white/5 p-1 rounded-lg border border-divider">
+          <div className="flex bg-surface-hover/50 p-1 rounded-lg border border-divider">
             {(['bet365', 'unibet', '1xbet'] as const).map((bm) => (
               <button
                 key={bm}
@@ -120,7 +120,7 @@ export const MatchOdds = ({ match, error }: MatchOddsProps) => {
                 className={`px-3 py-1 text-xs rounded-md font-medium transition-all ${
                   selectedBookmaker === bm
                     ? 'bg-accent text-black shadow-sm'
-                    : 'text-text-secondary hover:text-white'
+                    : 'text-text-secondary hover:text-text-primary'
                 }`}
               >
                 {bm === 'bet365' ? 'Bet365' : bm === 'unibet' ? 'Unibet' : '1xBet'}
@@ -133,9 +133,9 @@ export const MatchOdds = ({ match, error }: MatchOddsProps) => {
       {/* Markets Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {markets.map((market) => (
-          <div key={market.id} className="bg-white/5 rounded-xl p-4 border border-divider/50 space-y-3">
+          <div key={market.id} className="bg-surface-hover/50 rounded-xl p-4 border border-divider/50 space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-white text-xs font-semibold uppercase tracking-wider">{market.name}</h3>
+              <h3 className="text-text-primary text-xs font-semibold uppercase tracking-wider">{market.name}</h3>
               <Shield className="w-3.5 h-3.5 text-text-muted" />
             </div>
 
@@ -149,8 +149,8 @@ export const MatchOdds = ({ match, error }: MatchOddsProps) => {
                     onClick={() => setSelectedOdds(isSelected ? null : optId)}
                     className={`flex items-center justify-between p-3 rounded-lg border transition-all text-left ${
                       isSelected
-                        ? 'bg-accent/20 border-accent text-white shadow-md'
-                        : 'bg-surface/60 border-divider/40 hover:bg-white/10 text-white'
+                        ? 'bg-accent/20 border-accent text-text-primary shadow-md'
+                        : 'bg-surface/60 border-divider/40 hover:bg-surface-hover text-text-primary'
                     }`}
                   >
                     <span className="text-xs font-medium truncate max-w-[130px]" title={opt.label}>
@@ -178,7 +178,7 @@ export const MatchOdds = ({ match, error }: MatchOddsProps) => {
           </div>
           <button
             onClick={() => setSelectedOdds(null)}
-            className="text-text-secondary text-xs hover:text-white underline"
+            className="text-text-secondary text-xs hover:text-text-primary underline"
           >
             Clear Selection
           </button>
@@ -186,7 +186,7 @@ export const MatchOdds = ({ match, error }: MatchOddsProps) => {
       )}
 
       {/* Info Footer */}
-      <div className="p-3 bg-white/5 rounded-xl border border-divider/30 text-[11px] text-text-muted flex items-center gap-2">
+      <div className="p-3 bg-surface-hover/40 rounded-xl border border-divider/30 text-[11px] text-text-muted flex items-center gap-2">
         <DollarSign className="w-4 h-4 text-accent shrink-0" />
         <span>Odds updated in real-time from official bookmaker feeds. Odds subject to fluctuation until event start.</span>
       </div>

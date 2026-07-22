@@ -29,7 +29,7 @@ export const MatchTabs = ({ activeTab, onTabChange }: MatchTabsProps) => {
               "flex-1 min-w-fit px-4 py-3 text-xs sm:text-sm font-semibold transition-all relative whitespace-nowrap",
               isActive
                 ? "text-accent font-bold" 
-                : "text-text-secondary hover:text-white"
+                : "text-text-secondary hover:text-text-primary"
             )}
           >
             {tab.label}

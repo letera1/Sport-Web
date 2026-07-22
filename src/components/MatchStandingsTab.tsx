@@ -28,7 +28,7 @@ export const MatchStandingsTab = ({ match }: MatchStandingsTabProps) => {
     return (
       <div className="p-6 min-h-[250px] flex flex-col items-center justify-center text-center">
         <Trophy className="w-12 h-12 text-text-muted mb-3" />
-        <h3 className="text-white font-medium text-sm">No League Table Available</h3>
+        <h3 className="text-text-primary font-medium text-sm">No League Table Available</h3>
         <p className="text-text-secondary text-xs mt-1">
           Standings are not available for {match.strLeague || 'this competition'}.
         </p>
@@ -46,7 +46,7 @@ export const MatchStandingsTab = ({ match }: MatchStandingsTabProps) => {
       <div className="flex items-center justify-between pb-3 border-b border-divider">
         <div className="flex items-center gap-2">
           <Trophy className="w-5 h-5 text-accent" />
-          <h2 className="text-white font-semibold text-base">{match.strLeague} Standings</h2>
+          <h2 className="text-text-primary font-semibold text-base">{match.strLeague} Standings</h2>
         </div>
         <button
           onClick={() => navigate('/standings')}
@@ -82,8 +82,8 @@ export const MatchStandingsTab = ({ match }: MatchStandingsTabProps) => {
                 <tr
                   key={entry.idStanding || entry.idTeam || entry.intRank}
                   onClick={() => entry.idTeam && navigate(`/team/${entry.idTeam}`)}
-                  className={`hover:bg-white/10 transition-colors cursor-pointer ${
-                    isMatchTeam ? 'bg-accent/20 font-semibold text-white' : 'text-text-secondary hover:text-white'
+                  className={`hover:bg-surface-hover transition-colors cursor-pointer ${
+                    isMatchTeam ? 'bg-accent/20 font-semibold text-text-primary' : 'text-text-secondary hover:text-text-primary'
                   }`}
                 >
                   <td className="py-3 px-3">
@@ -101,18 +101,18 @@ export const MatchStandingsTab = ({ match }: MatchStandingsTabProps) => {
                         className="w-6 h-6 object-contain shrink-0"
                         onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
                       />
-                      <span className={`truncate text-xs ${isMatchTeam ? 'text-accent font-bold' : 'text-white'}`}>
+                      <span className={`truncate text-xs ${isMatchTeam ? 'text-accent font-bold' : 'text-text-primary'}`}>
                         {entry.strTeam}
                       </span>
                       {isHome && <span className="text-[9px] px-1.5 py-0.5 rounded bg-accent/30 text-accent border border-accent/50 uppercase font-bold">Home</span>}
-                      {isAway && <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/20 text-white border border-white/30 uppercase font-bold">Away</span>}
+                      {isAway && <span className="text-[9px] px-1.5 py-0.5 rounded bg-info/20 text-info border border-info/40 uppercase font-bold">Away</span>}
                     </div>
                   </td>
-                  <td className="py-3 px-3 text-center font-medium text-white">{entry.intPlayed}</td>
-                  <td className="py-3 px-3 text-center text-white/80">{entry.intWin}</td>
-                  <td className="py-3 px-3 text-center text-white/80">{entry.intDraw}</td>
-                  <td className="py-3 px-3 text-center text-white/80">{entry.intLoss}</td>
-                  <td className="py-3 px-3 text-center hidden sm:table-cell text-white/80">{entry.intGoalDifference}</td>
+                  <td className="py-3 px-3 text-center font-medium text-text-primary">{entry.intPlayed}</td>
+                  <td className="py-3 px-3 text-center text-text-secondary">{entry.intWin}</td>
+                  <td className="py-3 px-3 text-center text-text-secondary">{entry.intDraw}</td>
+                  <td className="py-3 px-3 text-center text-text-secondary">{entry.intLoss}</td>
+                  <td className="py-3 px-3 text-center hidden sm:table-cell text-text-secondary">{entry.intGoalDifference}</td>
                   <td className="py-3 px-3 text-right font-bold text-accent text-sm">{entry.intPoints}</td>
                 </tr>
               );

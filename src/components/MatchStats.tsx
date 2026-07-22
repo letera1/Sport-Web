@@ -22,25 +22,25 @@ const StatBar = ({ label, homeValue, awayValue, suffix = '' }: StatBarProps) => 
   return (
     <div className="flex flex-col gap-1.5 sm:gap-2">
       <div className="flex items-center justify-between text-xs sm:text-sm">
-        <span className="text-white font-medium">{homeValue}{suffix}</span>
+        <span className="text-text-primary font-medium">{homeValue}{suffix}</span>
         <span className="text-text-secondary text-[10px] sm:text-sm">{label}</span>
-        <span className="text-white font-medium">{awayValue}{suffix}</span>
+        <span className="text-text-primary font-medium">{awayValue}{suffix}</span>
       </div>
       <div className="flex h-1.5 sm:h-2 gap-1">
-        <div className="flex-1 bg-white/10 rounded-l-full overflow-hidden flex justify-end">
+        <div className="flex-1 bg-surface-hover rounded-l-full overflow-hidden flex justify-end">
           <div 
             className={cn(
               "h-full rounded-l-full transition-all",
-              homeValue >= awayValue ? "bg-accent" : "bg-white/30"
+              homeValue >= awayValue ? "bg-accent" : "bg-text-muted/40"
             )}
             style={{ width: `${homePercent}%` }}
           />
         </div>
-        <div className="flex-1 bg-white/10 rounded-r-full overflow-hidden">
+        <div className="flex-1 bg-surface-hover rounded-r-full overflow-hidden">
           <div 
             className={cn(
               "h-full rounded-r-full transition-all",
-              awayValue >= homeValue ? "bg-accent" : "bg-white/30"
+              awayValue >= homeValue ? "bg-accent" : "bg-text-muted/40"
             )}
             style={{ width: `${awayPercent}%` }}
           />
@@ -59,7 +59,7 @@ export const MatchStats = ({ match, error }: MatchStatsProps) => {
           <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto bg-danger/10 rounded-full flex items-center justify-center border border-danger/30">
             <span className="text-danger text-xl sm:text-2xl">!</span>
           </div>
-          <h3 className="text-white font-medium text-base sm:text-lg">Server Error</h3>
+          <h3 className="text-text-primary font-medium text-base sm:text-lg">Server Error</h3>
           <p className="text-text-secondary text-xs sm:text-sm max-w-[250px]">
             {error}
           </p>
@@ -93,7 +93,7 @@ export const MatchStats = ({ match, error }: MatchStatsProps) => {
           <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto bg-white/5 rounded-full flex items-center justify-center border border-divider">
             <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8 text-text-secondary" />
           </div>
-          <h3 className="text-white font-medium text-base sm:text-lg">No Statistics Available</h3>
+          <h3 className="text-text-primary font-medium text-base sm:text-lg">No Statistics Available</h3>
           <p className="text-text-secondary text-xs sm:text-sm">
             Match statistics will appear here once the match begins.
           </p>
@@ -105,7 +105,7 @@ export const MatchStats = ({ match, error }: MatchStatsProps) => {
   return (
     <div className="bg-surface rounded-b-lg p-4 sm:p-6">
       <div className="flex items-center gap-2 mb-4 sm:mb-8">
-        <h2 className="text-white font-medium text-sm sm:text-base">Match Statistics</h2>
+        <h2 className="text-text-primary font-medium text-sm sm:text-base">Match Statistics</h2>
       </div>
 
       <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
