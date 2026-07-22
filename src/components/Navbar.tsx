@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X, Sun, Moon, Search, Trophy, Heart } from 'lucide-react';
+import { Menu, X, Sun, Moon, Search, Trophy, Heart, Zap } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { LEAGUES } from '../constants';
@@ -29,118 +29,212 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
   };
 
   return (
-    <header className="sticky top-0 z-[100] bg-surface border-b border-border shadow-md">
-      {/* Top Main Navigation Bar - 100% Opaque Solid */}
-      <div className="max-w-app mx-auto px-3 sm:px-6 h-13 sm:h-14 flex items-center justify-between gap-4 bg-surface">
-        {/* Left: Brand & Main Navigation */}
-        <div className="flex items-center gap-6">
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-accent/15 border border-accent/30 flex items-center justify-center font-bold text-accent text-lg group-hover:bg-accent group-hover:text-black transition-all">
-              S
-            </div>
-            <span className="text-lg sm:text-xl font-bold font-display tracking-tight text-white">
-              stat<span className="text-accent">score</span>
-            </span>
-          </Link>
+    <header className="sticky top-0 z-[100]">
+      {/* Top Main Navigation Bar — Premium Glass Effect */}
+      <div
+        className="relative border-b border-white/[0.06]"
+        style={{
+          background: isDark
+            ? 'linear-gradient(135deg, rgba(13,17,23,0.97) 0%, rgba(22,27,34,0.98) 50%, rgba(13,17,23,0.97) 100%)'
+            : 'linear-gradient(135deg, rgba(255,255,255,0.97) 0%, rgba(246,248,250,0.98) 50%, rgba(255,255,255,0.97) 100%)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+        }}
+      >
+        {/* Subtle top accent line */}
+        <div
+          className="absolute top-0 left-0 right-0 h-[2px]"
+          style={{
+            background: 'linear-gradient(90deg, transparent 0%, rgb(var(--color-accent)) 30%, rgb(var(--color-info)) 70%, transparent 100%)',
+            opacity: 0.7,
+          }}
+        />
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-1">
-            <Link
-              to="/"
-              className={cn(
-                "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors relative",
-                location.pathname === '/' 
-                  ? "text-white bg-surface-hover font-semibold" 
-                  : "text-text-secondary hover:text-white hover:bg-surface-hover/50"
-              )}
-            >
-              Scores & Matches
-              {location.pathname === '/' && (
-                <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-accent rounded-full animate-fade-in" />
-              )}
-            </Link>
-            <Link
-              to="/standings"
-              className={cn(
-                "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center gap-1.5 relative",
-                location.pathname === '/standings' 
-                  ? "text-white bg-surface-hover font-semibold" 
-                  : "text-text-secondary hover:text-white hover:bg-surface-hover/50"
-              )}
-            >
-              <Trophy className="w-3.5 h-3.5 text-accent" />
-              Standings
-              {location.pathname === '/standings' && (
-                <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-accent rounded-full animate-fade-in" />
-              )}
-            </Link>
-          </nav>
-        </div>
-
-        {/* Right Tools: Search, Favorites, Theme, Mobile Menu */}
-        <div className="flex items-center gap-2">
-          {/* Search Trigger / Input */}
-          <div className="relative">
-            {searchOpen ? (
-              <form onSubmit={handleSearchSubmit} className="flex items-center">
-                <input
-                  type="text"
-                  placeholder="Search team or player..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  autoFocus
-                  onBlur={() => !searchQuery && setSearchOpen(false)}
-                  className="w-44 sm:w-60 bg-surface-hover border border-border rounded-full px-3 py-1 text-xs text-white placeholder:text-text-muted focus:outline-none focus:border-accent"
-                />
-                <button type="submit" className="absolute right-2 text-text-muted hover:text-white">
-                  <Search className="w-3.5 h-3.5" />
-                </button>
-              </form>
-            ) : (
-              <button
-                onClick={() => setSearchOpen(true)}
-                className="w-8 h-8 rounded-full bg-surface-hover hover:bg-border/60 border border-border/50 flex items-center justify-center text-text-secondary hover:text-white transition-colors"
-                title="Search"
+        <div className="max-w-app mx-auto px-4 sm:px-6 h-16 sm:h-[72px] flex items-center justify-between gap-6">
+          {/* Left: Brand & Main Navigation */}
+          <div className="flex items-center gap-8">
+            <Link to="/" className="flex items-center gap-3 group">
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-black text-xl shadow-lg group-hover:scale-105 transition-transform duration-300"
+                style={{
+                  background: 'linear-gradient(135deg, rgb(var(--color-accent)), rgb(var(--color-info)))',
+                  boxShadow: '0 4px 15px rgba(0, 230, 118, 0.25), 0 0 30px rgba(0, 230, 118, 0.1)',
+                }}
               >
-                <Search className="w-4 h-4" />
-              </button>
-            )}
+                S
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl sm:text-2xl font-extrabold font-display tracking-tight leading-none">
+                  stat<span className="text-accent">score</span>
+                </span>
+                <span className="text-[10px] font-medium text-text-muted tracking-widest uppercase hidden sm:block">
+                  live sports
+                </span>
+              </div>
+            </Link>
+
+            {/* Desktop Nav Links */}
+            <nav className="hidden md:flex items-center gap-1.5">
+              <Link
+                to="/"
+                className={cn(
+                  "px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 relative group",
+                  location.pathname === '/'
+                    ? "text-white"
+                    : "text-text-secondary hover:text-white hover:bg-white/[0.06]"
+                )}
+              >
+                {location.pathname === '/' && (
+                  <div
+                    className="absolute inset-0 rounded-xl animate-fade-in"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(0,230,118,0.15), rgba(56,166,248,0.1))',
+                      border: '1px solid rgba(0,230,118,0.2)',
+                    }}
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-accent" />
+                  Scores & Matches
+                </span>
+                {location.pathname === '/' && (
+                  <div
+                    className="absolute -bottom-[13px] left-4 right-4 h-[2px] rounded-full animate-fade-in"
+                    style={{
+                      background: 'linear-gradient(90deg, rgb(var(--color-accent)), rgb(var(--color-info)))',
+                    }}
+                  />
+                )}
+              </Link>
+              <Link
+                to="/standings"
+                className={cn(
+                  "px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 relative group",
+                  location.pathname === '/standings'
+                    ? "text-white"
+                    : "text-text-secondary hover:text-white hover:bg-white/[0.06]"
+                )}
+              >
+                {location.pathname === '/standings' && (
+                  <div
+                    className="absolute inset-0 rounded-xl animate-fade-in"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(0,230,118,0.15), rgba(56,166,248,0.1))',
+                      border: '1px solid rgba(0,230,118,0.2)',
+                    }}
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-2">
+                  <Trophy className="w-4 h-4 text-accent" />
+                  Standings
+                </span>
+                {location.pathname === '/standings' && (
+                  <div
+                    className="absolute -bottom-[13px] left-4 right-4 h-[2px] rounded-full animate-fade-in"
+                    style={{
+                      background: 'linear-gradient(90deg, rgb(var(--color-accent)), rgb(var(--color-info)))',
+                    }}
+                  />
+                )}
+              </Link>
+            </nav>
           </div>
 
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="w-8 h-8 rounded-full bg-surface-hover hover:bg-border/60 border border-border/50 flex items-center justify-center text-text-secondary hover:text-white transition-colors"
-            title={isDark ? 'Light Mode' : 'Dark Mode'}
-          >
-            {isDark ? <Sun className="w-4 h-4 text-warning" /> : <Moon className="w-4 h-4 text-info" />}
-          </button>
+          {/* Right Tools: Search, Favorites, Theme, Mobile Menu */}
+          <div className="flex items-center gap-2.5">
+            {/* Search Trigger / Input */}
+            <div className="relative">
+              {searchOpen ? (
+                <form onSubmit={handleSearchSubmit} className="flex items-center">
+                  <input
+                    type="text"
+                    placeholder="Search team or player..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    autoFocus
+                    onBlur={() => !searchQuery && setSearchOpen(false)}
+                    className="w-48 sm:w-64 rounded-xl px-4 py-2 text-sm placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/40"
+                    style={{
+                      background: isDark ? 'rgba(33,38,45,0.9)' : 'rgba(246,248,250,0.9)',
+                      border: '1px solid rgba(var(--color-border), 0.5)',
+                      color: isDark ? '#f0f6fc' : '#1f2328',
+                    }}
+                  />
+                  <button type="submit" className="absolute right-3 text-text-muted hover:text-white transition-colors">
+                    <Search className="w-4 h-4" />
+                  </button>
+                </form>
+              ) : (
+                <button
+                  onClick={() => setSearchOpen(true)}
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-text-secondary hover:text-white transition-all duration-200 hover:scale-105"
+                  style={{
+                    background: isDark ? 'rgba(33,38,45,0.6)' : 'rgba(246,248,250,0.8)',
+                    border: '1px solid rgba(var(--color-border), 0.3)',
+                  }}
+                  title="Search"
+                >
+                  <Search className="w-[18px] h-[18px]" />
+                </button>
+              )}
+            </div>
 
-          {/* Favorites Count Pill */}
-          {favoritesCount > 0 && (
+            {/* Theme Toggle */}
             <button
-              onClick={() => navigate('/')}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-danger/10 border border-danger/30 text-danger text-xs font-semibold hover:bg-danger/20 transition-colors"
+              onClick={toggleTheme}
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-text-secondary hover:text-white transition-all duration-200 hover:scale-105"
+              style={{
+                background: isDark ? 'rgba(33,38,45,0.6)' : 'rgba(246,248,250,0.8)',
+                border: '1px solid rgba(var(--color-border), 0.3)',
+              }}
+              title={isDark ? 'Light Mode' : 'Dark Mode'}
             >
-              <Heart className="w-3.5 h-3.5 fill-danger" />
-              <span>{favoritesCount}</span>
+              {isDark ? <Sun className="w-[18px] h-[18px] text-warning" /> : <Moon className="w-[18px] h-[18px] text-info" />}
             </button>
-          )}
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden w-8 h-8 rounded-lg bg-surface-hover flex items-center justify-center text-text-secondary hover:text-white"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+            {/* Favorites Count Pill */}
+            {favoritesCount > 0 && (
+              <button
+                onClick={() => navigate('/')}
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-danger text-sm font-bold hover:scale-105 transition-all duration-200"
+                style={{
+                  background: isDark ? 'rgba(248,81,73,0.1)' : 'rgba(207,34,46,0.08)',
+                  border: '1px solid rgba(248,81,73,0.25)',
+                }}
+              >
+                <Heart className="w-4 h-4 fill-danger" />
+                <span>{favoritesCount}</span>
+              </button>
+            )}
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden w-10 h-10 rounded-xl flex items-center justify-center text-text-secondary hover:text-white transition-all duration-200"
+              style={{
+                background: isDark ? 'rgba(33,38,45,0.6)' : 'rgba(246,248,250,0.8)',
+                border: '1px solid rgba(var(--color-border), 0.3)',
+              }}
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Sub-Header: Horizontal League Scroller - 100% Solid Opaque Background */}
-      <div className="border-t border-border/60 bg-surface shadow-inner">
-        <div className="max-w-app mx-auto px-3 sm:px-6">
-          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-2">
+      {/* Sub-Header: Horizontal League Scroller — Premium Glass Strip */}
+      <div
+        className="border-b border-white/[0.04]"
+        style={{
+          background: isDark
+            ? 'linear-gradient(180deg, rgba(22,27,34,0.95), rgba(13,17,23,0.97))'
+            : 'linear-gradient(180deg, rgba(246,248,250,0.95), rgba(255,255,255,0.97))',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+        }}
+      >
+        <div className="max-w-app mx-auto px-4 sm:px-6">
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-2.5">
             {leagues.map((league) => {
               const isSelected = league.id === selectedLeagueId;
               return (
@@ -148,13 +242,24 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
                   key={league.id}
                   onClick={() => onSelectLeague(league.id)}
                   className={cn(
-                    "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all shrink-0 border",
+                    "flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 shrink-0 hover:scale-[1.03]",
                     isSelected
-                      ? "bg-accent text-black font-bold border-accent shadow-glow-accent"
-                      : "bg-surface-hover/60 text-text-secondary border-border/40 hover:text-white hover:bg-surface-hover"
+                      ? "text-black font-bold shadow-lg"
+                      : "text-text-secondary hover:text-white"
                   )}
+                  style={
+                    isSelected
+                      ? {
+                          background: 'linear-gradient(135deg, rgb(var(--color-accent)), rgb(var(--color-info)))',
+                          boxShadow: '0 2px 12px rgba(0, 230, 118, 0.25)',
+                        }
+                      : {
+                          background: isDark ? 'rgba(33,38,45,0.5)' : 'rgba(246,248,250,0.8)',
+                          border: '1px solid rgba(var(--color-border), 0.3)',
+                        }
+                  }
                 >
-                  <span className="text-xs leading-none">{league.flag}</span>
+                  <span className="text-sm leading-none">{league.flag}</span>
                   <span>{league.name}</span>
                 </button>
               );
@@ -163,30 +268,62 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
         </div>
       </div>
 
-      {/* Mobile Drawer Menu - 100% Solid Opaque */}
+      {/* Mobile Drawer Menu — Premium Glass Panel */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-surface border-b border-border animate-slide-up p-4 space-y-4 shadow-xl">
-          <nav className="flex flex-col gap-2">
+        <div
+          className="md:hidden animate-slide-up p-5 space-y-3 border-b"
+          style={{
+            background: isDark
+              ? 'linear-gradient(180deg, rgba(22,27,34,0.98), rgba(13,17,23,0.99))'
+              : 'linear-gradient(180deg, rgba(255,255,255,0.98), rgba(246,248,250,0.99))',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderColor: isDark ? 'rgba(48,54,61,0.6)' : 'rgba(216,222,228,0.6)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+          }}
+        >
+          <nav className="flex flex-col gap-1.5">
             <Link
               to="/"
               onClick={() => setMobileMenuOpen(false)}
               className={cn(
-                "px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-between",
-                location.pathname === '/' ? "bg-accent/15 text-accent font-bold" : "text-text-secondary hover:text-white"
+                "px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-all duration-200",
+                location.pathname === '/' ? "text-white" : "text-text-secondary hover:text-white"
               )}
+              style={
+                location.pathname === '/'
+                  ? {
+                      background: 'linear-gradient(135deg, rgba(0,230,118,0.12), rgba(56,166,248,0.08))',
+                      border: '1px solid rgba(0,230,118,0.2)',
+                    }
+                  : {}
+              }
             >
+              <Zap className="w-5 h-5 text-accent" />
               <span>Matches & Scores</span>
             </Link>
+            <div
+              className="mx-4 h-px"
+              style={{ background: isDark ? 'rgba(48,54,61,0.4)' : 'rgba(216,222,228,0.4)' }}
+            />
             <Link
               to="/standings"
               onClick={() => setMobileMenuOpen(false)}
               className={cn(
-                "px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-between",
-                location.pathname === '/standings' ? "bg-accent/15 text-accent font-bold" : "text-text-secondary hover:text-white"
+                "px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-all duration-200",
+                location.pathname === '/standings' ? "text-white" : "text-text-secondary hover:text-white"
               )}
+              style={
+                location.pathname === '/standings'
+                  ? {
+                      background: 'linear-gradient(135deg, rgba(0,230,118,0.12), rgba(56,166,248,0.08))',
+                      border: '1px solid rgba(0,230,118,0.2)',
+                    }
+                  : {}
+              }
             >
+              <Trophy className="w-5 h-5 text-accent" />
               <span>Standings</span>
-              <Trophy className="w-4 h-4 text-accent" />
             </Link>
           </nav>
         </div>
