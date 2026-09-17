@@ -54,7 +54,16 @@ export const useStandings = (leagueId: string, season?: string) => {
         return;
       }
 
-      const remainingTeams = allTeams.filter(team => !tableTeamIds.has(team.idTeam));
+      // Dedupe allTeams by idTeam — prevSeason merge above can push a team
+      // that already exists in the fetched allTeams list, producing duplicate rows.
+      const seenTeamIds = new Set<string>();
+      const uniqueTeams = allTeams.filter(team => {
+        if (!team.idTeam || seenTeamIds.has(team.idTeam)) return false;
+        seenTeamIds.add(team.idTeam);
+        return true;
+      });
+
+      const remainingTeams = uniqueTeams.filter(team => !tableTeamIds.has(team.idTeam));
 
       const fullList: StandingsEntry[] = [...realTable];
 
