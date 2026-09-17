@@ -3,6 +3,7 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 interface FavoritesContextType {
   favoriteTeams: Set<string>;
   favoriteMatches: Set<string>;
+  favoritesCount: number;
   toggleTeamFavorite: (id: string) => void;
   toggleMatchFavorite: (id: string) => void;
   isTeamFavorite: (id: string) => boolean;
@@ -48,9 +49,10 @@ export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
 
   const isTeamFavorite = useCallback((id: string) => favoriteTeams.has(id), [favoriteTeams]);
   const isMatchFavorite = useCallback((id: string) => favoriteMatches.has(id), [favoriteMatches]);
+  const favoritesCount = favoriteMatches.size;
 
   return (
-    <FavoritesContext.Provider value={{ favoriteTeams, favoriteMatches, toggleTeamFavorite, toggleMatchFavorite, isTeamFavorite, isMatchFavorite }}>
+    <FavoritesContext.Provider value={{ favoriteTeams, favoriteMatches, favoritesCount, toggleTeamFavorite, toggleMatchFavorite, isTeamFavorite, isMatchFavorite }}>
       {children}
     </FavoritesContext.Provider>
   );
