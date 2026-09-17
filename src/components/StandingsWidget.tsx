@@ -56,7 +56,7 @@ export const StandingsWidget = ({ leagueId, limit = 8 }: StandingsWidgetProps) =
       </div>
 
       {/* Mini Table Header */}
-      <div className="grid grid-cols-[1.5rem_1fr_2rem_2rem_2.5rem] px-3 py-1.5 text-[10px] font-bold text-text-muted uppercase border-b border-border/30 bg-surface-hover/20">
+      <div className="grid grid-cols-[1.5rem_1fr_2rem_2rem_2.5rem] px-3 py-2 text-[11px] font-bold text-text-muted uppercase tracking-wider border-b border-border/30 bg-surface-hover/20">
         <span className="text-center">#</span>
         <span>Team</span>
         <span className="text-center">P</span>
@@ -74,11 +74,11 @@ export const StandingsWidget = ({ leagueId, limit = 8 }: StandingsWidgetProps) =
           return (
             <Link
               to={`/team/${row.idTeam}`}
-              key={row.idTeam || row.intRank}
+              key={row.idTeam + row.intRank}
               className="grid grid-cols-[1.5rem_1fr_2rem_2rem_2.5rem] items-center px-3 py-2 text-xs hover:bg-surface-hover/60 transition-colors group"
             >
               <span className={cn(
-                "text-center font-bold text-[11px]",
+                "text-center font-bold text-[11px] font-score",
                 isChampionsLeague ? "text-accent" : isRelegation ? "text-danger" : "text-text-muted"
               )}>
                 {row.intRank}
@@ -94,14 +94,14 @@ export const StandingsWidget = ({ leagueId, limit = 8 }: StandingsWidgetProps) =
                   {row.strTeam}
                 </span>
               </div>
-              <span className="text-center text-text-secondary">{row.intPlayed}</span>
+              <span className="text-center text-text-secondary font-score">{row.intPlayed}</span>
               <span className={cn(
-                "text-center font-medium text-[11px]",
+                "text-center font-medium text-[11px] font-score",
                 Number(row.intGoalDifference) > 0 ? "text-accent" : Number(row.intGoalDifference) < 0 ? "text-danger" : "text-text-muted"
               )}>
                 {Number(row.intGoalDifference) > 0 ? `+${row.intGoalDifference}` : row.intGoalDifference}
               </span>
-              <span className="text-right font-bold text-text-primary">{row.intPoints}</span>
+              <span className="text-right font-bold text-text-primary font-score">{row.intPoints}</span>
             </Link>
           );
         })}
