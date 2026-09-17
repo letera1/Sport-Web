@@ -42,7 +42,7 @@ export class ErrorBoundary extends Component<Props, State> {
           </p>
           <button
             onClick={this.handleReset}
-            className="px-5 py-2.5 bg-[#00FFA5] text-black font-semibold rounded-lg hover:bg-[#00FFA5]/90 transition-colors flex items-center gap-2 text-sm"
+            className="px-5 py-2.5 bg-accent text-black font-semibold rounded-lg hover:bg-accent/90 transition-colors flex items-center gap-2 text-sm"
           >
             <RefreshCw className="w-4 h-4" /> Reload Page
           </button>
