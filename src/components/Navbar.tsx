@@ -183,7 +183,7 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
                   key={league.id}
                   onClick={() => onSelectLeague(league.id)}
                   className={cn(
-                    "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all shrink-0 border",
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all shrink-0 border",
                     isSelected
                       ? "bg-accent text-black font-bold border-accent shadow-sm"
                       : "bg-surface text-text-secondary border-border/60 hover:text-text-primary hover:bg-surface-hover"
