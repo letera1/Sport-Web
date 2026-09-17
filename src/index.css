@@ -6,52 +6,52 @@
 
 @layer base {
   /* ========================
-     Dark Theme (default) — Deep Navy
-     Inspired by FlashScore / GitHub Dark
+     Dark Theme (default) — Deep Slate
+     Premium data-platform palette (FlashScore / Sofascore / Linear-grade)
      ======================== */
   :root {
-    --color-background: 13 17 23;
-    --color-surface: 22 27 34;
-    --color-surface-hover: 33 38 45;
-    --color-card: 22 27 34;
-    --color-card-hover: 33 38 45;
-    --color-primary: 48 98 204;
-    --color-accent: 0 230 118;
-    --color-live: 255 179 0;
-    --color-danger: 248 81 73;
-    --color-warning: 231 198 75;
-    --color-info: 56 166 248;
-    --color-success: 46 204 113;
-    --color-text-primary: 240 246 252;
-    --color-text-secondary: 139 148 158;
-    --color-text-muted: 110 118 129;
-    --color-divider: 33 38 45;
-    --color-border: 48 54 61;
+    --color-background: 8 11 16;
+    --color-surface: 15 20 28;
+    --color-surface-hover: 23 30 40;
+    --color-card: 15 20 28;
+    --color-card-hover: 23 30 40;
+    --color-primary: 37 99 235;
+    --color-accent: 16 185 129;
+    --color-live: 245 158 11;
+    --color-danger: 239 68 68;
+    --color-warning: 234 179 8;
+    --color-info: 59 130 246;
+    --color-success: 34 197 94;
+    --color-text-primary: 244 247 250;
+    --color-text-secondary: 148 163 184;
+    --color-text-muted: 100 116 139;
+    --color-divider: 24 30 40;
+    --color-border: 39 47 61;
     --color-overlay: 0 0 0;
-    --color-navbar: 13 17 23;
+    --color-navbar: 8 11 16;
   }
 
   /* ========================
      Light Theme
      ======================== */
   .light {
-    --color-background: 246 248 250;
+    --color-background: 248 250 252;
     --color-surface: 255 255 255;
-    --color-surface-hover: 246 248 250;
+    --color-surface-hover: 241 245 249;
     --color-card: 255 255 255;
-    --color-card-hover: 246 248 250;
-    --color-primary: 48 98 204;
-    --color-accent: 0 170 90;
-    --color-live: 210 140 0;
-    --color-danger: 207 34 46;
-    --color-warning: 155 120 0;
+    --color-card-hover: 241 245 249;
+    --color-primary: 37 99 235;
+    --color-accent: 5 150 105;
+    --color-live: 217 119 6;
+    --color-danger: 220 38 38;
+    --color-warning: 161 98 7;
     --color-info: 37 99 235;
     --color-success: 22 163 74;
-    --color-text-primary: 31 35 40;
-    --color-text-secondary: 87 96 106;
-    --color-text-muted: 140 149 159;
-    --color-divider: 216 222 228;
-    --color-border: 216 222 228;
+    --color-text-primary: 15 23 42;
+    --color-text-secondary: 71 85 105;
+    --color-text-muted: 100 116 139;
+    --color-divider: 226 232 240;
+    --color-border: 203 213 225;
     --color-overlay: 0 0 0;
     --color-navbar: 255 255 255;
   }
@@ -67,11 +67,16 @@
   }
 
   body {
-    @apply font-sans antialiased;
+    @apply font-sans antialiased text-[15px];
     background-color: rgb(var(--color-background));
     color: rgb(var(--color-text-primary));
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
   }
 
   /* Custom scrollbar — ultra-slim */

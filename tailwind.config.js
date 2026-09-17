@@ -6,6 +6,12 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        'xs': '480px',
+      },
+      fontSize: {
+        '2xs': ['0.6875rem', { lineHeight: '1rem' }],
+      },
       colors: {
         background: "rgb(var(--color-background) / <alpha-value>)",
         surface: "rgb(var(--color-surface) / <alpha-value>)",
