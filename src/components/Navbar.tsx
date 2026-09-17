@@ -78,9 +78,9 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
         </div>
 
         {/* Right Tools: Search, Favorites, Theme, Mobile Menu */}
-        <div className="flex items-center gap-2">
-          {/* Search Input / Trigger */}
-          <div className="relative">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Search Input / Trigger (desktop inline) */}
+          <div className="relative hidden sm:block">
             {searchOpen ? (
               <form onSubmit={handleSearchSubmit} className="flex items-center">
                 <input
@@ -90,7 +90,7 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
                   onChange={(e) => setSearchQuery(e.target.value)}
                   autoFocus
                   onBlur={() => !searchQuery && setSearchOpen(false)}
-                  className="w-44 sm:w-60 bg-background text-text-primary border border-border/80 rounded-lg px-3 py-1.5 text-xs placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-accent"
+                  className="w-60 bg-background text-text-primary border border-border/80 rounded-lg px-3 py-1.5 text-xs placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-accent"
                 />
                 <button type="submit" className="absolute right-2.5 text-text-muted hover:text-text-primary transition-colors">
                   <Search className="w-3.5 h-3.5" />
