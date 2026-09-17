@@ -107,6 +107,41 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
             )}
           </div>
 
+          {/* Search Trigger (mobile) — opens a full-width overlay bar instead of squeezing the header */}
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="sm:hidden w-9 h-9 rounded-lg bg-surface-hover border border-border/50 flex items-center justify-center text-text-secondary hover:text-text-primary transition-colors"
+            title="Search"
+          >
+            <Search className="w-4 h-4" />
+          </button>
+
+          {/* Mobile Search Overlay */}
+          {searchOpen && (
+            <div className="sm:hidden fixed inset-x-0 top-0 h-16 z-[110] bg-surface flex items-center gap-2 px-4 border-b border-border/60 shadow-sm animate-fade-in">
+              <button
+                onClick={() => setSearchOpen(false)}
+                className="p-1.5 -ml-1 shrink-0 text-text-secondary hover:text-text-primary transition-colors"
+                aria-label="Close search"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <form onSubmit={handleSearchSubmit} className="flex-1 relative">
+                <input
+                  type="text"
+                  placeholder="Search team or player..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  autoFocus
+                  className="w-full bg-background text-text-primary border border-border/80 rounded-lg pl-3 pr-10 py-2 text-sm placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-accent"
+                />
+                <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors">
+                  <Search className="w-4 h-4" />
+                </button>
+              </form>
+            </div>
+          )}
+
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
