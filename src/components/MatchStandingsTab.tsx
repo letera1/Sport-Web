@@ -1,6 +1,6 @@
 import { useStandings } from '../hooks/useStandings';
 import { MatchDetails } from '../types';
-import { getProxiedImageUrl, FALLBACK_BADGE } from '../services/sportsApi';
+import { StandingsHeaderRow, StandingsRow } from './StandingsRow';
 import { Trophy, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -41,85 +41,41 @@ export const MatchStandingsTab = ({ match }: MatchStandingsTabProps) => {
   const awayNorm = normalize(match.strAwayTeam || '');
 
   return (
-    <div className="bg-surface rounded-b-lg p-4 sm:p-6 space-y-4">
+    <div className="bg-surface rounded-b-lg space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-divider">
-        <div className="flex items-center gap-2">
-          <Trophy className="w-5 h-5 text-accent" />
-          <h2 className="text-text-primary font-semibold text-base">{match.strLeague} Standings</h2>
+      <div className="flex items-center justify-between px-4 sm:px-6 pt-4 sm:pt-6 pb-3 border-b border-divider">
+        <div className="flex items-center gap-2 min-w-0">
+          <Trophy className="w-5 h-5 text-accent shrink-0" />
+          <h2 className="text-text-primary font-semibold text-base truncate">{match.strLeague} Standings</h2>
         </div>
         <button
           onClick={() => navigate('/standings')}
-          className="text-xs text-accent hover:underline font-medium"
+          className="text-xs text-accent hover:underline font-semibold shrink-0"
         >
-          View Full League Table →
+          Full Table &rarr;
         </button>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr className="text-text-secondary uppercase text-[10px] tracking-wider border-b border-divider/60">
-              <th className="py-2.5 px-3">#</th>
-              <th className="py-2.5 px-3">Team</th>
-              <th className="py-2.5 px-3 text-center">P</th>
-              <th className="py-2.5 px-3 text-center">W</th>
-              <th className="py-2.5 px-3 text-center">D</th>
-              <th className="py-2.5 px-3 text-center">L</th>
-              <th className="py-2.5 px-3 text-center hidden sm:table-cell">GD</th>
-              <th className="py-2.5 px-3 text-right font-bold">PTS</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-divider/30">
-            {standings.map((entry) => {
-              const entryNorm = normalize(entry.strTeam);
-              const isHome = entryNorm.includes(homeNorm) || homeNorm.includes(entryNorm);
-              const isAway = entryNorm.includes(awayNorm) || awayNorm.includes(entryNorm);
-              const isMatchTeam = isHome || isAway;
-
-              return (
-                <tr
-                  key={entry.idStanding || entry.idTeam || entry.intRank}
-                  onClick={() => entry.idTeam && navigate(`/team/${entry.idTeam}`)}
-                  className={`hover:bg-surface-hover transition-colors cursor-pointer ${
-                    isMatchTeam ? 'bg-accent/20 font-semibold text-text-primary' : 'text-text-secondary hover:text-text-primary'
-                  }`}
-                >
-                  <td className="py-3 px-3">
-                    <span className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-[11px] ${
-                      isMatchTeam ? 'bg-accent text-black font-bold' : 'text-text-secondary'
-                    }`}>
-                      {entry.intRank}
-                    </span>
-                  </td>
-                  <td className="py-3 px-3">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <img
-                        src={getProxiedImageUrl(entry.strTeamBadge || entry.strBadge)}
-                        alt={entry.strTeam}
-                        className="w-6 h-6 object-contain shrink-0"
-                        onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
-                      />
-                      <span className={`truncate text-xs ${isMatchTeam ? 'text-accent font-bold' : 'text-text-primary'}`}>
-                        {entry.strTeam}
-                      </span>
-                      {isHome && <span className="text-[9px] px-1.5 py-0.5 rounded bg-accent/30 text-accent border border-accent/50 uppercase font-bold">Home</span>}
-                      {isAway && <span className="text-[9px] px-1.5 py-0.5 rounded bg-info/20 text-info border border-info/40 uppercase font-bold">Away</span>}
-                    </div>
-                  </td>
-                  <td className="py-3 px-3 text-center font-medium text-text-primary">{entry.intPlayed}</td>
-                  <td className="py-3 px-3 text-center text-text-secondary">{entry.intWin}</td>
-                  <td className="py-3 px-3 text-center text-text-secondary">{entry.intDraw}</td>
-                  <td className="py-3 px-3 text-center text-text-secondary">{entry.intLoss}</td>
-                  <td className="py-3 px-3 text-center hidden sm:table-cell text-text-secondary">{entry.intGoalDifference}</td>
-                  <td className="py-3 px-3 text-right font-bold text-accent text-sm">{entry.intPoints}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      <div className="border border-border/40 rounded-xl overflow-hidden mx-4 sm:mx-6 mb-4 sm:mb-6">
+        <StandingsHeaderRow />
+        <div className="divide-y divide-border/20">
+          {standings.map((entry) => {
+            const entryNorm = normalize(entry.strTeam);
+            const isHome = entryNorm.includes(homeNorm) || homeNorm.includes(entryNorm);
+            const isAway = entryNorm.includes(awayNorm) || awayNorm.includes(entryNorm);
+            return (
+              <StandingsRow
+                key={entry.idStanding || entry.idTeam || entry.intRank}
+                entry={entry}
+                totalTeams={standings.length}
+                highlight={isHome ? 'home' : isAway ? 'away' : undefined}
+              />
+            );
+          })}
+        </div>
       </div>
     </div>
   );
 };
+
