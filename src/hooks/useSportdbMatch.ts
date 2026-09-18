@@ -6,8 +6,10 @@ import {
   normalizeOdds,
   normalizeStatPeriods,
 } from '../services/sportdb/matchNormalize';
+import { asArray, normalizeMatch } from '../services/sportdb/normalize';
 import type {
   SportLineup,
+  SportMatch,
   SportMatchInfo,
   SportOdds,
   SportStatPeriod,
@@ -102,6 +104,7 @@ function useLazyResource<T>(
 }
 
 export interface SportdbMatch {
+  seed: SportMatch | null;
   info: SportdbResource<SportMatchInfo>;
   stats: SportdbResource<SportStatPeriod[]>;
   lineups: SportdbResource<SportLineup>;
@@ -110,12 +113,50 @@ export interface SportdbMatch {
 }
 
 /**
+ * Recovers score and state for a visitor who arrived by direct link.
+ *
+ * The details endpoint returns no score, so navigating within the app hands it
+ * over instead. On a cold load there is nothing to hand over, and the live feed
+ * is the only endpoint that carries it. That feed is already the most-requested
+ * one in the app and is cached by the proxy, so the lookup is normally served
+ * without touching the provider.
+ */
+function useFallbackSeed(eventId: string | undefined, enabled: boolean): SportMatch | null {
+  const [seed, setSeed] = useState<SportMatch | null>(null);
+
+  useEffect(() => {
+    if (!eventId || !enabled) {
+      setSeed(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    sportdb
+      .liveAll('football', controller.signal)
+      .then(({ data }) => {
+        if (controller.signal.aborted) return;
+        const match = asArray(data)
+          .map(normalizeMatch)
+          .find((row) => row?.id === eventId);
+        setSeed(match ?? null);
+      })
+      // The match may simply not be in today's feed; the header copes without it.
+      .catch(() => undefined);
+
+    return () => controller.abort();
+  }, [eventId, enabled]);
+
+  return seed;
+}
+
+/**
  * Loads a SportDB match view. The header data loads immediately; statistics,
  * lineups and odds load on first visit to their tab.
  */
 export function useSportdbMatch(
   eventId: string | undefined,
-  activeTab: SportdbMatchTab
+  activeTab: SportdbMatchTab,
+  providedSeed?: SportMatch
 ): SportdbMatch {
   const [nonce, setNonce] = useState(0);
 
@@ -124,7 +165,9 @@ export function useSportdbMatch(
   const lineups = useLazyResource(eventId, activeTab === 'lineups', sportdb.matchLineups, normalizeLineups, nonce);
   const odds = useLazyResource(eventId, activeTab === 'odds', sportdb.matchOdds, normalizeOdds, nonce);
 
+  const fallbackSeed = useFallbackSeed(eventId, !providedSeed);
+
   const refresh = useCallback(() => setNonce((value) => value + 1), []);
 
-  return { info, stats, lineups, odds, refresh };
+  return { seed: providedSeed ?? fallbackSeed, info, stats, lineups, odds, refresh };
 }

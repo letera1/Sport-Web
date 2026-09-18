@@ -41,10 +41,10 @@ interface SportdbMatchDetailsProps {
   seed?: SportMatch;
 }
 
-export const SportdbMatchDetails = ({ eventId, seed }: SportdbMatchDetailsProps) => {
+export const SportdbMatchDetails = ({ eventId, seed: providedSeed }: SportdbMatchDetailsProps) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<SportdbMatchTab>('summary');
-  const { info, stats, lineups, odds, refresh } = useSportdbMatch(eventId, activeTab);
+  const { seed, info, stats, lineups, odds, refresh } = useSportdbMatch(eventId, activeTab, providedSeed);
 
   const match = info.data;
 
