@@ -3,7 +3,7 @@
  * else, and is never returned, logged, or echoed into error messages.
  */
 
-import { getConfig } from './config.js';
+import { getConfig } from './config';
 
 export interface UpstreamSuccess {
   ok: true;

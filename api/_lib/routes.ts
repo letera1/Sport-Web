@@ -6,7 +6,7 @@
  * Route shapes mirror the published SportDB.dev REST surface.
  */
 
-import { getConfig } from './config.js';
+import { getConfig } from './config';
 
 export type FeatureId =
   | 'live'

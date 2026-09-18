@@ -6,7 +6,7 @@
  * restarts, so we stop probing it.
  */
 
-import { ALL_FEATURES, type FeatureId } from './routes.js';
+import { ALL_FEATURES, type FeatureId } from './routes';
 
 export type FeatureState = 'unknown' | 'available' | 'unavailable';
 
