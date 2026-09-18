@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { getProxiedImageUrl, FALLBACK_BADGE } from '../services/sportsApi';
-import type { StandingsEntry } from '../types';
+import type { SportStanding } from '../services/sportdb/models';
 
 /**
  * Shared column layout for the full standings table (StandingsPage + MatchStandingsTab).
- * Every column (P/W/D/L/GF/GA/GD/Pts/Form) is always rendered. The team column grows
- * to absorb leftover width on wide screens and holds a fixed basis on narrow ones, so the
- * row overflows into the shared horizontal scroll container (see StandingsPage /
- * MatchStandingsTab) with rank+team pinned via `sticky left-0`.
+ * Every column is always rendered. The team column grows to absorb leftover width
+ * on wide screens and holds a fixed basis on narrow ones, so the row overflows
+ * into the shared horizontal scroll container with rank+team pinned via
+ * `sticky left-0`. Rows need `w-max min-w-full` for that pinning to hold.
  */
 const TEAM_COL = 'sticky left-0 z-10 flex items-center gap-2 grow shrink-0 basis-[148px] sm:basis-[190px] py-2.5 pl-2.5 sm:pl-4 pr-2';
 const STATS_ROW = 'flex items-center gap-1.5 sm:gap-2 shrink-0 py-2.5 pr-2.5 sm:pr-4 pl-1';
@@ -20,21 +20,22 @@ const CELL = {
   form: 'w-24 shrink-0 flex justify-center gap-1',
 };
 
-// The free API tier caps tables at the top 5, so only flag relegation on a plausibly full table.
-const hasRelegationZone = (totalTeams: number) => totalTeams >= 10;
+/** Shows a dash rather than a fabricated 0 when the provider omits a value. */
+const val = (n: number | null): string => (n === null ? '–' : String(n));
 
-function zoneTextClass(rank: number, totalTeams: number): string {
-  if (rank <= 4) return 'text-accent';
-  if (hasRelegationZone(totalTeams) && rank > totalTeams - 3) return 'text-danger';
-  return 'text-text-secondary';
-}
+const ZONE_BORDER: Record<SportStanding['zone'], string> = {
+  champions: 'border-l-accent',
+  europa: 'border-l-info',
+  relegation: 'border-l-danger',
+  none: 'border-l-transparent',
+};
 
-function zoneBorderClass(rank: number, totalTeams: number): string {
-  if (rank <= 4) return 'border-l-accent';
-  if (rank === 5) return 'border-l-info';
-  if (hasRelegationZone(totalTeams) && rank > totalTeams - 3) return 'border-l-danger';
-  return 'border-l-transparent';
-}
+const ZONE_RANK_TEXT: Record<SportStanding['zone'], string> = {
+  champions: 'text-accent',
+  europa: 'text-info',
+  relegation: 'text-danger',
+  none: 'text-text-secondary',
+};
 
 interface StandingsHeaderRowProps {
   className?: string;
@@ -68,25 +69,22 @@ export const StandingsHeaderRow = ({ className }: StandingsHeaderRowProps) => (
 );
 
 interface StandingsRowProps {
-  entry: StandingsEntry;
-  totalTeams: number;
+  entry: SportStanding;
   highlight?: 'home' | 'away' | boolean;
 }
 
-export const StandingsRow = ({ entry, totalTeams, highlight }: StandingsRowProps) => {
-  const rank = parseInt(entry.intRank, 10) || 0;
-  const gd = parseInt(entry.intGoalDifference || '0', 10) || 0;
-  const formChars = entry.strForm?.split('') || [];
+export const StandingsRow = ({ entry, highlight }: StandingsRowProps) => {
+  const gd = entry.goalDifference;
   const isHome = highlight === 'home';
   const isAway = highlight === 'away';
   const isHighlighted = highlight === true || isHome || isAway;
 
   return (
     <Link
-      to={`/team/${entry.idTeam}`}
+      to={entry.team.id ? `/team/${entry.team.id}` : '/standings'}
       className={cn(
         'group flex items-stretch w-max min-w-full border-l-2 transition-colors text-xs sm:text-sm',
-        zoneBorderClass(rank, totalTeams),
+        ZONE_BORDER[entry.zone],
         isHome && 'border-l-accent',
         isAway && 'border-l-info'
       )}
@@ -95,48 +93,51 @@ export const StandingsRow = ({ entry, totalTeams, highlight }: StandingsRowProps
         TEAM_COL, 'transition-colors',
         isHighlighted ? 'bg-surface-hover' : 'bg-surface group-hover:bg-surface-hover'
       )}>
-        <span className={cn('w-6 shrink-0 text-center font-bold font-score', zoneTextClass(rank, totalTeams))}>
-          {entry.intRank}
+        <span className={cn('w-6 shrink-0 text-center font-bold font-score', ZONE_RANK_TEXT[entry.zone])}>
+          {entry.rank}
         </span>
         <img
-          src={getProxiedImageUrl(entry.strTeamBadge || entry.strBadge)}
+          src={entry.team.badgeUrl ? getProxiedImageUrl(entry.team.badgeUrl) : FALLBACK_BADGE}
           alt=""
+          loading="lazy"
           className="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0"
           onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
         />
         <span className={cn('flex-1 min-w-0 truncate font-medium', isHighlighted ? 'text-accent font-bold' : 'text-text-primary')}>
-          {entry.strTeam}
+          {entry.team.name}
         </span>
       </div>
 
       <div className={cn(STATS_ROW, 'transition-colors group-hover:bg-surface-hover/70')}>
-        <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{entry.intPlayed}</span>
-        <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{entry.intWin}</span>
-        <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{entry.intDraw}</span>
-        <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{entry.intLoss}</span>
-        <span className={cn(CELL.wide, 'text-text-secondary font-score')}>{entry.intGoalsFor}</span>
-        <span className={cn(CELL.wide, 'text-text-secondary font-score')}>{entry.intGoalsAgainst}</span>
+        <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{val(entry.played)}</span>
+        <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{val(entry.wins)}</span>
+        <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{val(entry.draws)}</span>
+        <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{val(entry.losses)}</span>
+        <span className={cn(CELL.wide, 'text-text-secondary font-score')}>{val(entry.goalsFor)}</span>
+        <span className={cn(CELL.wide, 'text-text-secondary font-score')}>{val(entry.goalsAgainst)}</span>
         <span className={cn(
           CELL.gd, 'font-score font-semibold',
-          gd > 0 ? 'text-accent' : gd < 0 ? 'text-danger' : 'text-text-secondary'
+          gd === null ? 'text-text-secondary' : gd > 0 ? 'text-accent' : gd < 0 ? 'text-danger' : 'text-text-secondary'
         )}>
-          {gd > 0 ? `+${gd}` : gd}
+          {gd === null ? '–' : gd > 0 ? `+${gd}` : gd}
         </span>
-        <span className={cn(CELL.pts, 'font-bold font-score text-text-primary text-sm')}>{entry.intPoints}</span>
+        <span className={cn(CELL.pts, 'font-bold font-score text-text-primary text-sm')}>
+          {val(entry.points)}
+        </span>
 
         <div className={CELL.form}>
-          {formChars.slice(-5).map((c, i) => (
+          {entry.form.slice(-5).map((result, i) => (
             <span
               key={i}
+              title={result === 'W' ? 'Win' : result === 'L' ? 'Loss' : 'Draw'}
               className={cn(
                 'w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0',
-                c === 'W' ? 'bg-accent text-black' :
-                c === 'L' ? 'bg-danger text-white' :
-                c === 'D' ? 'bg-text-muted/40 text-text-primary' :
-                'bg-surface-hover text-text-muted'
+                result === 'W' ? 'bg-accent text-black' :
+                result === 'L' ? 'bg-danger text-white' :
+                'bg-text-muted/40 text-text-primary'
               )}
             >
-              {c}
+              {result}
             </span>
           ))}
         </div>
@@ -144,4 +145,3 @@ export const StandingsRow = ({ entry, totalTeams, highlight }: StandingsRowProps
     </Link>
   );
 };
-

@@ -9,6 +9,14 @@ export interface UpstreamSuccess {
   ok: true;
   data: unknown;
   latencyMs: number;
+  quota: ProviderQuota | null;
+}
+
+/** Provider-reported plan usage, read from `x-plan` / `x-quota` / `x-usage-month`. */
+export interface ProviderQuota {
+  plan: string | null;
+  quota: number | null;
+  usedThisMonth: number | null;
 }
 
 export interface UpstreamFailure {
@@ -33,14 +41,17 @@ function classify(status: number): UpstreamFailure['kind'] {
   return 'server';
 }
 
-async function attempt(upstreamPath: string): Promise<UpstreamResult> {
+async function attempt(upstreamPath: string, query: Record<string, string>): Promise<UpstreamResult> {
   const { apiKey, baseUrl, timeoutMs } = getConfig();
   const startedAt = Date.now();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
+  const search = new URLSearchParams(query).toString();
+  const url = `${baseUrl}/api/${upstreamPath}${search ? `?${search}` : ''}`;
+
   try {
-    const response = await fetch(`${baseUrl}/api/${upstreamPath}`, {
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'X-API-Key': apiKey as string,
@@ -51,6 +62,15 @@ async function attempt(upstreamPath: string): Promise<UpstreamResult> {
     });
 
     const latencyMs = Date.now() - startedAt;
+    const toInt = (raw: string | null): number | null => {
+      const n = Number.parseInt(raw ?? '', 10);
+      return Number.isFinite(n) ? n : null;
+    };
+    const quota: ProviderQuota = {
+      plan: response.headers.get('x-plan'),
+      quota: toInt(response.headers.get('x-quota')),
+      usedThisMonth: toInt(response.headers.get('x-usage-month')),
+    };
 
     if (!response.ok) {
       const retryAfter = Number.parseInt(response.headers.get('retry-after') ?? '', 10);
@@ -71,7 +91,7 @@ async function attempt(upstreamPath: string): Promise<UpstreamResult> {
     }
 
     try {
-      return { ok: true, data: await response.json(), latencyMs };
+      return { ok: true, data: await response.json(), latencyMs, quota };
     } catch {
       return {
         ok: false, status: 502, kind: 'malformed',
@@ -96,15 +116,18 @@ async function attempt(upstreamPath: string): Promise<UpstreamResult> {
  * Retries only transient failures (network/5xx). Auth, permission, 404 and 429
  * are never retried — retrying those wastes a strictly limited free quota.
  */
-export async function fetchUpstream(upstreamPath: string): Promise<UpstreamResult> {
+export async function fetchUpstream(
+  upstreamPath: string,
+  query: Record<string, string> = {}
+): Promise<UpstreamResult> {
   const { maxRetries } = getConfig();
 
-  let last: UpstreamResult = await attempt(upstreamPath);
+  let last: UpstreamResult = await attempt(upstreamPath, query);
   for (let i = 0; i < maxRetries; i += 1) {
     if (last.ok) return last;
     if (last.kind !== 'network' && last.kind !== 'server') return last;
     await sleep(2 ** i * 500);
-    last = await attempt(upstreamPath);
+    last = await attempt(upstreamPath, query);
   }
 
   return last;

@@ -35,6 +35,43 @@ export const LEAGUES: { id: string; name: string; code: string; country: string;
 ];
 
 // ========================
+// SportDB (Flashscore) league mapping
+// ========================
+
+export interface SportdbLeague {
+  sport: string;
+  country: string;
+  competition: string;
+}
+
+/**
+ * Maps a TheSportsDB league id to its SportDB/Flashscore path. Only leagues
+ * listed here can use SportDB; anything else falls back to TheSportsDB.
+ * The `premier-league` entry is verified against the live API; the rest follow
+ * Flashscore's slug convention and degrade gracefully if a slug is wrong.
+ */
+export const SPORTDB_LEAGUES: Record<string, SportdbLeague> = {
+  '4328': { sport: 'football', country: 'england', competition: 'premier-league' },
+  '4335': { sport: 'football', country: 'spain', competition: 'laliga' },
+  '4332': { sport: 'football', country: 'italy', competition: 'serie-a' },
+  '4331': { sport: 'football', country: 'germany', competition: 'bundesliga' },
+  '4334': { sport: 'football', country: 'france', competition: 'ligue-1' },
+  '4480': { sport: 'football', country: 'europe', competition: 'champions-league' },
+  '4481': { sport: 'football', country: 'europe', competition: 'europa-league' },
+  '4337': { sport: 'football', country: 'netherlands', competition: 'eredivisie' },
+  '4344': { sport: 'football', country: 'portugal', competition: 'liga-portugal' },
+  '4329': { sport: 'football', country: 'england', competition: 'championship' },
+  '4346': { sport: 'football', country: 'usa', competition: 'mls' },
+  '4668': { sport: 'football', country: 'saudi-arabia', competition: 'saudi-professional-league' },
+  '4351': { sport: 'football', country: 'brazil', competition: 'serie-a' },
+  '4406': { sport: 'football', country: 'argentina', competition: 'liga-profesional' },
+};
+
+export const getSportdbLeague = (leagueId: string): SportdbLeague | null =>
+  SPORTDB_LEAGUES[leagueId] ?? null;
+
+
+// ========================
 // API Endpoints (v1 free tier)
 // ========================
 export const API_ENDPOINTS = {

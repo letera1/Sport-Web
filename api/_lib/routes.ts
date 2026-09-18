@@ -1,35 +1,34 @@
 /**
- * Endpoint allowlist. Only paths matched here are ever forwarded upstream, which
- * is what prevents arbitrary-URL proxying / SSRF and stops quota being burned on
- * endpoints the product doesn't use.
+ * Endpoint allowlist — the SSRF / quota boundary.
  *
- * Route shapes mirror the published SportDB.dev REST surface.
+ * Paths mirror SportDB.dev's real surface (verified against the live API), which
+ * proxies Flashscore and Transfermarkt under two namespaces. Our proxy path is
+ * the upstream path minus the `/api/` prefix, so the `links` values the API
+ * returns inside its own payloads can be used verbatim by the client.
  */
 
 import { getConfig } from './config';
 
 export type FeatureId =
   | 'live'
-  | 'countries'
-  | 'competitions'
-  | 'competitionSeasons'
+  | 'competition'
+  | 'competitionLive'
   | 'standings'
   | 'fixtures'
-  | 'match'
-  | 'lineups'
+  | 'results'
+  | 'matchDetails'
+  | 'matchLineups'
   | 'matchStats'
-  | 'clubSearch'
-  | 'clubProfile'
-  | 'clubPlayers'
-  | 'playerSearch'
-  | 'playerProfile'
-  | 'playerStats'
-  | 'playerTransfers';
+  | 'matchOdds'
+  | 'matchPlayerStats'
+  | 'team'
+  | 'transfermarkt';
 
 export interface ResolvedRoute {
   feature: FeatureId;
-  /** Path forwarded to the upstream API, already validated segment by segment. */
   upstreamPath: string;
+  /** Query params copied through to upstream, already validated. */
+  query: Record<string, string>;
   ttlMs: number;
 }
 
@@ -37,89 +36,120 @@ const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 
-/** TTLs are deliberately per-data-type: volatile data short, reference data long. */
+/**
+ * Tuned for a 1000-requests/month quota: volatile data short, everything else
+ * cached hard. Expired entries stay usable as fallback when upstream fails.
+ */
 export const FEATURE_TTL: Record<FeatureId, number> = {
-  live: 30_000,
-  countries: 7 * DAY,
-  competitions: DAY,
-  competitionSeasons: DAY,
-  standings: 10 * MINUTE,
-  fixtures: 15 * MINUTE,
-  match: MINUTE,
-  lineups: 5 * MINUTE,
-  matchStats: MINUTE,
-  clubSearch: 6 * HOUR,
-  clubProfile: 7 * DAY,
-  clubPlayers: 2 * DAY,
-  playerSearch: 6 * HOUR,
-  playerProfile: 7 * DAY,
-  playerStats: DAY,
-  playerTransfers: 2 * DAY,
+  live: 45_000,
+  competition: 7 * DAY,
+  competitionLive: 45_000,
+  standings: 2 * HOUR,
+  fixtures: 6 * HOUR,
+  results: 2 * HOUR,
+  matchDetails: 2 * MINUTE,
+  matchLineups: 30 * MINUTE,
+  matchStats: 2 * MINUTE,
+  matchOdds: 30 * MINUTE,
+  matchPlayerStats: 10 * MINUTE,
+  team: 3 * DAY,
+  transfermarkt: 3 * DAY,
 };
 
 const SLUG = /^[a-z0-9][a-z0-9-]{0,63}$/i;
-const ID = /^[a-z0-9][a-z0-9_-]{0,63}$/i;
-const SEASON = /^\d{4}(-\d{2,4})?$/;
-const SEARCH_TERM = /^[\p{L}\p{N} .'&-]{2,64}$/u;
+const ID = /^[a-z0-9]{1,32}$/i;
+const SEASON = /^\d{4}(-\d{4})?$/;
 
 const isSport = (segment: string): boolean =>
   SLUG.test(segment) && getConfig().allowedSports.includes(segment.toLowerCase());
 
-function route(feature: FeatureId, segments: string[]): ResolvedRoute {
+/** Only `page` is forwarded; anything else is dropped before reaching upstream. */
+function safeQuery(query: Record<string, string | undefined>): Record<string, string> {
+  const page = query.page;
+  if (page && /^\d{1,3}$/.test(page) && Number(page) >= 1 && Number(page) <= 200) {
+    return { page };
+  }
+  return {};
+}
+
+function route(
+  feature: FeatureId,
+  segments: string[],
+  query: Record<string, string> = {}
+): ResolvedRoute {
   return {
     feature,
     upstreamPath: segments.map(encodeURIComponent).join('/'),
+    query,
     ttlMs: FEATURE_TTL[feature],
   };
 }
 
-/**
- * Returns a route only when every segment passes validation, otherwise null.
- * `match`, `clubs` and `players` are reserved namespaces checked before the
- * generic `{sport}/{country}/...` shapes so they can never be shadowed.
- */
-export function resolveRoute(segments: string[]): ResolvedRoute | null {
-  if (segments.length === 0 || segments.length > 5) return null;
+export function resolveRoute(
+  segments: string[],
+  rawQuery: Record<string, string | undefined> = {}
+): ResolvedRoute | null {
+  if (segments.length < 2 || segments.length > 6) return null;
   if (segments.some((s) => !s || s.length > 64 || s === '.' || s === '..')) return null;
 
+  const [ns, ...rest] = segments;
+  if (ns === 'flashscore') return resolveFlashscore(rest, rawQuery);
+  if (ns === 'transfermarkt') return resolveTransfermarkt(rest);
+  return null;
+}
+
+function resolveFlashscore(
+  segments: string[],
+  rawQuery: Record<string, string | undefined>
+): ResolvedRoute | null {
   const [a, b, c, d, e] = segments;
+  const p = (...parts: string[]) => ['flashscore', ...parts];
 
   if (a === 'match') {
-    if (!ID.test(b ?? '')) return null;
-    if (segments.length === 2) return route('match', ['match', b]);
-    if (segments.length === 3 && c === 'lineups') return route('lineups', ['match', b, 'lineups']);
-    if (segments.length === 3 && c === 'stats') return route('matchStats', ['match', b, 'stats']);
-    return null;
+    if (segments.length !== 3 || !ID.test(b ?? '')) return null;
+    const subs: Record<string, FeatureId> = {
+      details: 'matchDetails',
+      lineups: 'matchLineups',
+      stats: 'matchStats',
+      odds: 'matchOdds',
+      playerstats: 'matchPlayerStats',
+    };
+    const feature = subs[c ?? ''];
+    return feature ? route(feature, p('match', b, c)) : null;
   }
 
-  if (a === 'clubs' || a === 'players') {
-    const isClub = a === 'clubs';
-    if (segments.length === 3 && b === 'search') {
-      if (!SEARCH_TERM.test(c ?? '')) return null;
-      return route(isClub ? 'clubSearch' : 'playerSearch', [a, 'search', c]);
-    }
-    if (segments.length === 3 && ID.test(b ?? '')) {
-      if (c === 'profile') return route(isClub ? 'clubProfile' : 'playerProfile', [a, b, 'profile']);
-      if (isClub && c === 'players') return route('clubPlayers', [a, b, 'players']);
-      if (!isClub && c === 'stats') return route('playerStats', [a, b, 'stats']);
-      if (!isClub && c === 'transfers') return route('playerTransfers', [a, b, 'transfers']);
-    }
-    return null;
+  if (a === 'team') {
+    if (segments.length !== 3 || !SLUG.test(b ?? '') || !ID.test(c ?? '')) return null;
+    return route('team', p('team', b, c));
   }
 
   if (!isSport(a ?? '')) return null;
 
-  if (segments.length === 2 && b === 'live') return route('live', [a, 'live']);
-  if (segments.length === 2 && b === 'countries') return route('countries', [a, 'countries']);
-  if (segments.length === 2 && SLUG.test(b)) return route('competitions', [a, b]);
-  if (segments.length === 3 && SLUG.test(b) && SLUG.test(c)) {
-    return route('competitionSeasons', [a, b, c]);
-  }
-  if (segments.length === 5 && SLUG.test(b) && SLUG.test(c) && SEASON.test(d ?? '')) {
-    if (e === 'standings') return route('standings', [a, b, c, d, 'standings']);
-    if (e === 'fixtures') return route('fixtures', [a, b, c, d, 'fixtures']);
+  if (segments.length === 2 && b === 'live') return route('live', p(a, 'live'));
+
+  if (segments.length === 3 && SLUG.test(b ?? '') && SLUG.test(c ?? '')) {
+    return route('competition', p(a, b, c));
   }
 
+  if (segments.length === 4 && SLUG.test(b ?? '') && SLUG.test(c ?? '') && d === 'live') {
+    return route('competitionLive', p(a, b, c, 'live'));
+  }
+
+  if (segments.length === 5 && SLUG.test(b ?? '') && SLUG.test(c ?? '') && SEASON.test(d ?? '')) {
+    if (e === 'standings') return route('standings', p(a, b, c, d, 'standings'));
+    if (e === 'fixtures') return route('fixtures', p(a, b, c, d, 'fixtures'), safeQuery(rawQuery));
+    if (e === 'results') return route('results', p(a, b, c, d, 'results'), safeQuery(rawQuery));
+  }
+
+  return null;
+}
+
+function resolveTransfermarkt(segments: string[]): ResolvedRoute | null {
+  if (segments.length === 3 && segments[0] === 'players' && /^\d{1,12}$/.test(segments[1])) {
+    if (['profile', 'transfers', 'stats'].includes(segments[2])) {
+      return route('transfermarkt', ['transfermarkt', ...segments]);
+    }
+  }
   return null;
 }
 

@@ -8,6 +8,24 @@
 
 import { ALL_FEATURES, type FeatureId } from './routes';
 
+export interface ProviderQuotaSnapshot {
+  plan: string | null;
+  quota: number | null;
+  usedThisMonth: number | null;
+  observedAt: string;
+}
+
+let providerQuota: ProviderQuotaSnapshot | null = null;
+
+export function recordProviderQuota(
+  quota: { plan: string | null; quota: number | null; usedThisMonth: number | null } | null
+): void {
+  if (!quota || quota.quota === null) return;
+  providerQuota = { ...quota, observedAt: new Date().toISOString() };
+}
+
+export const getProviderQuota = (): ProviderQuotaSnapshot | null => providerQuota;
+
 export type FeatureState = 'unknown' | 'available' | 'unavailable';
 
 interface FeatureRecord {

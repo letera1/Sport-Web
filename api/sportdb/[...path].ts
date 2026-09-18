@@ -33,8 +33,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     return;
   }
 
+  const query: Record<string, string> = {};
+  for (const [name, value] of Object.entries(req.query)) {
+    if (name === 'path') continue;
+    const single = Array.isArray(value) ? value[0] : value;
+    if (typeof single === 'string') query[name] = single;
+  }
+
   const result = await handleProxyRequest({
     segments: toSegments(req.query),
+    query,
     clientId: clientIdFrom(req.headers),
   });
 

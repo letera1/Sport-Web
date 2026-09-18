@@ -1,270 +1,237 @@
 /**
- * Normalizes SportDB responses into the app's domain models.
+ * Normalizers written against the verified SportDB/Flashscore response schema.
  *
- * The provider's exact field names are read defensively through candidate lists
- * because response shapes vary per competition, and the free tier cannot be
- * probed without spending quota. Anything missing stays null/empty — no value is
- * ever invented or defaulted to zero.
+ * Official values are passed through untouched — nothing is invented, rounded or
+ * zero-filled. Fields the provider omits stay null/empty.
  */
 
 import type {
   MatchState, SportLineup, SportLineupPlayer, SportMatch, SportMatchStat,
-  SportStanding, SportTeamRef,
+  SportStanding, SportTeamRef, StandingZone,
 } from './models';
 
 type Rec = Record<string, unknown>;
 
-const isRec = (value: unknown): value is Rec =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
+const isRec = (v: unknown): v is Rec => typeof v === 'object' && v !== null && !Array.isArray(v);
 
-/** Reads the first present, non-empty candidate key. */
-function pick(source: Rec, keys: string[]): unknown {
-  for (const key of keys) {
-    const value = source[key];
-    if (value !== undefined && value !== null && value !== '') return value;
-  }
-  return undefined;
-}
-
-function str(source: Rec, keys: string[]): string | null {
-  const value = pick(source, keys);
-  if (typeof value === 'string') return value;
-  if (typeof value === 'number') return String(value);
+const asString = (v: unknown): string | null => {
+  if (typeof v === 'string') return v.trim() === '' ? null : v;
+  if (typeof v === 'number' && Number.isFinite(v)) return String(v);
   return null;
+};
+
+const asInt = (v: unknown): number | null => {
+  const s = asString(v);
+  if (s === null) return null;
+  const n = Number.parseInt(s, 10);
+  return Number.isFinite(n) ? n : null;
+};
+
+export const asArray = (payload: unknown): Rec[] =>
+  Array.isArray(payload) ? payload.filter(isRec) : [];
+
+/** Flashscore encodes goals as "scored:conceded", e.g. "8:1". */
+function splitGoals(raw: unknown): { for: number | null; against: number | null } {
+  const value = asString(raw);
+  if (!value?.includes(':')) return { for: null, against: null };
+  const [scored, conceded] = value.split(':');
+  return { for: asInt(scored), against: asInt(conceded) };
 }
 
-function num(source: Rec, keys: string[]): number | null {
-  const value = pick(source, keys);
-  if (typeof value === 'number' && Number.isFinite(value)) return value;
-  if (typeof value === 'string') {
-    const parsed = Number.parseInt(value, 10);
-    if (Number.isFinite(parsed)) return parsed;
-  }
-  return null;
-}
-
-/** Unwraps the common envelope shapes providers use around list payloads. */
-export function toArray(payload: unknown, keys: string[] = []): Rec[] {
-  if (Array.isArray(payload)) return payload.filter(isRec);
-  if (!isRec(payload)) return [];
-
-  for (const key of [...keys, 'data', 'results', 'response', 'items']) {
-    const value = payload[key];
-    if (Array.isArray(value)) return value.filter(isRec);
-    if (isRec(value)) {
-      const nested = toArray(value, keys);
-      if (nested.length) return nested;
-    }
-  }
-  return [];
-}
-
-export function toRecord(payload: unknown, keys: string[] = []): Rec | null {
-  if (!isRec(payload)) return null;
-  for (const key of [...keys, 'data', 'result', 'response']) {
-    const value = payload[key];
-    if (isRec(value)) return value;
-  }
-  return payload;
-}
-
-function teamRef(source: Rec, prefix: 'home' | 'away' | null): SportTeamRef {
-  const nested = prefix ? source[`${prefix}Team`] ?? source[`${prefix}_team`] ?? source[prefix] : null;
-  const node = isRec(nested) ? nested : source;
-
-  const flatName = prefix
-    ? str(source, [`${prefix}TeamName`, `${prefix}_team_name`, `${prefix}Name`])
-    : null;
-
-  return {
-    id: str(node, ['id', 'teamId', 'team_id', 'clubId', 'club_id']),
-    name: flatName ?? str(node, ['name', 'teamName', 'team_name', 'club', 'title']) ?? 'Unknown',
-    badgeUrl: str(node, ['logo', 'badge', 'crest', 'image', 'logoUrl', 'logo_url']),
-  };
-}
-
-function matchState(raw: string | null): MatchState {
-  if (!raw) return 'unknown';
-  const value = raw.toLowerCase();
-  if (/(^|\b)(live|1h|2h|ht|et|pen|inplay|in_play|playing)/.test(value)) return 'live';
-  if (/(ft|finished|final|ended|aet|after)/.test(value)) return 'finished';
-  if (/(postpon|cancel|abandon|suspend)/.test(value)) return 'postponed';
-  if (/(sched|not started|ns|upcoming|fixture|timed)/.test(value)) return 'scheduled';
-  if (/^\d{1,3}('|\+)?$/.test(value)) return 'live';
-  return 'unknown';
-}
-
-export function normalizeMatch(raw: Rec): SportMatch | null {
-  const id = str(raw, ['id', 'matchId', 'match_id', 'fixtureId', 'fixture_id']);
-  if (!id) return null;
-
-  const statusLabel =
-    str(raw, ['statusText', 'status_text', 'minute', 'elapsed', 'progress']) ??
-    str(raw, ['status', 'state', 'matchStatus']);
-
-  return {
-    id,
-    competition: str(raw, ['competition', 'league', 'competitionName', 'tournament']),
-    season: str(raw, ['season', 'seasonName']),
-    round: str(raw, ['round', 'matchday', 'week', 'stage']),
-    home: teamRef(raw, 'home'),
-    away: teamRef(raw, 'away'),
-    homeScore: num(raw, ['homeScore', 'home_score', 'homeGoals', 'scoreHome']),
-    awayScore: num(raw, ['awayScore', 'away_score', 'awayGoals', 'scoreAway']),
-    state: matchState(str(raw, ['status', 'state', 'matchStatus'])),
-    statusLabel,
-    kickoff: str(raw, ['kickoff', 'startTime', 'start_time', 'date', 'datetime', 'utcDate']),
-    venue: str(raw, ['venue', 'stadium', 'ground']),
-  };
-}
-
-export function normalizeMatches(payload: unknown): SportMatch[] {
-  return toArray(payload, ['matches', 'fixtures', 'live', 'events'])
-    .map(normalizeMatch)
-    .filter((match): match is SportMatch => match !== null);
-}
-
-export function normalizeStanding(raw: Rec, fallbackRank: number): SportStanding | null {
-  const team = teamRef(raw, null);
-  if (team.name === 'Unknown' && !team.id) return null;
-
-  const played = num(raw, ['played', 'matchesPlayed', 'games', 'gamesPlayed', 'mp', 'p']) ?? 0;
-  const wins = num(raw, ['wins', 'won', 'win', 'w']) ?? 0;
-  const draws = num(raw, ['draws', 'drawn', 'draw', 'd']) ?? 0;
-  const losses = num(raw, ['losses', 'lost', 'loss', 'l']) ?? 0;
-  const goalsFor = num(raw, ['goalsFor', 'goals_for', 'scored', 'gf']) ?? 0;
-  const goalsAgainst = num(raw, ['goalsAgainst', 'goals_against', 'conceded', 'ga']) ?? 0;
-  const goalDifference =
-    num(raw, ['goalDifference', 'goal_difference', 'goalDiff', 'gd']) ?? goalsFor - goalsAgainst;
-
-  const rawForm = pick(raw, ['form', 'recentForm', 'last5']);
-  const form = typeof rawForm === 'string'
-    ? rawForm.replace(/[^WDL]/gi, '').toUpperCase().split('')
-    : Array.isArray(rawForm)
-      ? rawForm.map((f) => String(f).charAt(0).toUpperCase()).filter((f) => 'WDL'.includes(f))
-      : [];
-
-  return {
-    rank: num(raw, ['rank', 'position', 'place', 'pos']) ?? fallbackRank,
-    team,
-    played,
-    wins,
-    draws,
-    losses,
-    goalsFor,
-    goalsAgainst,
-    goalDifference,
-    points: num(raw, ['points', 'pts']) ?? 0,
-    form,
-  };
+/** `rankClass` is the provider's own qualification marker (q1/q2/q3/r1...). */
+function zoneFrom(rankClass: string | null): StandingZone {
+  if (!rankClass) return 'none';
+  if (rankClass.startsWith('q')) return rankClass === 'q1' ? 'champions' : 'europa';
+  if (rankClass.startsWith('r')) return 'relegation';
+  return 'none';
 }
 
 export function normalizeStandings(payload: unknown): SportStanding[] {
-  return toArray(payload, ['standings', 'table', 'rows', 'teams'])
-    .map((row, index) => normalizeStanding(row, index + 1))
+  return asArray(payload)
+    .map((row, index): SportStanding | null => {
+      const name = asString(row.teamName);
+      if (!name) return null;
+
+      const goals = splitGoals(row.goals);
+      const played = asInt(row.matches);
+      const wins = asInt(row.wins);
+      const draws = asInt(row.draws);
+      // Derived only when the provider gives all three inputs.
+      const losses =
+        played !== null && wins !== null && draws !== null ? played - wins - draws : null;
+
+      const rankClass = asString(row.rankClass);
+
+      return {
+        rank: asInt(row.rank) ?? index + 1,
+        team: {
+          id: asString(row.teamId),
+          name,
+          slug: asString(row.teamSlug),
+          badgeUrl: null,
+        },
+        played,
+        wins,
+        draws,
+        losses,
+        goalsFor: goals.for,
+        goalsAgainst: goals.against,
+        goalDifference: asInt(row.goalDiff),
+        points: asInt(row.points),
+        pointsPerMatch: asString(row.pointsPerMatchesPlayed),
+        zone: zoneFrom(rankClass),
+        zoneColor: asString(row.rankColor),
+        form: normalizeForm(row.events),
+      };
+    })
     .filter((row): row is SportStanding => row !== null)
     .sort((a, b) => a.rank - b.rank);
 }
 
-function lineupPlayer(raw: Rec): SportLineupPlayer | null {
-  const name = str(raw, ['name', 'playerName', 'player_name', 'player']);
-  if (!name) return null;
+/**
+ * `events[]` carries each team's matches with `eventType` already expressed from
+ * that team's perspective ("w" | "d" | "l" | "upcoming"). Returned oldest-first.
+ */
+function normalizeForm(events: unknown, limit = 5): string[] {
+  return asArray(events)
+    .map((event) => asString(event.eventType)?.toLowerCase())
+    .filter((type): type is string => type === 'w' || type === 'd' || type === 'l')
+    .slice(0, limit)
+    .reverse()
+    .map((type) => type.toUpperCase());
+}
 
-  const starterFlag = pick(raw, ['isStarter', 'starter', 'starting', 'isStarting']);
-  const role = str(raw, ['role', 'type', 'lineupType']);
+function matchState(stage: string | null): MatchState {
+  switch (stage?.toUpperCase()) {
+    case 'LIVE': return 'live';
+    case 'FINISHED': return 'finished';
+    case 'SCHEDULED': return 'scheduled';
+    case 'POSTPONED':
+    case 'CANCELED':
+    case 'CANCELLED': return 'postponed';
+    default: return 'unknown';
+  }
+}
+
+function team(row: Rec, side: 'home' | 'away'): SportTeamRef {
+  return {
+    id: asString(row[`${side}ParticipantIds`]) ?? asString(row[`${side}EventParticipantId`]),
+    name: asString(row[`${side}Name`]) ?? 'Unknown',
+    slug: asString(row[`${side}ParticipantNameUrl`]),
+    badgeUrl: asString(row[`${side}Logo`]),
+  };
+}
+
+export function normalizeMatch(row: Rec): SportMatch | null {
+  const id = asString(row.eventId);
+  if (!id) return null;
+
+  const state = matchState(asString(row.eventStage));
+  const gameTime = asString(row.gameTime);
 
   return {
-    id: str(raw, ['id', 'playerId', 'player_id']),
+    id,
+    competition: asString(row.tournamentName),
+    season: asString(row.season),
+    home: team(row, 'home'),
+    away: team(row, 'away'),
+    homeScore: asInt(row.homeScore),
+    awayScore: asInt(row.awayScore),
+    state,
+    // Only shown for genuinely live matches; "-1" is the provider's null marker.
+    statusLabel: state === 'live' && gameTime && gameTime !== '-1' ? gameTime : null,
+    kickoff: asString(row.startDateTimeUtc),
+    venue: null,
+  };
+}
+
+export function normalizeMatches(payload: unknown): SportMatch[] {
+  return asArray(payload)
+    .map(normalizeMatch)
+    .filter((m): m is SportMatch => m !== null);
+}
+
+/** Competition payload is self-describing: it lists its own season links. */
+export interface CompetitionInfo {
+  name: string | null;
+  slug: string | null;
+  logoUrl: string | null;
+  seasons: string[];
+  currentSeason: string | null;
+}
+
+export function normalizeCompetition(payload: unknown): CompetitionInfo | null {
+  if (!isRec(payload)) return null;
+  const seasons = Array.isArray(payload.seasons)
+    ? payload.seasons
+        .filter(isRec)
+        .map((s) => asString(s.season))
+        .filter((s): s is string => s !== null)
+    : [];
+
+  return {
+    name: asString(payload.name),
+    slug: asString(payload.slug),
+    logoUrl: asString(payload.logo),
+    seasons,
+    currentSeason: seasons[0] ?? null,
+  };
+}
+
+function lineupPlayer(raw: Rec, isStarter: boolean): SportLineupPlayer | null {
+  const name = asString(raw.playerName) ?? asString(raw.name) ?? asString(raw.player);
+  if (!name) return null;
+  return {
+    id: asString(raw.playerId) ?? asString(raw.id),
     name,
-    position: str(raw, ['position', 'pos', 'role']),
-    shirtNumber: str(raw, ['number', 'shirtNumber', 'shirt_number', 'jersey']),
-    isStarter:
-      typeof starterFlag === 'boolean'
-        ? starterFlag
-        : role
-          ? !/sub|bench/i.test(role)
-          : true,
+    position: asString(raw.playerTypeName) ?? asString(raw.position) ?? asString(raw.role),
+    shirtNumber: asString(raw.jerseyNumber) ?? asString(raw.number),
+    isStarter,
   };
 }
 
 export function normalizeLineups(payload: unknown): SportLineup | null {
-  const root = toRecord(payload, ['lineups', 'lineup']);
-  if (!root) return null;
+  if (!isRec(payload)) return null;
 
-  const side = (key: 'home' | 'away'): SportLineupPlayer[] => {
-    const node = root[key] ?? root[`${key}Team`] ?? root[`${key}_team`];
-    const container = isRec(node) ? node : root;
-    const list = [
-      ...toArray(container, ['starters', 'startingXI', 'starting_eleven', 'players', 'lineup']),
-      ...toArray(container, ['substitutes', 'subs', 'bench']),
-    ];
-    return list.map(lineupPlayer).filter((p): p is SportLineupPlayer => p !== null);
-  };
+  const collect = (node: unknown, starter: boolean): SportLineupPlayer[] =>
+    asArray(node)
+      .flatMap((group) => (Array.isArray(group.players) ? group.players.filter(isRec) : [group]))
+      .map((p) => lineupPlayer(p, starter))
+      .filter((p): p is SportLineupPlayer => p !== null);
 
-  const home = side('home');
-  const away = side('away');
+  const home = [
+    ...collect(payload.homeStarters ?? payload.homeLineup, true),
+    ...collect(payload.homeSubstitutes ?? payload.homeBench, false),
+  ];
+  const away = [
+    ...collect(payload.awayStarters ?? payload.awayLineup, true),
+    ...collect(payload.awaySubstitutes ?? payload.awayBench, false),
+  ];
+
   if (!home.length && !away.length) return null;
 
-  const formationOf = (key: 'home' | 'away'): string | null => {
-    const node = root[key] ?? root[`${key}Team`];
-    if (isRec(node)) return str(node, ['formation']);
-    return str(root, [`${key}Formation`, `${key}_formation`]);
-  };
-
   return {
-    homeFormation: formationOf('home'),
-    awayFormation: formationOf('away'),
+    homeFormation: asString(payload.homeFormation),
+    awayFormation: asString(payload.awayFormation),
     home,
     away,
   };
 }
 
-const STAT_LABELS: Record<string, string> = {
-  possession: 'Possession',
-  ballPossession: 'Possession',
-  shots: 'Shots',
-  totalShots: 'Shots',
-  shotsOnTarget: 'Shots on Target',
-  shotsOnGoal: 'Shots on Target',
-  corners: 'Corners',
-  cornerKicks: 'Corners',
-  fouls: 'Fouls',
-  offsides: 'Offsides',
-  yellowCards: 'Yellow Cards',
-  redCards: 'Red Cards',
-  saves: 'Saves',
-  passes: 'Passes',
-  passAccuracy: 'Pass Accuracy',
-};
-
-const humanize = (key: string): string =>
-  STAT_LABELS[key] ??
-  key.replace(/[_-]/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/\b\w/g, (c) => c.toUpperCase());
-
-/** Only emits rows where the provider supplied both sides — never zero-filled. */
+/** Emits only metrics where the provider supplied both sides. */
 export function normalizeMatchStats(payload: unknown): SportMatchStat[] {
-  const root = toRecord(payload, ['stats', 'statistics']);
-  if (!root) return [];
+  const rows = Array.isArray(payload)
+    ? payload.filter(isRec)
+    : isRec(payload) && Array.isArray(payload.stats)
+      ? payload.stats.filter(isRec)
+      : [];
 
-  const rows = toArray(root, ['stats', 'statistics']);
-  if (rows.length) {
-    return rows
-      .map((row) => {
-        const label = str(row, ['label', 'name', 'type', 'stat']);
-        const home = str(row, ['home', 'homeValue', 'home_value']);
-        const away = str(row, ['away', 'awayValue', 'away_value']);
-        return label && home !== null && away !== null
-          ? { label: humanize(label), home, away }
-          : null;
-      })
-      .filter((row): row is SportMatchStat => row !== null);
-  }
-
-  const home = toRecord(root, ['home', 'homeTeam']);
-  const away = toRecord(root, ['away', 'awayTeam']);
-  if (!home || !away || home === root || away === root) return [];
-
-  return Object.keys(home)
-    .filter((key) => away[key] !== undefined && home[key] !== null && away[key] !== null)
-    .map((key) => ({ label: humanize(key), home: String(home[key]), away: String(away[key]) }));
+  return rows
+    .map((row): SportMatchStat | null => {
+      const label = asString(row.name) ?? asString(row.label) ?? asString(row.type);
+      const home = asString(row.homeValue) ?? asString(row.home);
+      const away = asString(row.awayValue) ?? asString(row.away);
+      return label && home !== null && away !== null ? { label, home, away } : null;
+    })
+    .filter((row): row is SportMatchStat => row !== null);
 }

@@ -2,7 +2,8 @@
  * Browser-side SportDB client.
  *
  * Talks only to our own `/api/sportdb/*` proxy — it holds no key and has no
- * knowledge of the upstream host, so nothing secret can leak into the bundle.
+ * knowledge of the upstream host, so nothing secret can enter the bundle.
+ * Paths mirror the provider's own `links` values.
  */
 
 import type { SportDataMeta, SportResult } from './models';
@@ -24,14 +25,12 @@ export type SportdbErrorCode =
 export class SportdbError extends Error {
   readonly code: SportdbErrorCode;
   readonly status: number;
-  readonly feature?: string;
 
-  constructor(code: SportdbErrorCode, message: string, status: number, feature?: string) {
+  constructor(code: SportdbErrorCode, message: string, status: number) {
     super(message);
     this.name = 'SportdbError';
     this.code = code;
     this.status = status;
-    this.feature = feature;
   }
 
   /** True when retrying is pointless until configuration or quota changes. */
@@ -48,10 +47,10 @@ export class SportdbError extends Error {
 interface ProxyEnvelope<T> {
   data?: T;
   meta?: SportDataMeta;
-  error?: { code?: string; message?: string; feature?: string };
+  error?: { code?: string; message?: string };
 }
 
-async function request<T>(path: string, signal?: AbortSignal): Promise<SportResult<T>> {
+async function request<T = unknown>(path: string, signal?: AbortSignal): Promise<SportResult<T>> {
   let response: Response;
   try {
     response = await fetch(`${PROXY_ROOT}/${path}`, {
@@ -71,12 +70,10 @@ async function request<T>(path: string, signal?: AbortSignal): Promise<SportResu
   }
 
   if (!response.ok || body.error) {
-    const code = (body.error?.code ?? 'unknown') as SportdbErrorCode;
     throw new SportdbError(
-      code,
+      (body.error?.code ?? 'unknown') as SportdbErrorCode,
       body.error?.message ?? 'Sports data request failed.',
-      response.status,
-      body.error?.feature
+      response.status
     );
   }
 
@@ -86,62 +83,45 @@ async function request<T>(path: string, signal?: AbortSignal): Promise<SportResu
 export interface SportdbStatus {
   configured: boolean;
   health: 'healthy' | 'degraded' | 'unavailable';
-  allowedSports: string[];
+  providerQuota: { plan: string | null; quota: number | null; usedThisMonth: number | null } | null;
   budget: { used: number; budget: number; remaining: number; exhausted: boolean };
   features: Array<{ id: string; state: 'unknown' | 'available' | 'unavailable'; reason?: string }>;
 }
 
 export const sportdb = {
-  status: (signal?: AbortSignal) =>
-    request<never>('__status', signal).catch(() => null) as Promise<SportResult<never> | null>,
-
-  /** Raw status payload (the proxy returns it unwrapped). */
-  async rawStatus(signal?: AbortSignal): Promise<SportdbStatus | null> {
+  async status(signal?: AbortSignal): Promise<SportdbStatus | null> {
     try {
       const response = await fetch(`${PROXY_ROOT}/__status`, { signal });
-      if (!response.ok) return null;
-      return (await response.json()) as SportdbStatus;
+      return response.ok ? ((await response.json()) as SportdbStatus) : null;
     } catch {
       return null;
     }
   },
 
-  live: (sport: string, signal?: AbortSignal) =>
-    request<unknown>(`${sport}/live`, signal),
+  liveAll: (sport = 'football', signal?: AbortSignal) =>
+    request(`flashscore/${sport}/live`, signal),
+
+  competition: (sport: string, country: string, competition: string, signal?: AbortSignal) =>
+    request(`flashscore/${sport}/${country}/${competition}`, signal),
+
+  competitionLive: (sport: string, country: string, competition: string, signal?: AbortSignal) =>
+    request(`flashscore/${sport}/${country}/${competition}/live`, signal),
 
   standings: (sport: string, country: string, competition: string, season: string, signal?: AbortSignal) =>
-    request<unknown>(`${sport}/${country}/${competition}/${season}/standings`, signal),
+    request(`flashscore/${sport}/${country}/${competition}/${season}/standings`, signal),
 
-  fixtures: (sport: string, country: string, competition: string, season: string, signal?: AbortSignal) =>
-    request<unknown>(`${sport}/${country}/${competition}/${season}/fixtures`, signal),
+  fixtures: (sport: string, country: string, competition: string, season: string, page = 1, signal?: AbortSignal) =>
+    request(`flashscore/${sport}/${country}/${competition}/${season}/fixtures?page=${page}`, signal),
 
-  match: (matchId: string, signal?: AbortSignal) =>
-    request<unknown>(`match/${encodeURIComponent(matchId)}`, signal),
+  results: (sport: string, country: string, competition: string, season: string, page = 1, signal?: AbortSignal) =>
+    request(`flashscore/${sport}/${country}/${competition}/${season}/results?page=${page}`, signal),
 
-  lineups: (matchId: string, signal?: AbortSignal) =>
-    request<unknown>(`match/${encodeURIComponent(matchId)}/lineups`, signal),
+  matchDetails: (eventId: string, signal?: AbortSignal) =>
+    request(`flashscore/match/${encodeURIComponent(eventId)}/details`, signal),
 
-  matchStats: (matchId: string, signal?: AbortSignal) =>
-    request<unknown>(`match/${encodeURIComponent(matchId)}/stats`, signal),
+  matchLineups: (eventId: string, signal?: AbortSignal) =>
+    request(`flashscore/match/${encodeURIComponent(eventId)}/lineups`, signal),
 
-  searchClubs: (term: string, signal?: AbortSignal) =>
-    request<unknown>(`clubs/search/${encodeURIComponent(term)}`, signal),
-
-  clubProfile: (clubId: string, signal?: AbortSignal) =>
-    request<unknown>(`clubs/${encodeURIComponent(clubId)}/profile`, signal),
-
-  clubPlayers: (clubId: string, signal?: AbortSignal) =>
-    request<unknown>(`clubs/${encodeURIComponent(clubId)}/players`, signal),
-
-  searchPlayers: (term: string, signal?: AbortSignal) =>
-    request<unknown>(`players/search/${encodeURIComponent(term)}`, signal),
-
-  playerProfile: (playerId: string, signal?: AbortSignal) =>
-    request<unknown>(`players/${encodeURIComponent(playerId)}/profile`, signal),
-
-  playerStats: (playerId: string, signal?: AbortSignal) =>
-    request<unknown>(`players/${encodeURIComponent(playerId)}/stats`, signal),
-
-  playerTransfers: (playerId: string, signal?: AbortSignal) =>
-    request<unknown>(`players/${encodeURIComponent(playerId)}/transfers`, signal),
+  matchStats: (eventId: string, signal?: AbortSignal) =>
+    request(`flashscore/match/${encodeURIComponent(eventId)}/stats`, signal),
 };

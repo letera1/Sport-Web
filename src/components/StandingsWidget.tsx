@@ -67,41 +67,43 @@ export const StandingsWidget = ({ leagueId, limit = 8 }: StandingsWidgetProps) =
       {/* Rows */}
       <div className="divide-y divide-border/20">
         {displayStandings.map((row) => {
-          const rank = parseInt(row.intRank);
-          const isChampionsLeague = rank <= 4;
-          const isRelegation = rank >= standings.length - 2;
+          const gd = row.goalDifference;
 
           return (
             <Link
-              to={`/team/${row.idTeam}`}
-              key={row.idTeam + row.intRank}
+              to={row.team.id ? `/team/${row.team.id}` : '/standings'}
+              key={`${row.team.id ?? row.team.name}-${row.rank}`}
               className="grid grid-cols-[1.5rem_1fr_2rem_2rem_2.5rem] items-center px-3 py-2 text-xs hover:bg-surface-hover/60 transition-colors group"
             >
               <span className={cn(
                 "text-center font-bold text-[11px] font-score",
-                isChampionsLeague ? "text-accent" : isRelegation ? "text-danger" : "text-text-muted"
+                row.zone === 'champions' ? "text-accent"
+                  : row.zone === 'europa' ? "text-info"
+                  : row.zone === 'relegation' ? "text-danger"
+                  : "text-text-muted"
               )}>
-                {row.intRank}
+                {row.rank}
               </span>
               <div className="flex items-center gap-2 min-w-0 pr-1">
                 <img
-                  src={getProxiedImageUrl(row.strTeamBadge || row.strBadge)}
-                  alt={row.strTeam}
+                  src={row.team.badgeUrl ? getProxiedImageUrl(row.team.badgeUrl) : FALLBACK_BADGE}
+                  alt=""
+                  loading="lazy"
                   className="w-4 h-4 object-contain shrink-0"
                   onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
                 />
                 <span className="text-text-primary group-hover:text-accent truncate font-medium text-xs">
-                  {row.strTeam}
+                  {row.team.name}
                 </span>
               </div>
-              <span className="text-center text-text-secondary font-score">{row.intPlayed}</span>
+              <span className="text-center text-text-secondary font-score">{row.played ?? '–'}</span>
               <span className={cn(
                 "text-center font-medium text-[11px] font-score",
-                Number(row.intGoalDifference) > 0 ? "text-accent" : Number(row.intGoalDifference) < 0 ? "text-danger" : "text-text-muted"
+                gd === null ? "text-text-muted" : gd > 0 ? "text-accent" : gd < 0 ? "text-danger" : "text-text-muted"
               )}>
-                {Number(row.intGoalDifference) > 0 ? `+${row.intGoalDifference}` : row.intGoalDifference}
+                {gd === null ? '–' : gd > 0 ? `+${gd}` : gd}
               </span>
-              <span className="text-right font-bold text-text-primary font-score">{row.intPoints}</span>
+              <span className="text-right font-bold text-text-primary font-score">{row.points ?? '–'}</span>
             </Link>
           );
         })}

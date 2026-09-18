@@ -10,7 +10,7 @@ interface StandingsPageProps {
 }
 
 export const StandingsPage = ({ leagueId, leagueName }: StandingsPageProps) => {
-  const { standings, loading, error } = useStandings(leagueId);
+  const { standings, loading, error, source, partial } = useStandings(leagueId);
 
   if (error) {
     const isUnsupported = error === 'No data found for this league';
@@ -72,7 +72,7 @@ export const StandingsPage = ({ leagueId, leagueName }: StandingsPageProps) => {
           {!loading && standings.length > 0 && (
             <div className="min-w-max divide-y divide-border/20 stagger-children">
               {standings.map((row) => (
-                <StandingsRow key={row.idTeam + row.intRank} entry={row} totalTeams={standings.length} />
+                <StandingsRow key={`${row.team.id ?? row.team.name}-${row.rank}`} entry={row} />
               ))}
             </div>
           )}
@@ -88,17 +88,21 @@ export const StandingsPage = ({ leagueId, leagueName }: StandingsPageProps) => {
       {!loading && standings.length > 0 && (
         <div className="flex flex-col gap-2 px-4 py-3 bg-surface rounded-xl border border-border/40">
           <div className="flex flex-wrap gap-4 text-xs text-text-secondary">
-            <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-accent" /> Champions League</div>
-            <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-info" /> Europa League</div>
-            {standings.length >= 10 && (
+            {standings.some((row) => row.zone === 'champions') && (
+              <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-accent" /> Champions League</div>
+            )}
+            {standings.some((row) => row.zone === 'europa') && (
+              <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-info" /> Europa / other qualification</div>
+            )}
+            {standings.some((row) => row.zone === 'relegation') && (
               <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-danger" /> Relegation</div>
             )}
           </div>
-          {standings.length < 10 && (
-            <p className="text-[11px] text-text-muted border-t border-border/40 pt-2">
-              Showing the top {standings.length} positions — TheSportsDB&apos;s free API tier only returns a partial table.
-            </p>
-          )}
+          <p className="text-[11px] text-text-muted border-t border-border/40 pt-2">
+            {partial
+              ? `Showing the top ${standings.length} positions — full table unavailable for this competition, so TheSportsDB's partial table is shown.`
+              : `Full table — ${standings.length} teams. Source: SportDB.`}
+          </p>
         </div>
       )}
     </div>

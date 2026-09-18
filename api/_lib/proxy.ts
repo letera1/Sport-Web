@@ -8,13 +8,14 @@ import { cacheStats, dedupe, readCache, writeCache } from './cache';
 import { checkRateLimit } from './rateLimit';
 import { resolveRoute, ALL_FEATURES, FEATURE_TTL } from './routes';
 import {
-  budgetStatus, getFeatureState, health, recordCacheHit, recordCacheMiss, recordDeduped,
-  recordUpstreamError, recordUpstreamSuccess, snapshot,
+  budgetStatus, getFeatureState, getProviderQuota, health, recordCacheHit, recordCacheMiss,
+  recordDeduped, recordProviderQuota, recordUpstreamError, recordUpstreamSuccess, snapshot,
 } from './metrics';
 import { fetchUpstream } from './sportdbClient';
 
 export interface ProxyRequest {
   segments: string[];
+  query?: Record<string, string | undefined>;
   clientId: string;
 }
 
@@ -45,6 +46,7 @@ export function buildStatus(): ProxyResponse {
     baseUrl: config.baseUrl,
     allowedSports: config.allowedSports,
     budget,
+    providerQuota: getProviderQuota(),
     cache: cacheStats(),
     metrics: {
       cacheHits: metrics.cacheHits,
@@ -80,7 +82,7 @@ export async function handleProxyRequest(request: ProxyRequest): Promise<ProxyRe
     });
   }
 
-  const route = resolveRoute(request.segments);
+  const route = resolveRoute(request.segments, request.query ?? {});
   if (!route) {
     return fail(404, 'unknown_endpoint', 'This endpoint is not part of the allowed SportDB surface.');
   }
@@ -92,7 +94,8 @@ export async function handleProxyRequest(request: ProxyRequest): Promise<ProxyRe
     });
   }
 
-  const cacheKey = route.upstreamPath;
+  const querySuffix = new URLSearchParams(route.query).toString();
+  const cacheKey = querySuffix ? `${route.upstreamPath}?${querySuffix}` : route.upstreamPath;
   const cached = readCache<unknown>(cacheKey);
 
   if (cached?.fresh) {
@@ -143,11 +146,12 @@ export async function handleProxyRequest(request: ProxyRequest): Promise<ProxyRe
 
   const result = await dedupe(cacheKey, async () => {
     recordDeduped();
-    return fetchUpstream(route.upstreamPath);
+    return fetchUpstream(route.upstreamPath, route.query);
   });
 
   if (result.ok) {
     recordUpstreamSuccess(route.feature, result.latencyMs);
+    recordProviderQuota(result.quota);
     const entry = writeCache(cacheKey, result.data, route.ttlMs);
     return json(200, {
       data: result.data,

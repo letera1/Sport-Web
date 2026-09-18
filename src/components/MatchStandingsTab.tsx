@@ -62,14 +62,13 @@ export const MatchStandingsTab = ({ match }: MatchStandingsTabProps) => {
           <StandingsHeaderRow />
           <div className="min-w-max divide-y divide-border/20">
             {standings.map((entry) => {
-              const entryNorm = normalize(entry.strTeam);
+              const entryNorm = normalize(entry.team.name);
               const isHome = entryNorm.includes(homeNorm) || homeNorm.includes(entryNorm);
               const isAway = entryNorm.includes(awayNorm) || awayNorm.includes(entryNorm);
               return (
                 <StandingsRow
-                  key={`${entry.idTeam || 'x'}-${entry.intRank}`}
+                  key={`${entry.team.id ?? entry.team.name}-${entry.rank}`}
                   entry={entry}
-                  totalTeams={standings.length}
                   highlight={isHome ? 'home' : isAway ? 'away' : undefined}
                 />
               );

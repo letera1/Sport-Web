@@ -24,11 +24,13 @@ function sportdbDevProxy(): Plugin {
             server.ssrLoadModule('/api/_lib/rateLimit.ts'),
           ]);
 
-          const pathname = (req.url ?? '/').split('?')[0];
-          const segments = pathname.split('/').filter(Boolean).map(decodeURIComponent);
+          const [rawPath, rawSearch] = (req.url ?? '/').split('?');
+          const segments = rawPath.split('/').filter(Boolean).map(decodeURIComponent);
+          const query = Object.fromEntries(new URLSearchParams(rawSearch ?? ''));
 
           const result = await proxy.handleProxyRequest({
             segments,
+            query,
             clientId: rateLimit.clientIdFrom(req.headers),
           });
 
