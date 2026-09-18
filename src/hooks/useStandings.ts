@@ -64,10 +64,17 @@ export const useStandings = (leagueId: string, season?: string) => {
         const info = normalizeCompetition(competition.data);
         const targetSeason = season ?? info?.currentSeason ?? getCurrentSeason();
 
-        const result = await sportdb.standings(
-          mapping.sport, mapping.country, mapping.competition, targetSeason
-        );
-        const rows = normalizeStandings(result.data);
+        // Badges come from TheSportsDB (free/unmetered) in parallel, since
+        // SportDB's standings payload carries no crests.
+        const [result, badges] = await Promise.all([
+          sportdb.standings(mapping.sport, mapping.country, mapping.competition, targetSeason),
+          loadBadgeIndex(leagueId),
+        ]);
+
+        const rows = normalizeStandings(result.data).map((row) => ({
+          ...row,
+          team: { ...row.team, badgeUrl: row.team.badgeUrl ?? resolveBadge(badges, row.team.name) },
+        }));
 
         if (rows.length > 0) {
           setStandings(rows);
