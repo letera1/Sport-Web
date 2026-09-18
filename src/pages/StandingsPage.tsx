@@ -13,12 +13,21 @@ export const StandingsPage = ({ leagueId, leagueName }: StandingsPageProps) => {
   const { standings, loading, error } = useStandings(leagueId);
 
   if (error) {
+    const isUnsupported = error === 'No data found for this league';
     return (
       <div className="flex flex-col gap-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-text-primary">Standings</h1>
-        <EmptyState variant="error" description={error} action={
-          <button onClick={() => window.location.reload()} className="px-4 py-2 bg-accent text-black rounded-lg text-sm font-semibold hover:bg-accent/90 transition-colors">Retry</button>
-        } />
+        <h1 className="text-xl sm:text-2xl font-bold text-text-primary">{leagueName || 'League'} Standings</h1>
+        {isUnsupported ? (
+          <EmptyState
+            variant="no-data"
+            title="Standings Not Available"
+            description={`A league table isn't provided for ${leagueName || 'this competition'} — this is common for cup/continental competitions without a fixed group table.`}
+          />
+        ) : (
+          <EmptyState variant="error" description={error} action={
+            <button onClick={() => window.location.reload()} className="px-4 py-2 bg-accent text-black rounded-lg text-sm font-semibold hover:bg-accent/90 transition-colors">Retry</button>
+          } />
+        )}
       </div>
     );
   }
