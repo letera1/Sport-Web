@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, RefreshCw, Users, Whistle } from 'lucide-react';
+import { ArrowLeft, MapPin, RefreshCw, UserCheck, Users } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { TeamBadge } from './TeamBadge';
 import { Skeleton } from './Skeleton';
@@ -151,7 +151,7 @@ export const SportdbMatchDetails = ({ eventId, seed }: SportdbMatchDetailsProps)
             )}
             {match.referee && (
               <span className="flex items-center gap-1.5">
-                <Whistle className="w-3.5 h-3.5 text-accent shrink-0" />
+                <UserCheck className="w-3.5 h-3.5 text-accent shrink-0" />
                 {match.referee}
               </span>
             )}

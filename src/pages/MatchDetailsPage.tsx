@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { MatchHeader } from '../components/MatchHeader';
 import { MatchTabs, MatchTab } from '../components/MatchTabs';
 import { MatchEvents } from '../components/MatchEvents';
@@ -8,11 +8,32 @@ import { MatchStats } from '../components/MatchStats';
 import { MatchDetailsTab } from '../components/MatchDetails';
 import { MatchOdds } from '../components/MatchOdds';
 import { MatchStandingsTab } from '../components/MatchStandingsTab';
+import { SportdbMatchDetails } from '../components/SportdbMatchDetails';
 import { useMatchDetails } from '../hooks/useMatchDetails';
 import { MatchDetails } from '../types';
+import type { SportMatch } from '../services/sportdb/models';
 import { ArrowLeft } from 'lucide-react';
 
+/**
+ * Matches arrive from two providers. `src=sportdb` rows carry provider-native
+ * ids that the legacy client cannot resolve, so they render through a separate
+ * component — that keeps the legacy hook unmounted instead of firing requests
+ * that are guaranteed to miss.
+ */
 export const MatchDetailsPage = () => {
+  const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+
+  if (id && searchParams.get('src') === 'sportdb') {
+    const seed = (location.state as { sportMatch?: SportMatch } | null)?.sportMatch;
+    return <SportdbMatchDetails eventId={id} seed={seed} />;
+  }
+
+  return <LegacyMatchDetailsPage />;
+};
+
+const LegacyMatchDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
