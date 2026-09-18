@@ -48,37 +48,48 @@ function sportdbDevProxy(): Plugin {
   };
 }
 
-export default defineConfig({
-  plugins: [react(), sportdbDevProxy()],
-  server: {
-    proxy: {
-      // Regex key so /api/sportdb/* falls through to the dev proxy above.
-      '^/api/(?!sportdb)': {
-        target: 'https://www.thesportsdb.com',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/images-r2': {
-        target: 'https://r2.thesportsdb.com',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/images-r2/, '')
-      },
-      '/images-www': {
-        target: 'https://www.thesportsdb.com',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/images-www/, '')
-      },
-      '/images-proxy': {
-        target: 'https://r2.thesportsdb.com',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/images-proxy/, '')
+export default defineConfig(({ mode }) => {
+  // Vite only exposes VITE_* to the client. Server-only vars are loaded here into
+  // the Node process so the dev proxy can read them — they are never bundled.
+  const env = loadEnv(mode, process.cwd(), '');
+  for (const key of Object.keys(env)) {
+    if (!key.startsWith('VITE_') && process.env[key] === undefined) {
+      process.env[key] = env[key];
+    }
+  }
+
+  return {
+    plugins: [react(), sportdbDevProxy()],
+    server: {
+      proxy: {
+        // Regex key so /api/sportdb/* falls through to the dev proxy above.
+        '^/api/(?!sportdb)': {
+          target: 'https://www.thesportsdb.com',
+          changeOrigin: true,
+          secure: false,
+        },
+        '/images-r2': {
+          target: 'https://r2.thesportsdb.com',
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/images-r2/, '')
+        },
+        '/images-www': {
+          target: 'https://www.thesportsdb.com',
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/images-www/, '')
+        },
+        '/images-proxy': {
+          target: 'https://r2.thesportsdb.com',
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/images-proxy/, '')
+        },
       },
     },
-  },
-  optimizeDeps: {
-    include: ['lucide-react'],
-  },
+    optimizeDeps: {
+      include: ['lucide-react'],
+    },
+  };
 });
