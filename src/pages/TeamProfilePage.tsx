@@ -1,5 +1,6 @@
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useTeamDetails } from '../hooks/useTeamDetails';
+import { SportdbTeamProfile } from '../components/SportdbTeamProfile';
 import { getProxiedImageUrl, FALLBACK_BADGE } from '../services/sportsApi';
 import { cn } from '../lib/utils';
 import { Skeleton } from '../components/Skeleton';
@@ -10,6 +11,7 @@ import { useMemo } from 'react';
 
 export const TeamProfilePage = () => {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { team, nextMatches, lastMatches, players, loading, error } = useTeamDetails(id);
 

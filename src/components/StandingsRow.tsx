@@ -81,7 +81,13 @@ export const StandingsRow = ({ entry, highlight }: StandingsRowProps) => {
 
   return (
     <Link
-      to={entry.team.id ? `/team/${entry.team.id}` : '/standings'}
+      to={
+        entry.team.id && entry.team.slug
+          ? `/team/${entry.team.id}?slug=${encodeURIComponent(entry.team.slug)}&src=sportdb`
+          : entry.team.id
+            ? `/team/${entry.team.id}`
+            : '/standings'
+      }
       className={cn(
         'group flex items-stretch w-max min-w-full border-l-2 transition-colors text-xs sm:text-sm',
         ZONE_BORDER[entry.zone],

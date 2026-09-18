@@ -71,7 +71,13 @@ export const StandingsWidget = ({ leagueId, limit = 8 }: StandingsWidgetProps) =
 
           return (
             <Link
-              to={row.team.id ? `/team/${row.team.id}` : '/standings'}
+              to={
+                row.team.id && row.team.slug
+                  ? `/team/${row.team.id}?slug=${encodeURIComponent(row.team.slug)}&src=sportdb`
+                  : row.team.id
+                    ? `/team/${row.team.id}`
+                    : '/standings'
+              }
               key={`${row.team.id ?? row.team.name}-${row.rank}`}
               className="grid grid-cols-[1.5rem_1fr_2rem_2rem_2.5rem] items-center px-3 py-2 text-xs hover:bg-surface-hover/60 transition-colors group"
             >
