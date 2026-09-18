@@ -3,6 +3,7 @@ import { lookupStandings } from '../services/sportsApi';
 import { getCurrentSeason, getSportdbLeague } from '../constants';
 import { sportdb } from '../services/sportdb/client';
 import { normalizeCompetition, normalizeStandings } from '../services/sportdb/normalize';
+import { loadBadgeIndex, resolveBadge } from '../services/sportdb/badges';
 import type { SportStanding } from '../services/sportdb/models';
 import type { StandingsEntry } from '../types';
 
