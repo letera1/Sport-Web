@@ -233,22 +233,17 @@ export async function lookupEventResults(eventId: string): Promise<EventResult[]
 // ========================
 
 export async function getAllTeamsInLeague(leagueId: string): Promise<TeamDetails[]> {
-  const [searchRes, lookupRes] = await Promise.allSettled([
-    deduplicatedGet<{ teams: TeamDetails[] | null }>(
-      API_ENDPOINTS.SEARCH_ALL_TEAMS, { id: leagueId }, CACHE_TTL.LEAGUE
-    ),
-    deduplicatedGet<{ teams: TeamDetails[] | null }>(
-      API_ENDPOINTS.LOOKUP_ALL_TEAMS, { id: leagueId }, CACHE_TTL.LEAGUE
-    ),
-  ]);
-
-  const searchTeams = (searchRes.status === 'fulfilled' && searchRes.value?.teams) || [];
-  const lookupTeams = (lookupRes.status === 'fulfilled' && lookupRes.value?.teams) || [];
+  // Note: lookup_all_teams.php ignores the `id` param on this API tier and always
+  // returns the same unrelated team list, so it must not be trusted/merged here.
+  const data = await deduplicatedGet<{ teams: TeamDetails[] | null }>(
+    API_ENDPOINTS.SEARCH_ALL_TEAMS, { id: leagueId }, CACHE_TTL.LEAGUE
+  );
+  const teams = data?.teams || [];
 
   const teamMap = new Map<string, TeamDetails>();
 
-  [...searchTeams, ...lookupTeams].forEach(t => {
-    if (t.idTeam && !teamMap.has(t.idTeam)) {
+  teams.forEach(t => {
+    if (t.idTeam && (!t.idLeague || t.idLeague === leagueId) && !teamMap.has(t.idTeam)) {
       teamMap.set(t.idTeam, {
         ...t,
         strTeamBadge: t.strBadge || t.strTeamBadge || ''
