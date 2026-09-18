@@ -1,1 +1,17 @@
+# Dependencies
 node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Local env files — NEVER commit secrets (SPORTDB_API_KEY lives here)
+.env
+.env.local
+.env.*.local
+
+# Logs / editor / OS noise
+*.log
+npm-debug.log*
+.DS_Store
+.vercel
