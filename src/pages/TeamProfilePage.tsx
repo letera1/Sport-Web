@@ -61,6 +61,13 @@ export const TeamProfilePage = () => {
     return alternates.length > 0 ? alternates.join(' • ') : null;
   }, [team?.strTeam, team?.strTeamAlternate]);
 
+  // SportDB ids are a different namespace from TheSportsDB's, so links from the
+  // SportDB-backed standings carry their slug and are rendered by that provider.
+  const sportdbSlug = searchParams.get('slug');
+  if (searchParams.get('src') === 'sportdb' && sportdbSlug && id) {
+    return <SportdbTeamProfile slug={sportdbSlug} teamId={id} />;
+  }
+
   if (loading) {
     return (
       <div className="flex flex-col gap-4">
