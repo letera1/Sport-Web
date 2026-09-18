@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { TeamBadge } from './TeamBadge';
 import type { SportMatch } from '../services/sportdb/models';
@@ -23,10 +24,13 @@ export const LiveMatchRow = memo(({ match }: LiveMatchRowProps) => {
   const awayWon = hasScore && match.awayScore! > match.homeScore!;
 
   return (
-    <div
+    <Link
+      to={`/match/${match.id}?src=sportdb`}
+      state={{ sportMatch: match }}
+      aria-label={`${match.home.name} versus ${match.away.name}`}
       className={cn(
         'flex items-center gap-3 px-3 sm:px-4 py-2.5 border-l-2 transition-colors',
-        'hover:bg-surface-hover/60',
+        'hover:bg-surface-hover/60 focus-visible:outline-none focus-visible:bg-surface-hover/60',
         isLive ? 'border-l-live bg-live/[0.04]' : 'border-l-transparent'
       )}
     >
@@ -65,7 +69,7 @@ export const LiveMatchRow = memo(({ match }: LiveMatchRowProps) => {
           </div>
         ))}
       </div>
-    </div>
+    </Link>
   );
 });
 
