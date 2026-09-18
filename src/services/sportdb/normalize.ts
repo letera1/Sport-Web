@@ -6,21 +6,21 @@
  */
 
 import type {
-  MatchState, SportLineup, SportLineupPlayer, SportMatch, SportMatchStat,
+  MatchState, SportMatch,
   SportStanding, SportTeamRef, StandingZone,
 } from './models';
 
-type Rec = Record<string, unknown>;
+export type Rec = Record<string, unknown>;
 
-const isRec = (v: unknown): v is Rec => typeof v === 'object' && v !== null && !Array.isArray(v);
+export const isRec = (v: unknown): v is Rec => typeof v === 'object' && v !== null && !Array.isArray(v);
 
-const asString = (v: unknown): string | null => {
+export const asString = (v: unknown): string | null => {
   if (typeof v === 'string') return v.trim() === '' ? null : v;
   if (typeof v === 'number' && Number.isFinite(v)) return String(v);
   return null;
 };
 
-const asInt = (v: unknown): number | null => {
+export const asInt = (v: unknown): number | null => {
   const s = asString(v);
   if (s === null) return null;
   const n = Number.parseInt(s, 10);
@@ -176,62 +176,4 @@ export function normalizeCompetition(payload: unknown): CompetitionInfo | null {
     seasons,
     currentSeason: seasons[0] ?? null,
   };
-}
-
-function lineupPlayer(raw: Rec, isStarter: boolean): SportLineupPlayer | null {
-  const name = asString(raw.playerName) ?? asString(raw.name) ?? asString(raw.player);
-  if (!name) return null;
-  return {
-    id: asString(raw.playerId) ?? asString(raw.id),
-    name,
-    position: asString(raw.playerTypeName) ?? asString(raw.position) ?? asString(raw.role),
-    shirtNumber: asString(raw.jerseyNumber) ?? asString(raw.number),
-    isStarter,
-  };
-}
-
-export function normalizeLineups(payload: unknown): SportLineup | null {
-  if (!isRec(payload)) return null;
-
-  const collect = (node: unknown, starter: boolean): SportLineupPlayer[] =>
-    asArray(node)
-      .flatMap((group) => (Array.isArray(group.players) ? group.players.filter(isRec) : [group]))
-      .map((p) => lineupPlayer(p, starter))
-      .filter((p): p is SportLineupPlayer => p !== null);
-
-  const home = [
-    ...collect(payload.homeStarters ?? payload.homeLineup, true),
-    ...collect(payload.homeSubstitutes ?? payload.homeBench, false),
-  ];
-  const away = [
-    ...collect(payload.awayStarters ?? payload.awayLineup, true),
-    ...collect(payload.awaySubstitutes ?? payload.awayBench, false),
-  ];
-
-  if (!home.length && !away.length) return null;
-
-  return {
-    homeFormation: asString(payload.homeFormation),
-    awayFormation: asString(payload.awayFormation),
-    home,
-    away,
-  };
-}
-
-/** Emits only metrics where the provider supplied both sides. */
-export function normalizeMatchStats(payload: unknown): SportMatchStat[] {
-  const rows = Array.isArray(payload)
-    ? payload.filter(isRec)
-    : isRec(payload) && Array.isArray(payload.stats)
-      ? payload.stats.filter(isRec)
-      : [];
-
-  return rows
-    .map((row): SportMatchStat | null => {
-      const label = asString(row.name) ?? asString(row.label) ?? asString(row.type);
-      const home = asString(row.homeValue) ?? asString(row.home);
-      const away = asString(row.awayValue) ?? asString(row.away);
-      return label && home !== null && away !== null ? { label, home, away } : null;
-    })
-    .filter((row): row is SportMatchStat => row !== null);
 }
