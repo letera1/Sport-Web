@@ -89,14 +89,6 @@ export async function getPastLeagueEvents(leagueId: string): Promise<MatchEvent[
   return data?.events || [];
 }
 
-export async function getSeasonEvents(leagueId: string, season?: string): Promise<MatchEvent[]> {
-  const s = season || getCurrentSeason();
-  const data = await deduplicatedGet<{ events: MatchEvent[] | null }>(
-    API_ENDPOINTS.SEASON_LEAGUE, { id: leagueId, s }, CACHE_TTL.MATCHES
-  );
-  return data?.events || [];
-}
-
 export async function getTeamNextEvents(teamId: string): Promise<MatchEvent[]> {
   const data = await deduplicatedGet<{ events: MatchEvent[] | null }>(
     API_ENDPOINTS.NEXT_TEAM, { id: teamId }, CACHE_TTL.MATCHES
@@ -149,13 +141,6 @@ export async function lookupPlayer(playerId: string): Promise<PlayerDetails | nu
   return data?.players?.[0] || null;
 }
 
-export async function lookupLeague(leagueId: string): Promise<LeagueDetails | null> {
-  const data = await deduplicatedGet<{ leagues: LeagueDetails[] | null }>(
-    API_ENDPOINTS.LOOKUP_LEAGUE, { id: leagueId }, CACHE_TTL.LEAGUE
-  );
-  return data?.leagues?.[0] || null;
-}
-
 export async function lookupStandings(leagueId: string, season?: string): Promise<StandingsEntry[]> {
   const params: Record<string, string> = { l: leagueId };
   if (season) params.s = season;
@@ -163,13 +148,6 @@ export async function lookupStandings(leagueId: string, season?: string): Promis
     API_ENDPOINTS.LOOKUP_TABLE, params, CACHE_TTL.STANDINGS
   );
   return data?.table || [];
-}
-
-export async function lookupEquipment(teamId: string): Promise<Equipment[]> {
-  const data = await deduplicatedGet<{ equipment: Equipment[] | null }>(
-    API_ENDPOINTS.LOOKUP_EQUIPMENT, { id: teamId }, CACHE_TTL.EQUIPMENT
-  );
-  return data?.equipment || [];
 }
 
 export async function lookupPlayerHonours(playerId: string): Promise<PlayerHonour[]> {
@@ -219,13 +197,6 @@ export async function lookupEventTimeline(eventId: string): Promise<EventTimelin
     API_ENDPOINTS.LOOKUP_TIMELINE, { id: eventId }, CACHE_TTL.MATCHES
   );
   return data?.timeline || [];
-}
-
-export async function lookupEventResults(eventId: string): Promise<EventResult[]> {
-  const data = await deduplicatedGet<{ results: EventResult[] | null }>(
-    API_ENDPOINTS.EVENT_RESULTS, { id: eventId }, CACHE_TTL.MATCHES
-  );
-  return data?.results || [];
 }
 
 // ========================
