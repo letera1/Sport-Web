@@ -58,21 +58,23 @@ export const MatchStandingsTab = ({ match }: MatchStandingsTabProps) => {
 
       {/* Table */}
       <div className="border border-border/40 rounded-xl overflow-hidden mx-4 sm:mx-6 mb-4 sm:mb-6">
-        <StandingsHeaderRow />
-        <div className="divide-y divide-border/20">
-          {standings.map((entry) => {
-            const entryNorm = normalize(entry.strTeam);
-            const isHome = entryNorm.includes(homeNorm) || homeNorm.includes(entryNorm);
-            const isAway = entryNorm.includes(awayNorm) || awayNorm.includes(entryNorm);
-            return (
-              <StandingsRow
-                key={entry.idStanding || entry.idTeam || entry.intRank}
-                entry={entry}
-                totalTeams={standings.length}
-                highlight={isHome ? 'home' : isAway ? 'away' : undefined}
-              />
-            );
-          })}
+        <div className="overflow-x-auto">
+          <StandingsHeaderRow />
+          <div className="divide-y divide-border/20">
+            {standings.map((entry) => {
+              const entryNorm = normalize(entry.strTeam);
+              const isHome = entryNorm.includes(homeNorm) || homeNorm.includes(entryNorm);
+              const isAway = entryNorm.includes(awayNorm) || awayNorm.includes(entryNorm);
+              return (
+                <StandingsRow
+                  key={`${entry.idTeam || 'x'}-${entry.intRank}`}
+                  entry={entry}
+                  totalTeams={standings.length}
+                  highlight={isHome ? 'home' : isAway ? 'away' : undefined}
+                />
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
