@@ -55,7 +55,8 @@ function useLazyResource<T>(
   eventId: string | undefined,
   enabled: boolean,
   fetcher: Fetcher,
-  normalize: (payload: unknown) => T | null
+  normalize: (payload: unknown) => T | null,
+  resetKey: number
 ): SportdbResource<T> {
   const [state, setState] = useState<SportdbResource<T>>(IDLE);
   const requestedFor = useRef<string | null>(null);
@@ -66,9 +67,11 @@ function useLazyResource<T>(
       setState(IDLE);
       return;
     }
-    if (!enabled || requestedFor.current === eventId) return;
 
-    requestedFor.current = eventId;
+    const attempt = `${resetKey}:${eventId}`;
+    if (!enabled || requestedFor.current === attempt) return;
+
+    requestedFor.current = attempt;
     const controller = new AbortController();
     setState({ data: null, loading: true, error: null });
 
@@ -85,7 +88,7 @@ function useLazyResource<T>(
       });
 
     return () => controller.abort();
-  }, [eventId, enabled, fetcher, normalize]);
+  }, [eventId, enabled, fetcher, normalize, resetKey]);
 
   return state;
 }
@@ -107,12 +110,11 @@ export function useSportdbMatch(
   activeTab: SportdbMatchTab
 ): SportdbMatch {
   const [nonce, setNonce] = useState(0);
-  const key = eventId ? `${eventId}#${nonce}` : undefined;
 
-  const info = useLazyResource(key, true, sportdb.matchDetails, normalizeMatchInfo);
-  const stats = useLazyResource(key, activeTab === 'stats', sportdb.matchStats, normalizeStatPeriods);
-  const lineups = useLazyResource(key, activeTab === 'lineups', sportdb.matchLineups, normalizeLineups);
-  const odds = useLazyResource(key, activeTab === 'odds', sportdb.matchOdds, normalizeOdds);
+  const info = useLazyResource(eventId, true, sportdb.matchDetails, normalizeMatchInfo, nonce);
+  const stats = useLazyResource(eventId, activeTab === 'stats', sportdb.matchStats, normalizeStatPeriods, nonce);
+  const lineups = useLazyResource(eventId, activeTab === 'lineups', sportdb.matchLineups, normalizeLineups, nonce);
+  const odds = useLazyResource(eventId, activeTab === 'odds', sportdb.matchOdds, normalizeOdds, nonce);
 
   const refresh = useCallback(() => setNonce((value) => value + 1), []);
 
