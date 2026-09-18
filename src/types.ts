@@ -2,12 +2,6 @@
 // Base Types
 // ========================
 
-export interface Team {
-  idTeam: string;
-  strTeam: string;
-  strTeamBadge: string;
-}
-
 export interface MatchEvent {
   idEvent: string;
   strEvent: string;
@@ -65,27 +59,6 @@ export interface MatchDetails extends MatchEvent {
 // ========================
 // League & Standings
 // ========================
-
-export interface LeagueDetails {
-  idLeague: string;
-  strLeague: string;
-  strSport: string;
-  strLeagueAlternate?: string;
-  intFormedYear?: string;
-  strCountry?: string;
-  strDescriptionEN?: string;
-  strBadge?: string;
-  strLogo?: string;
-  strFanart1?: string;
-  strFanart2?: string;
-  strFanart3?: string;
-  strFanart4?: string;
-  strBanner?: string;
-  strPoster?: string;
-  strTrophy?: string;
-  strNaming?: string;
-  strCurrentSeason?: string;
-}
 
 export interface StandingsEntry {
   idStanding?: string;
@@ -146,13 +119,6 @@ export interface TeamDetails {
   strTeamBanner?: string;
   strManager?: string;
   strKeywords?: string;
-}
-
-export interface Equipment {
-  idEquipment: string;
-  strEquipment?: string;
-  strSeason?: string;
-  strType?: string;
 }
 
 // ========================
@@ -299,45 +265,4 @@ export interface EventLineup {
   strPlayerCutout?: string;
   idPlayer?: string;
   idTeam?: string;
-}
-
-export interface EventResult {
-  idResult?: string;
-  idEvent?: string;
-  strEvent?: string;
-  strResult?: string;
-  strPlayer?: string;
-  strDetail?: string;
-  intMinute?: string;
-  strTeam?: string;
-  strSeason?: string;
-  strSport?: string;
-  idPlayer?: string;
-}
-
-export interface VideoHighlight {
-  idEvent?: string;
-  strEvent?: string;
-  strVideo?: string;
-  strThumb?: string;
-  dateEvent?: string;
-  strSport?: string;
-  strLeague?: string;
-  strSeason?: string;
-  strHomeTeam?: string;
-  strAwayTeam?: string;
-}
-
-export interface TVSchedule {
-  idChannel?: string;
-  strChannel?: string;
-  strCountry?: string;
-  strLogo?: string;
-  idEvent?: string;
-  strEvent?: string;
-  strSport?: string;
-  dateEvent?: string;
-  strTime?: string;
-  strLeague?: string;
-  strSeason?: string;
 }

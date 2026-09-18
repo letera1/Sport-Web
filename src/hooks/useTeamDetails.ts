@@ -19,9 +19,8 @@ export const useTeamDetails = (teamId: string | undefined) => {
 
     try {
       setLoading(true);
-      const [teamData, equipData, nextData, lastData, playersData] = await Promise.allSettled([
+      const [teamData, nextData, lastData, playersData] = await Promise.allSettled([
         lookupTeam(teamId),
-        lookupEquipment(teamId),
         getTeamNextEvents(teamId),
         getTeamLastEvents(teamId),
         lookupAllPlayers(teamId),
@@ -32,7 +31,6 @@ export const useTeamDetails = (teamId: string | undefined) => {
         fetchedTeam = teamData.value;
         setTeam(fetchedTeam);
       }
-      if (equipData.status === 'fulfilled') setEquipment(equipData.value);
       if (nextData.status === 'fulfilled') setNextMatches(nextData.value);
       if (lastData.status === 'fulfilled') setLastMatches(lastData.value);
 
@@ -55,5 +53,5 @@ export const useTeamDetails = (teamId: string | undefined) => {
     fetchAll();
   }, [fetchAll]);
 
-  return { team, equipment, nextMatches, lastMatches, players, loading, error };
+  return { team, nextMatches, lastMatches, players, loading, error };
 };

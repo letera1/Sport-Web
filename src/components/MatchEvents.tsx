@@ -1,4 +1,4 @@
-import { Flag, ArrowRightLeft, User, Award } from 'lucide-react';
+import { Flag, ArrowRightLeft, User } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { MatchDetails, EventTimeline, EventLineup } from '../types';
 import { format, parseISO } from 'date-fns';

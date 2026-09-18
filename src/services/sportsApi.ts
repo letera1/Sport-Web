@@ -1,10 +1,10 @@
 import { apiClient } from '../api/client';
-import { API_ENDPOINTS, CACHE_TTL, getCurrentSeason } from '../constants';
+import { API_ENDPOINTS, CACHE_TTL } from '../constants';
 import type {
-  MatchEvent, MatchDetails, LeagueDetails, StandingsEntry,
-  TeamDetails, PlayerDetails, Equipment, PlayerHonour,
+  MatchEvent, MatchDetails, StandingsEntry,
+  TeamDetails, PlayerDetails, PlayerHonour,
   PlayerContract, FormerTeam, PlayerMilestone, PlayerStats,
-  EventTimeline, EventLineup, EventResult, VideoHighlight,
+  EventTimeline, EventLineup,
 } from '../types';
 
 // ========================
@@ -227,7 +227,7 @@ export async function getAllTeamsInLeague(leagueId: string): Promise<TeamDetails
 
 export async function lookupAllPlayers(teamId: string, teamName?: string): Promise<PlayerDetails[]> {
   const data = await deduplicatedGet<{ player: PlayerDetails[] | null }>(
-    '/lookup_all_players.php', { id: teamId }, CACHE_TTL.TEAM
+    API_ENDPOINTS.LOOKUP_ALL_PLAYERS, { id: teamId }, CACHE_TTL.TEAM
   );
   if (Array.isArray(data?.player) && data.player.length > 0) {
     return data.player;

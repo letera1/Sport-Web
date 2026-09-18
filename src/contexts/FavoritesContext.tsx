@@ -34,7 +34,8 @@ export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
   const toggleTeamFavorite = useCallback((id: string) => {
     setFavoriteTeams(prev => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   }, []);
@@ -42,7 +43,8 @@ export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
   const toggleMatchFavorite = useCallback((id: string) => {
     setFavoriteMatches(prev => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   }, []);

@@ -8,8 +8,6 @@ export const CACHE_TTL = {
   PLAYER: 10 * 60 * 1000,     // 10 minutes
   LEAGUE: 30 * 60 * 1000,     // 30 minutes
   MATCHES: 30 * 1000,         // 30 seconds (live data)
-  HIGHLIGHTS: 10 * 60 * 1000, // 10 minutes
-  EQUIPMENT: 60 * 60 * 1000,  // 1 hour
 };
 
 // ========================
@@ -72,13 +70,12 @@ export const getSportdbLeague = (leagueId: string): SportdbLeague | null =>
 
 
 // ========================
-// API Endpoints (v1 free tier)
+// API Endpoints (TheSportsDB v1 free tier) — only endpoints actually called
 // ========================
 export const API_ENDPOINTS = {
   // Schedule
   NEXT_LEAGUE: '/eventsnextleague.php',
   PAST_LEAGUE: '/eventspastleague.php',
-  SEASON_LEAGUE: '/eventsseason.php',
   NEXT_TEAM: '/eventsnext.php',
   LAST_TEAM: '/eventslast.php',
   EVENTS_DAY: '/eventsday.php',
@@ -87,9 +84,7 @@ export const API_ENDPOINTS = {
   LOOKUP_EVENT: '/lookupevent.php',
   LOOKUP_TEAM: '/lookupteam.php',
   LOOKUP_PLAYER: '/lookupplayer.php',
-  LOOKUP_LEAGUE: '/lookupleague.php',
   LOOKUP_TABLE: '/lookuptable.php',
-  LOOKUP_EQUIPMENT: '/lookupequipment.php',
   LOOKUP_HONOURS: '/lookuphonours.php',
   LOOKUP_FORMER_TEAMS: '/lookupformerteams.php',
   LOOKUP_MILESTONES: '/lookupmilestones.php',
@@ -97,35 +92,11 @@ export const API_ENDPOINTS = {
   LOOKUP_PLAYER_STATS: '/lookupplayerstats.php',
   LOOKUP_LINEUP: '/lookuplineup.php',
   LOOKUP_TIMELINE: '/lookuptimeline.php',
-  PLAYER_RESULTS: '/playerresults.php',
-  EVENT_RESULTS: '/eventresults.php',
+  LOOKUP_ALL_PLAYERS: '/lookup_all_players.php',
 
   // Search
-  SEARCH_TEAMS: '/searchteams.php',
   SEARCH_PLAYERS: '/searchplayers.php',
-  SEARCH_ALL_LEAGUES: '/search_all_leagues.php',
   SEARCH_ALL_TEAMS: '/search_all_teams.php',
-
-  // List
-  LOOKUP_ALL_TEAMS: '/lookup_all_teams.php',
-
-  // Video
-  HIGHLIGHTS: '/eventshighlights.php',
-
-  // TV
-  TV_SCHEDULE: '/eventstv.php',
-};
-
-// ========================
-// Routes
-// ========================
-export const ROUTES = {
-  DASHBOARD: '/',
-  MATCH_DETAILS: '/match/:id',
-  STANDINGS: '/standings',
-  TEAM_PROFILE: '/team/:id',
-  PLAYER_PROFILE: '/player/:id',
-  HIGHLIGHTS: '/highlights',
 };
 
 // ========================

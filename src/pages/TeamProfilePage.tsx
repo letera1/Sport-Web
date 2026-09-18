@@ -5,7 +5,7 @@ import { getProxiedImageUrl, FALLBACK_BADGE } from '../services/sportsApi';
 import { cn } from '../lib/utils';
 import { Skeleton } from '../components/Skeleton';
 import { EmptyState } from '../components/EmptyState';
-import { ArrowLeft, MapPin, Calendar, Globe, ExternalLink, Trophy, Shield } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, Globe, ExternalLink, Shield } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { useMemo } from 'react';
 
@@ -48,7 +48,7 @@ export const TeamProfilePage = () => {
       }
     });
 
-    return Object.fromEntries(Object.entries(groups).filter(([_, list]) => list.length > 0));
+    return Object.fromEntries(Object.entries(groups).filter(([, list]) => list.length > 0));
   }, [players]);
 
   // Clean alternate names to prevent redundant repetition like "Chelsea / Chelsea / Chelsea FC"
