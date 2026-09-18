@@ -26,9 +26,13 @@ export const SportdbTeamProfile = ({ slug, teamId }: SportdbTeamProfileProps) =>
       if (bucket) bucket.push(player);
       else groups.set(player.position, [player]);
     }
-    return [...groups.entries()].sort(
-      (a, b) => (POSITION_ORDER.indexOf(a[0]) + 99) % 100 - (POSITION_ORDER.indexOf(b[0]) + 99) % 100
-    );
+
+    const rank = (position: string) => {
+      const index = POSITION_ORDER.indexOf(position);
+      return index === -1 ? POSITION_ORDER.length : index;
+    };
+
+    return [...groups.entries()].sort(([a], [b]) => rank(a) - rank(b) || a.localeCompare(b));
   }, [team]);
 
   if (loading) {

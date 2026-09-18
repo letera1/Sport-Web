@@ -31,6 +31,7 @@ function normalizeTeam(payload: unknown): SportdbTeam | null {
   if (!id || !name) return null;
 
   const squad: SportdbSquadPlayer[] = [];
+  const seen = new Set<string>();
   const groups = Array.isArray(payload.squad) ? payload.squad.filter(isRec) : [];
   for (const group of groups) {
     const players = Array.isArray(group.players) ? group.players.filter(isRec) : [];
@@ -39,6 +40,12 @@ function normalizeTeam(payload: unknown): SportdbTeam | null {
       const last = str(player.lastName) ?? '';
       const full = `${first} ${last}`.trim() || str(player.slug)?.replace(/-/g, ' ') || '';
       if (!full) continue;
+
+      // The same player appears once per competition group, so dedupe by id.
+      const key = str(player.id) ?? full.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+
       squad.push({
         id: str(player.id),
         slug: str(player.slug),
