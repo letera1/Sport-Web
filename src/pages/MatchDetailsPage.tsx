@@ -6,7 +6,6 @@ import { MatchEvents } from '../components/MatchEvents';
 import { MatchLineups } from '../components/MatchLineups';
 import { MatchStats } from '../components/MatchStats';
 import { MatchDetailsTab } from '../components/MatchDetails';
-import { MatchOdds } from '../components/MatchOdds';
 import { MatchStandingsTab } from '../components/MatchStandingsTab';
 import { SportdbMatchDetails } from '../components/SportdbMatchDetails';
 import { useMatchDetails } from '../hooks/useMatchDetails';
@@ -81,8 +80,6 @@ const LegacyMatchDetailsPage = () => {
         return <MatchEvents match={match} timeline={timeline} lineup={lineup} error={error} />;
       case 'stats':
         return <MatchStats match={match} error={error} />;
-      case 'odds':
-        return <MatchOdds match={match} error={error} />;
       case 'standings':
         return <MatchStandingsTab match={match} error={error} />;
       default:

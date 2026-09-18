@@ -1,13 +1,12 @@
 import { cn } from '../lib/utils';
 
-export type MatchTab = 'details' | 'odds' | 'lineups' | 'events' | 'stats' | 'standings';
+export type MatchTab = 'details' | 'lineups' | 'events' | 'stats' | 'standings';
 
 const tabs: { key: MatchTab; label: string }[] = [
   { key: 'events', label: 'Events' },
   { key: 'lineups', label: 'Lineups' },
   { key: 'stats', label: 'Stats' },
   { key: 'details', label: 'Details' },
-  { key: 'odds', label: 'Odds' },
   { key: 'standings', label: 'Standings' },
 ];
 
