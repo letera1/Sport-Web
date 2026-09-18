@@ -124,4 +124,10 @@ export const sportdb = {
 
   matchStats: (eventId: string, signal?: AbortSignal) =>
     request(`flashscore/match/${encodeURIComponent(eventId)}/stats`, signal),
+
+  matchOdds: (eventId: string, signal?: AbortSignal) =>
+    request(`flashscore/match/${encodeURIComponent(eventId)}/odds`, signal),
+
+  team: (slug: string, teamId: string, signal?: AbortSignal) =>
+    request(`flashscore/team/${encodeURIComponent(slug)}/${encodeURIComponent(teamId)}`, signal),
 };
