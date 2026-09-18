@@ -8,7 +8,7 @@ import { ArrowLeft, Trophy, Briefcase, MapPin, Calendar, Ruler, Weight, Flag } f
 export const PlayerProfilePage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { player, stats, honours, formerTeams, milestones, contracts, loading, error } = usePlayerDetails(id);
+  const { player, stats, honours, formerTeams, loading, error } = usePlayerDetails(id);
 
   if (loading) {
     return (

@@ -1,10 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { lookupTeam, lookupEquipment, getTeamNextEvents, getTeamLastEvents, lookupAllPlayers } from '../services/sportsApi';
-import type { TeamDetails, Equipment, MatchEvent, PlayerDetails } from '../types';
+import { lookupTeam, getTeamNextEvents, getTeamLastEvents, lookupAllPlayers } from '../services/sportsApi';
+import type { TeamDetails, MatchEvent, PlayerDetails } from '../types';
 
 export const useTeamDetails = (teamId: string | undefined) => {
   const [team, setTeam] = useState<TeamDetails | null>(null);
-  const [equipment, setEquipment] = useState<Equipment[]>([]);
   const [nextMatches, setNextMatches] = useState<MatchEvent[]>([]);
   const [lastMatches, setLastMatches] = useState<MatchEvent[]>([]);
   const [players, setPlayers] = useState<PlayerDetails[]>([]);

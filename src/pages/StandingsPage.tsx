@@ -10,7 +10,7 @@ interface StandingsPageProps {
 }
 
 export const StandingsPage = ({ leagueId, leagueName }: StandingsPageProps) => {
-  const { standings, loading, error, source, partial } = useStandings(leagueId);
+  const { standings, loading, error, partial } = useStandings(leagueId);
 
   if (error) {
     const isUnsupported = error === 'No data found for this league';

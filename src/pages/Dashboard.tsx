@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, Wifi, Heart, Trophy, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Wifi, Heart, Trophy } from 'lucide-react';
 import { MatchCard } from '../components/MatchCard';
 import { MatchCardSkeleton } from '../components/Skeleton';
 import { EmptyState } from '../components/EmptyState';

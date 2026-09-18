@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { addDays, subDays, parseISO, format } from 'date-fns';
+import { format } from 'date-fns';
 import { getNextLeagueEvents, getPastLeagueEvents, getEventsOnDay } from '../services/sportsApi';
 import { POLLING_INTERVAL } from '../constants';
 import type { MatchEvent } from '../types';
