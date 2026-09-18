@@ -5,12 +5,13 @@ import type { StandingsEntry } from '../types';
 
 /**
  * Shared column layout for the full standings table (StandingsPage + MatchStandingsTab).
- * Every column (P/W/D/L/GF/GA/GD/Pts/Form) is always rendered — on narrow screens
- * the row simply becomes wider than the viewport and the shared scroll container
- * (see StandingsPage/MatchStandingsTab) scrolls horizontally, with rank+team
- * pinned via `sticky left-0` so you never lose track of which team a stat belongs to.
+ * Every column (P/W/D/L/GF/GA/GD/Pts/Form) is always rendered. The team column grows
+ * to absorb leftover width on wide screens and holds a fixed basis on narrow ones, so the
+ * row overflows into the shared horizontal scroll container (see StandingsPage /
+ * MatchStandingsTab) with rank+team pinned via `sticky left-0`.
  */
-const TEAM_COL = 'sticky left-0 z-10 flex items-center gap-2 shrink-0 w-[148px] sm:w-[190px] py-2.5 pl-2.5 sm:pl-4 pr-2';
+const TEAM_COL = 'sticky left-0 z-10 flex items-center gap-2 grow shrink-0 basis-[148px] sm:basis-[190px] py-2.5 pl-2.5 sm:pl-4 pr-2';
+const STATS_ROW = 'flex items-center gap-1.5 sm:gap-2 shrink-0 py-2.5 pr-2.5 sm:pr-4 pl-1';
 const CELL = {
   stat: 'w-7 sm:w-8 shrink-0 text-center',
   wide: 'w-8 sm:w-9 shrink-0 text-center',
@@ -19,16 +20,19 @@ const CELL = {
   form: 'w-24 shrink-0 flex justify-center gap-1',
 };
 
+// The free API tier caps tables at the top 5, so only flag relegation on a plausibly full table.
+const hasRelegationZone = (totalTeams: number) => totalTeams >= 10;
+
 function zoneTextClass(rank: number, totalTeams: number): string {
   if (rank <= 4) return 'text-accent';
-  if (rank > totalTeams - 3) return 'text-danger';
+  if (hasRelegationZone(totalTeams) && rank > totalTeams - 3) return 'text-danger';
   return 'text-text-secondary';
 }
 
 function zoneBorderClass(rank: number, totalTeams: number): string {
   if (rank <= 4) return 'border-l-accent';
   if (rank === 5) return 'border-l-info';
-  if (rank > totalTeams - 3) return 'border-l-danger';
+  if (hasRelegationZone(totalTeams) && rank > totalTeams - 3) return 'border-l-danger';
   return 'border-l-transparent';
 }
 
@@ -49,7 +53,7 @@ export const StandingsHeaderRow = ({ className }: StandingsHeaderRowProps) => (
       <span className="w-6 shrink-0 text-center">#</span>
       <span className="flex-1 min-w-0">Team</span>
     </div>
-    <div className="flex items-center gap-1.5 sm:gap-2 py-2.5 pr-2.5 sm:pr-4 pl-1 bg-surface-hover/40">
+    <div className={cn(STATS_ROW, 'bg-surface-hover/40')}>
       <span className={CELL.stat}>P</span>
       <span className={CELL.stat}>W</span>
       <span className={CELL.stat}>D</span>
@@ -105,7 +109,7 @@ export const StandingsRow = ({ entry, totalTeams, highlight }: StandingsRowProps
         </span>
       </div>
 
-      <div className="flex-1 flex items-center gap-1.5 sm:gap-2 py-2.5 pr-2.5 sm:pr-4 pl-1 transition-colors group-hover:bg-surface-hover/70">
+      <div className={cn(STATS_ROW, 'transition-colors group-hover:bg-surface-hover/70')}>
         <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{entry.intPlayed}</span>
         <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{entry.intWin}</span>
         <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{entry.intDraw}</span>
