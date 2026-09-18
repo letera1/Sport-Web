@@ -6,6 +6,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { Dashboard } from './pages/Dashboard';
 import { MatchDetailsPage } from './pages/MatchDetailsPage';
 import { StandingsPage } from './pages/StandingsPage';
+import { LiveScoresPage } from './pages/LiveScoresPage';
 import { TeamProfilePage } from './pages/TeamProfilePage';
 import { PlayerProfilePage } from './pages/PlayerProfilePage';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -37,6 +38,7 @@ function AppContent() {
       <main className="w-full max-w-app mx-auto px-3 sm:px-6 py-4 sm:py-6 flex-1">
         <Routes>
           <Route path="/" element={<Dashboard leagueId={selectedLeagueId} />} />
+          <Route path="/live" element={<LiveScoresPage />} />
           <Route path="/match/:id" element={<MatchDetailsPage />} />
           <Route path="/standings" element={
             <StandingsPage 

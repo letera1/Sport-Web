@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X, Sun, Moon, Search, Trophy, Heart, Zap } from 'lucide-react';
+import { Menu, X, Sun, Moon, Search, Trophy, Heart, Zap, Radio } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { LEAGUES } from '../constants';
@@ -61,6 +61,18 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
             >
               <Zap className="w-4 h-4 text-accent" />
               <span>Scores & Matches</span>
+            </Link>
+            <Link
+              to="/live"
+              className={cn(
+                "px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2",
+                location.pathname === '/live'
+                  ? "bg-live/10 text-live font-bold border border-live/30"
+                  : "text-text-secondary hover:text-text-primary hover:bg-surface-hover"
+              )}
+            >
+              <Radio className="w-4 h-4 text-live" />
+              <span>Live</span>
             </Link>
             <Link
               to="/standings"
