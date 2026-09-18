@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useStandings } from '../hooks/useStandings';
 import { cn } from '../lib/utils';
-import { getProxiedImageUrl, FALLBACK_BADGE } from '../services/sportsApi';
+import { TeamBadge } from './TeamBadge';
 import { Skeleton } from './Skeleton';
 import { Trophy, ChevronRight } from 'lucide-react';
 
@@ -85,12 +85,10 @@ export const StandingsWidget = ({ leagueId, limit = 8 }: StandingsWidgetProps) =
                 {row.rank}
               </span>
               <div className="flex items-center gap-2 min-w-0 pr-1">
-                <img
-                  src={row.team.badgeUrl ? getProxiedImageUrl(row.team.badgeUrl) : FALLBACK_BADGE}
-                  alt=""
-                  loading="lazy"
-                  className="w-4 h-4 object-contain shrink-0"
-                  onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
+                <TeamBadge
+                  name={row.team.name}
+                  badgeUrl={row.team.badgeUrl}
+                  className="w-4 h-4"
                 />
                 <span className="text-text-primary group-hover:text-accent truncate font-medium text-xs">
                   {row.team.name}

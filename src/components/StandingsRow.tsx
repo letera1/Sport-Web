@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
-import { getProxiedImageUrl, FALLBACK_BADGE } from '../services/sportsApi';
+import { TeamBadge } from './TeamBadge';
 import type { SportStanding } from '../services/sportdb/models';
 
 /**
@@ -96,12 +96,10 @@ export const StandingsRow = ({ entry, highlight }: StandingsRowProps) => {
         <span className={cn('w-6 shrink-0 text-center font-bold font-score', ZONE_RANK_TEXT[entry.zone])}>
           {entry.rank}
         </span>
-        <img
-          src={entry.team.badgeUrl ? getProxiedImageUrl(entry.team.badgeUrl) : FALLBACK_BADGE}
-          alt=""
-          loading="lazy"
-          className="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0"
-          onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
+        <TeamBadge
+          name={entry.team.name}
+          badgeUrl={entry.team.badgeUrl}
+          className="w-5 h-5 sm:w-6 sm:h-6"
         />
         <span className={cn('flex-1 min-w-0 truncate font-medium', isHighlighted ? 'text-accent font-bold' : 'text-text-primary')}>
           {entry.team.name}
