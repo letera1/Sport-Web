@@ -258,14 +258,14 @@ export async function lookupAllPlayers(teamId: string, teamName?: string): Promi
   const data = await deduplicatedGet<{ player: PlayerDetails[] | null }>(
     '/lookup_all_players.php', { id: teamId }, CACHE_TTL.TEAM
   );
-  if (data?.player && data.player.length > 0) {
+  if (Array.isArray(data?.player) && data.player.length > 0) {
     return data.player;
   }
   if (teamName) {
     const searchData = await deduplicatedGet<{ player: PlayerDetails[] | null }>(
       API_ENDPOINTS.SEARCH_PLAYERS, { t: teamName }, CACHE_TTL.TEAM
     );
-    return searchData?.player || [];
+    return Array.isArray(searchData?.player) ? searchData.player : [];
   }
   return [];
 }

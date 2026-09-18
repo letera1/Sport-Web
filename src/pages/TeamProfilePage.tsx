@@ -13,7 +13,15 @@ export const TeamProfilePage = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { team, nextMatches, lastMatches, players, loading, error } = useTeamDetails(id);
+
+  // SportDB ids live in a different namespace, so the TheSportsDB lookup is
+  // skipped entirely for those links rather than issuing doomed requests.
+  const sportdbSlug = searchParams.get('slug');
+  const isSportdb = searchParams.get('src') === 'sportdb' && Boolean(sportdbSlug) && Boolean(id);
+
+  const { team, nextMatches, lastMatches, players, loading, error } = useTeamDetails(
+    isSportdb ? undefined : id
+  );
 
   // Group squad players by position
   const groupedPlayers = useMemo(() => {
@@ -63,8 +71,7 @@ export const TeamProfilePage = () => {
 
   // SportDB ids are a different namespace from TheSportsDB's, so links from the
   // SportDB-backed standings carry their slug and are rendered by that provider.
-  const sportdbSlug = searchParams.get('slug');
-  if (searchParams.get('src') === 'sportdb' && sportdbSlug && id) {
+  if (isSportdb && sportdbSlug && id) {
     return <SportdbTeamProfile slug={sportdbSlug} teamId={id} />;
   }
 
