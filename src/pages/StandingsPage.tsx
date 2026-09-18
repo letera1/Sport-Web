@@ -45,27 +45,29 @@ export const StandingsPage = ({ leagueId, leagueName }: StandingsPageProps) => {
 
       {/* Table Container */}
       <div className="bg-surface rounded-xl overflow-hidden border border-border/50 shadow-card">
-        <StandingsHeaderRow className="sticky top-0" />
+        <div className="overflow-x-auto">
+          <StandingsHeaderRow className="sticky top-0" />
 
-        {/* Skeleton Loading */}
-        {loading && (
-          <div className="divide-y divide-border/20">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="px-3 sm:px-4 py-3">
-                <Skeleton className="w-full h-5" />
-              </div>
-            ))}
-          </div>
-        )}
+          {/* Skeleton Loading */}
+          {loading && (
+            <div className="divide-y divide-border/20">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <div key={i} className="px-3 sm:px-4 py-3">
+                  <Skeleton className="w-full h-5" />
+                </div>
+              ))}
+            </div>
+          )}
 
-        {/* Standings Rows */}
-        {!loading && standings.length > 0 && (
-          <div className="divide-y divide-border/20 stagger-children">
-            {standings.map((row) => (
-              <StandingsRow key={row.idTeam + row.intRank} entry={row} totalTeams={standings.length} />
-            ))}
-          </div>
-        )}
+          {/* Standings Rows */}
+          {!loading && standings.length > 0 && (
+            <div className="divide-y divide-border/20 stagger-children">
+              {standings.map((row) => (
+                <StandingsRow key={row.idTeam + row.intRank} entry={row} totalTeams={standings.length} />
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Empty */}
         {!loading && standings.length === 0 && (
