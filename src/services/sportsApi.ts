@@ -242,41 +242,21 @@ export async function lookupAllPlayers(teamId: string, teamName?: string): Promi
 }
 
 // ========================
-// Video Endpoints
+// Image helpers
 // ========================
 
-export async function getHighlights(date: string, leagueId?: string): Promise<VideoHighlight[]> {
-  const params: Record<string, string> = { d: date };
-  if (leagueId) params.l = leagueId;
-  const data = await deduplicatedGet<{ tvhighlights: VideoHighlight[] | null }>(
-    API_ENDPOINTS.HIGHLIGHTS, params, CACHE_TTL.HIGHLIGHTS
-  );
-  return data?.tvhighlights || [];
-}
-
-// ========================
-// Team badge helper
-// ========================
-
+/** Routes provider images through the local proxy; other hosts pass through. */
 export function getProxiedImageUrl(url: string | null | undefined): string {
   if (!url) return FALLBACK_BADGE;
   try {
     const u = new URL(url);
-    if (u.hostname === 'r2.thesportsdb.com') {
-      const cleanPath = u.pathname.replace(/\/(tiny|small|medium|preview)$/i, '');
-      return `/images-r2${cleanPath}`;
-    }
-    if (u.hostname.endsWith('thesportsdb.com')) {
-      const cleanPath = u.pathname.replace(/\/(tiny|small|medium|preview)$/i, '');
-      return `/images-www${cleanPath}`;
-    }
+    const cleanPath = u.pathname.replace(/\/(tiny|small|medium|preview)$/i, '');
+    if (u.hostname === 'r2.thesportsdb.com') return `/images-r2${cleanPath}`;
+    if (u.hostname.endsWith('thesportsdb.com')) return `/images-www${cleanPath}`;
     return url;
-  } catch (e) {}
-  return url;
-}
-
-export function getTeamBadgeUrl(teamName: string): string {
-  return FALLBACK_BADGE; // The old name-based API is deprecated and returns 404
+  } catch {
+    return url;
+  }
 }
 
 export const FALLBACK_BADGE = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="%23938F99" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>';
