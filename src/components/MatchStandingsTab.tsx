@@ -60,7 +60,7 @@ export const MatchStandingsTab = ({ match }: MatchStandingsTabProps) => {
       <div className="border border-border/40 rounded-xl overflow-hidden mx-4 sm:mx-6 mb-4 sm:mb-6">
         <div className="overflow-x-auto">
           <StandingsHeaderRow />
-          <div className="divide-y divide-border/20">
+          <div className="min-w-max divide-y divide-border/20">
             {standings.map((entry) => {
               const entryNorm = normalize(entry.strTeam);
               const isHome = entryNorm.includes(homeNorm) || homeNorm.includes(entryNorm);

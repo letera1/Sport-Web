@@ -70,7 +70,7 @@ export const StandingsPage = ({ leagueId, leagueName }: StandingsPageProps) => {
 
           {/* Standings Rows */}
           {!loading && standings.length > 0 && (
-            <div className="divide-y divide-border/20 stagger-children">
+            <div className="min-w-max divide-y divide-border/20 stagger-children">
               {standings.map((row) => (
                 <StandingsRow key={row.idTeam + row.intRank} entry={row} totalTeams={standings.length} />
               ))}

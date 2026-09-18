@@ -43,7 +43,7 @@ interface StandingsHeaderRowProps {
 export const StandingsHeaderRow = ({ className }: StandingsHeaderRowProps) => (
   <div
     className={cn(
-      'flex items-stretch border-l-2 border-l-transparent',
+      'flex items-stretch w-max min-w-full border-l-2 border-l-transparent',
       'text-[11px] font-bold text-text-muted uppercase tracking-wider',
       'border-b border-border/50',
       className
@@ -85,7 +85,7 @@ export const StandingsRow = ({ entry, totalTeams, highlight }: StandingsRowProps
     <Link
       to={`/team/${entry.idTeam}`}
       className={cn(
-        'group flex items-stretch border-l-2 transition-colors text-xs sm:text-sm',
+        'group flex items-stretch w-max min-w-full border-l-2 transition-colors text-xs sm:text-sm',
         zoneBorderClass(rank, totalTeams),
         isHome && 'border-l-accent',
         isAway && 'border-l-info'
