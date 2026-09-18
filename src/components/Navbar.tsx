@@ -228,6 +228,19 @@ export const Navbar = ({ selectedLeagueId, onSelectLeague, leagues = LEAGUES }: 
               <span>Matches & Scores</span>
             </Link>
             <Link
+              to="/live"
+              onClick={() => setMobileMenuOpen(false)}
+              className={cn(
+                "px-3.5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-3 transition-colors",
+                location.pathname === '/live'
+                  ? "bg-live/10 text-live border border-live/30 font-bold"
+                  : "text-text-secondary hover:text-text-primary hover:bg-surface-hover"
+              )}
+            >
+              <Radio className="w-4 h-4 text-live" />
+              <span>Live Scores</span>
+            </Link>
+            <Link
               to="/standings"
               onClick={() => setMobileMenuOpen(false)}
               className={cn(
