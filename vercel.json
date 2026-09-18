@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "https://www.thesportsdb.com/api/:path*"
+      "source": "/api/((?!sportdb).*)",
+      "destination": "https://www.thesportsdb.com/api/$1"
     },
     {
       "source": "/images-r2/:path*",
