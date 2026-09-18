@@ -73,21 +73,29 @@ function useLazyResource<T>(
 
     requestedFor.current = attempt;
     const controller = new AbortController();
+    let settled = false;
     setState({ data: null, loading: true, error: null });
 
     fetcher(eventId, controller.signal)
       .then(({ data }) => {
+        settled = true;
         if (controller.signal.aborted) return;
         setState({ data: normalize(data), loading: false, error: null });
       })
       .catch((error: unknown) => {
+        settled = true;
         if (controller.signal.aborted || (error as Error)?.name === 'AbortError') return;
-        // Allow a retry after a transient failure.
-        requestedFor.current = null;
         setState({ data: null, loading: false, error: messageFor(error) });
       });
 
-    return () => controller.abort();
+    return () => {
+      controller.abort();
+      // A request that never settled left no result behind, so forget the
+      // attempt and let the next run retry. Without this, StrictMode's
+      // mount/unmount/mount cycle would abort the only request and then skip
+      // the retry, stranding the tab on its loading state.
+      if (!settled) requestedFor.current = null;
+    };
   }, [eventId, enabled, fetcher, normalize, resetKey]);
 
   return state;

@@ -401,22 +401,31 @@ const TeamLineupHeader = ({ name, formation, rating }: {
   </div>
 );
 
-const PlayerRow = ({ player }: { player: SportLineup['groups'][number]['home'][number] }) => (
-  <li className="flex items-center gap-2 py-1.5 min-w-0">
-    <span className="w-5 shrink-0 text-center text-[11px] font-bold font-score text-text-muted tabular-nums">
-      {player.shirtNumber ?? ''}
-    </span>
-    <span className="flex-1 min-w-0 text-xs text-text-primary truncate" title={player.name}>
-      {player.name}
-    </span>
-    {player.incident && (
-      <span className="shrink-0 text-[10px] text-text-muted font-score" title={player.incidentType ?? undefined}>
-        {player.incident}
+const PlayerRow = ({ player }: { player: SportLineup['groups'][number]['home'][number] }) => {
+  // The tooltip reads e.g. "61' Anthony J. (Schuster J.) ()". Only the minute
+  // fits a two-column row; the full text stays available on hover.
+  const incidentMinute = player.incident?.match(/^\d+(\+\d+)?'/)?.[0] ?? player.incident;
+
+  return (
+    <li className="flex items-center gap-2 py-1.5 min-w-0">
+      <span className="w-5 shrink-0 text-center text-[11px] font-bold font-score text-text-muted tabular-nums">
+        {player.shirtNumber ?? ''}
       </span>
-    )}
-    {player.rating && <RatingChip value={player.rating} />}
-  </li>
-);
+      <span className="flex-1 min-w-0 text-xs text-text-primary truncate" title={player.name}>
+        {player.name}
+      </span>
+      {incidentMinute && (
+        <span
+          className="shrink-0 text-[10px] text-text-muted font-score tabular-nums"
+          title={player.incident ?? undefined}
+        >
+          {incidentMinute}
+        </span>
+      )}
+      {player.rating && <RatingChip value={player.rating} />}
+    </li>
+  );
+};
 
 /** Provider ratings are on a 0-10 scale; 7 and 6 are its own quality breaks. */
 const RatingChip = ({ value }: { value: string }) => {
