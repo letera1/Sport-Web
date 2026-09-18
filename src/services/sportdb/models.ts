@@ -55,22 +55,86 @@ export interface SportStanding {
 export interface SportLineupPlayer {
   id: string | null;
   name: string;
-  position: string | null;
   shirtNumber: string | null;
-  isStarter: boolean;
+  /** Provider's 0-10 performance rating, e.g. "7.1". */
+  rating: string | null;
+  country: string | null;
+  photoUrl: string | null;
+  /** Substitution/card note attached to the player, e.g. "87'". */
+  incident: string | null;
+  incidentType: string | null;
+}
+
+/** One lineup block as grouped by the provider: starters, bench or coaches. */
+export interface SportLineupGroup {
+  group: string;
+  home: SportLineupPlayer[];
+  away: SportLineupPlayer[];
 }
 
 export interface SportLineup {
   homeFormation: string | null;
   awayFormation: string | null;
-  home: SportLineupPlayer[];
-  away: SportLineupPlayer[];
+  homeRating: string | null;
+  awayRating: string | null;
+  groups: SportLineupGroup[];
 }
 
 export interface SportMatchStat {
+  id: string | null;
   label: string;
   home: string;
   away: string;
+}
+
+/** Stats as split by the provider: "Match", "1st Half", "2nd Half". */
+export interface SportStatPeriod {
+  period: string;
+  stats: SportMatchStat[];
+}
+
+export type MatchSide = 'home' | 'away';
+
+export interface SportTimelineEvent {
+  id: string;
+  minute: string | null;
+  /** Provider's own label, e.g. "Goal", "Yellow Card", "Substitution". */
+  type: string | null;
+  side: MatchSide | null;
+  player: string | null;
+  playerId: string | null;
+  homeScore: number | null;
+  awayScore: number | null;
+  commentary: string | null;
+}
+
+export interface SportMatchInfo {
+  home: SportTeamRef;
+  away: SportTeamRef;
+  venue: string | null;
+  venueCity: string | null;
+  capacity: string | null;
+  referee: string | null;
+  timeline: SportTimelineEvent[];
+}
+
+export interface SportOddsSelection {
+  label: string;
+  /** Current decimal price as quoted, e.g. "2.55". */
+  value: string;
+  /** Opening price, enabling a drift indicator. */
+  opening: string | null;
+  active: boolean;
+}
+
+export interface SportOddsOffer {
+  bookmaker: string;
+  selections: SportOddsSelection[];
+}
+
+/** Match-winner prices grouped per bookmaker, full time only. */
+export interface SportOdds {
+  offers: SportOddsOffer[];
 }
 
 /** Envelope from our proxy, carrying cache provenance for the UI. */
