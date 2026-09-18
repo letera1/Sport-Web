@@ -73,7 +73,13 @@ export const useStandings = (leagueId: string, season?: string) => {
 
         const rows = normalizeStandings(result.data).map((row) => ({
           ...row,
-          team: { ...row.team, badgeUrl: row.team.badgeUrl ?? resolveBadge(badges, row.team.name) },
+          team: {
+            ...row.team,
+            badgeUrl:
+              row.team.badgeUrl ??
+              (row.team.id ? getCachedLogo(row.team.id) : null) ??
+              resolveBadge(badges, row.team.name),
+          },
         }));
 
         if (rows.length > 0) {
@@ -82,6 +88,22 @@ export const useStandings = (leagueId: string, season?: string) => {
           setPartial(false);
           setError(null);
           setLoading(false);
+
+          // Fill remaining crests in the background so the table paints first.
+          const missing = rows.filter((row) => !row.team.badgeUrl);
+          if (missing.length > 0) {
+            resolveTeamLogos(missing.map((row) => ({ teamId: row.team.id, slug: row.team.slug })))
+              .then((logos) => {
+                setStandings((current) =>
+                  current.map((row) =>
+                    row.team.badgeUrl || !row.team.id || !logos[row.team.id]
+                      ? row
+                      : { ...row, team: { ...row.team, badgeUrl: logos[row.team.id] } }
+                  )
+                );
+              })
+              .catch(() => { /* crests are cosmetic */ });
+          }
           return;
         }
       } catch {
