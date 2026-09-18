@@ -31,7 +31,7 @@ export const LEAGUES: { id: string; name: string; code: string; country: string;
   { id: '4346', name: 'MLS', code: 'MLS', country: 'USA', flag: '🇺🇸' },
   { id: '4668', name: 'Saudi Pro League', code: 'SPL', country: 'Saudi Arabia', flag: '🇸🇦' },
   { id: '4351', name: 'Brasileirão', code: 'BRA', country: 'Brazil', flag: '🇧🇷' },
-  { id: '4350', name: 'Primera División', code: 'ARG', country: 'Argentina', flag: '🇦🇷' },
+  { id: '4406', name: 'Primera División', code: 'ARG', country: 'Argentina', flag: '🇦🇷' },
 ];
 
 // ========================
