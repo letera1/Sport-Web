@@ -5,18 +5,18 @@ import type { StandingsEntry } from '../types';
 
 /**
  * Shared column layout for the full standings table (StandingsPage + MatchStandingsTab).
- * Columns collapse progressively on narrow viewports so the Team column never
- * gets squeezed below a legible width — # and Team are the only columns that
- * are always visible; everything else reveals itself as space allows.
+ * Every column (P/W/D/L/GF/GA/GD/Pts/Form) is always rendered — on narrow screens
+ * the row simply becomes wider than the viewport and the shared scroll container
+ * (see StandingsPage/MatchStandingsTab) scrolls horizontally, with rank+team
+ * pinned via `sticky left-0` so you never lose track of which team a stat belongs to.
  */
+const TEAM_COL = 'sticky left-0 z-10 flex items-center gap-2 shrink-0 w-[148px] sm:w-[190px] py-2.5 pl-2.5 sm:pl-4 pr-2';
 const CELL = {
-  rank: 'w-6 sm:w-8 shrink-0 text-center',
-  stat: 'hidden sm:block w-7 sm:w-8 shrink-0 text-center',
-  wide: 'hidden lg:block w-8 shrink-0 text-center',
-  played: 'hidden xs:block w-7 sm:w-8 shrink-0 text-center',
+  stat: 'w-7 sm:w-8 shrink-0 text-center',
+  wide: 'w-8 sm:w-9 shrink-0 text-center',
   gd: 'w-9 sm:w-11 shrink-0 text-center',
   pts: 'w-9 sm:w-12 shrink-0 text-right',
-  form: 'hidden xl:flex w-24 shrink-0 justify-center gap-1',
+  form: 'w-24 shrink-0 flex justify-center gap-1',
 };
 
 function zoneTextClass(rank: number, totalTeams: number): string {
@@ -39,23 +39,27 @@ interface StandingsHeaderRowProps {
 export const StandingsHeaderRow = ({ className }: StandingsHeaderRowProps) => (
   <div
     className={cn(
-      'flex items-center gap-1 sm:gap-2 px-2.5 sm:px-4 py-2.5 border-l-2 border-l-transparent',
+      'flex items-stretch border-l-2 border-l-transparent',
       'text-[11px] font-bold text-text-muted uppercase tracking-wider',
-      'border-b border-border/50 bg-surface-hover/40',
+      'border-b border-border/50',
       className
     )}
   >
-    <span className={CELL.rank}>#</span>
-    <span className="flex-1 min-w-0">Team</span>
-    <span className={CELL.played}>P</span>
-    <span className={CELL.stat}>W</span>
-    <span className={CELL.stat}>D</span>
-    <span className={CELL.stat}>L</span>
-    <span className={CELL.wide}>GF</span>
-    <span className={CELL.wide}>GA</span>
-    <span className={CELL.gd}>GD</span>
-    <span className={CELL.pts}>Pts</span>
-    <span className={CELL.form}>Form</span>
+    <div className={cn(TEAM_COL, 'bg-surface-hover/95')}>
+      <span className="w-6 shrink-0 text-center">#</span>
+      <span className="flex-1 min-w-0">Team</span>
+    </div>
+    <div className="flex items-center gap-1.5 sm:gap-2 py-2.5 pr-2.5 sm:pr-4 pl-1 bg-surface-hover/40">
+      <span className={CELL.stat}>P</span>
+      <span className={CELL.stat}>W</span>
+      <span className={CELL.stat}>D</span>
+      <span className={CELL.stat}>L</span>
+      <span className={CELL.wide}>GF</span>
+      <span className={CELL.wide}>GA</span>
+      <span className={CELL.gd}>GD</span>
+      <span className={CELL.pts}>Pts</span>
+      <span className={CELL.form}>Form</span>
+    </div>
   </div>
 );
 
@@ -77,69 +81,63 @@ export const StandingsRow = ({ entry, totalTeams, highlight }: StandingsRowProps
     <Link
       to={`/team/${entry.idTeam}`}
       className={cn(
-        'flex items-center gap-1 sm:gap-2 px-2.5 sm:px-4 py-2.5 border-l-2 transition-colors',
-        'text-xs sm:text-sm hover:bg-surface-hover/70',
+        'group flex items-stretch border-l-2 transition-colors text-xs sm:text-sm',
         zoneBorderClass(rank, totalTeams),
-        isHome && 'bg-accent/[0.06] border-l-accent',
-        isAway && 'bg-info/[0.06] border-l-info'
+        isHome && 'border-l-accent',
+        isAway && 'border-l-info'
       )}
     >
-      <span className={cn(CELL.rank, 'font-bold font-score', zoneTextClass(rank, totalTeams))}>
-        {entry.intRank}
-      </span>
-
-      <div className="flex-1 min-w-0 flex items-center gap-2">
+      <div className={cn(
+        TEAM_COL, 'transition-colors',
+        isHighlighted ? 'bg-surface-hover' : 'bg-surface group-hover:bg-surface-hover'
+      )}>
+        <span className={cn('w-6 shrink-0 text-center font-bold font-score', zoneTextClass(rank, totalTeams))}>
+          {entry.intRank}
+        </span>
         <img
           src={getProxiedImageUrl(entry.strTeamBadge || entry.strBadge)}
           alt=""
           className="w-5 h-5 sm:w-6 sm:h-6 object-contain shrink-0"
           onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = FALLBACK_BADGE; }}
         />
-        <span className={cn('truncate font-medium', isHighlighted ? 'text-accent font-bold' : 'text-text-primary')}>
+        <span className={cn('flex-1 min-w-0 truncate font-medium', isHighlighted ? 'text-accent font-bold' : 'text-text-primary')}>
           {entry.strTeam}
         </span>
-        {isHome && (
-          <span className="hidden sm:inline-block shrink-0 text-[9px] px-1.5 py-0.5 rounded bg-accent/15 text-accent border border-accent/30 font-bold uppercase tracking-wide">
-            Home
-          </span>
-        )}
-        {isAway && (
-          <span className="hidden sm:inline-block shrink-0 text-[9px] px-1.5 py-0.5 rounded bg-info/15 text-info border border-info/30 font-bold uppercase tracking-wide">
-            Away
-          </span>
-        )}
       </div>
 
-      <span className={cn(CELL.played, 'text-text-secondary font-score')}>{entry.intPlayed}</span>
-      <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{entry.intWin}</span>
-      <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{entry.intDraw}</span>
-      <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{entry.intLoss}</span>
-      <span className={cn(CELL.wide, 'text-text-secondary font-score')}>{entry.intGoalsFor}</span>
-      <span className={cn(CELL.wide, 'text-text-secondary font-score')}>{entry.intGoalsAgainst}</span>
-      <span className={cn(
-        CELL.gd, 'font-score font-semibold',
-        gd > 0 ? 'text-accent' : gd < 0 ? 'text-danger' : 'text-text-secondary'
-      )}>
-        {gd > 0 ? `+${gd}` : gd}
-      </span>
-      <span className={cn(CELL.pts, 'font-bold font-score text-text-primary text-sm')}>{entry.intPoints}</span>
+      <div className="flex-1 flex items-center gap-1.5 sm:gap-2 py-2.5 pr-2.5 sm:pr-4 pl-1 transition-colors group-hover:bg-surface-hover/70">
+        <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{entry.intPlayed}</span>
+        <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{entry.intWin}</span>
+        <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{entry.intDraw}</span>
+        <span className={cn(CELL.stat, 'text-text-secondary font-score')}>{entry.intLoss}</span>
+        <span className={cn(CELL.wide, 'text-text-secondary font-score')}>{entry.intGoalsFor}</span>
+        <span className={cn(CELL.wide, 'text-text-secondary font-score')}>{entry.intGoalsAgainst}</span>
+        <span className={cn(
+          CELL.gd, 'font-score font-semibold',
+          gd > 0 ? 'text-accent' : gd < 0 ? 'text-danger' : 'text-text-secondary'
+        )}>
+          {gd > 0 ? `+${gd}` : gd}
+        </span>
+        <span className={cn(CELL.pts, 'font-bold font-score text-text-primary text-sm')}>{entry.intPoints}</span>
 
-      <div className={CELL.form}>
-        {formChars.slice(-5).map((c, i) => (
-          <span
-            key={i}
-            className={cn(
-              'w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0',
-              c === 'W' ? 'bg-accent text-black' :
-              c === 'L' ? 'bg-danger text-white' :
-              c === 'D' ? 'bg-text-muted/40 text-text-primary' :
-              'bg-surface-hover text-text-muted'
-            )}
-          >
-            {c}
-          </span>
-        ))}
+        <div className={CELL.form}>
+          {formChars.slice(-5).map((c, i) => (
+            <span
+              key={i}
+              className={cn(
+                'w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0',
+                c === 'W' ? 'bg-accent text-black' :
+                c === 'L' ? 'bg-danger text-white' :
+                c === 'D' ? 'bg-text-muted/40 text-text-primary' :
+                'bg-surface-hover text-text-muted'
+              )}
+            >
+              {c}
+            </span>
+          ))}
+        </div>
       </div>
     </Link>
   );
 };
+
