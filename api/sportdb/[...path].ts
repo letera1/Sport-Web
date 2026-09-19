@@ -9,7 +9,7 @@ import { clientIdFrom } from '../_lib/rateLimit.js';
 interface VercelRequest {
   method?: string;
   url?: string;
-  query: Record<string, string | string[] | undefined>;
+  query?: Record<string, string | string[] | undefined>;
   headers: Record<string, string | string[] | undefined>;
 }
 
@@ -65,7 +65,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
   }
 
   const query: Record<string, string> = {};
-  for (const [name, value] of Object.entries(req.query)) {
+  for (const [name, value] of Object.entries(req.query ?? {})) {
     if (name === 'path') continue;
     const single = Array.isArray(value) ? value[0] : value;
     if (typeof single === 'string') query[name] = single;
