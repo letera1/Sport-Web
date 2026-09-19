@@ -3,8 +3,8 @@
  * Everything below `/api/sportdb/` is validated and forwarded by the shared core.
  */
 
-import { handleProxyRequest } from '../_lib/proxy';
-import { clientIdFrom } from '../_lib/rateLimit';
+import { handleProxyRequest } from '../_lib/proxy.js';
+import { clientIdFrom } from '../_lib/rateLimit.js';
 
 interface VercelRequest {
   method?: string;

@@ -3,7 +3,7 @@
  * else, and is never returned, logged, or echoed into error messages.
  */
 
-import { getConfig } from './config';
+import { getConfig } from './config.js';
 
 export interface UpstreamSuccess {
   ok: true;
@@ -30,6 +30,10 @@ export interface UpstreamFailure {
 }
 
 export type UpstreamResult = UpstreamSuccess | UpstreamFailure;
+
+/** Explicit predicate: discriminant narrowing on `ok` needs strictNullChecks,
+ *  which the deployment platform does not guarantee when compiling functions. */
+const isFailure = (result: UpstreamResult): result is UpstreamFailure => !result.ok;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -124,7 +128,7 @@ export async function fetchUpstream(
 
   let last: UpstreamResult = await attempt(upstreamPath, query);
   for (let i = 0; i < maxRetries; i += 1) {
-    if (last.ok) return last;
+    if (!isFailure(last)) return last;
     if (last.kind !== 'network' && last.kind !== 'server') return last;
     await sleep(2 ** i * 500);
     last = await attempt(upstreamPath, query);

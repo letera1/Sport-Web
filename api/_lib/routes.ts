@@ -7,7 +7,7 @@
  * returns inside its own payloads can be used verbatim by the client.
  */
 
-import { getConfig } from './config';
+import { getConfig } from './config.js';
 
 export type FeatureId =
   | 'live'

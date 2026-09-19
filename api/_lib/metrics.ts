@@ -6,7 +6,7 @@
  * restarts, so we stop probing it.
  */
 
-import { ALL_FEATURES, type FeatureId } from './routes';
+import { ALL_FEATURES, type FeatureId } from './routes.js';
 
 export interface ProviderQuotaSnapshot {
   plan: string | null;

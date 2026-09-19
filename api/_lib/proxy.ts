@@ -3,15 +3,15 @@
  * the Vite dev middleware (local), so both environments behave identically.
  */
 
-import { getConfig } from './config';
-import { cacheStats, dedupe, readCache, writeCache } from './cache';
-import { checkRateLimit } from './rateLimit';
-import { resolveRoute, ALL_FEATURES, FEATURE_TTL } from './routes';
+import { getConfig } from './config.js';
+import { cacheStats, dedupe, readCache, writeCache } from './cache.js';
+import { checkRateLimit } from './rateLimit.js';
+import { resolveRoute, ALL_FEATURES, FEATURE_TTL } from './routes.js';
 import {
   budgetStatus, getFeatureState, getProviderQuota, health, recordCacheHit, recordCacheMiss,
   recordDeduped, recordProviderQuota, recordUpstreamError, recordUpstreamSuccess, snapshot,
-} from './metrics';
-import { fetchUpstream } from './sportdbClient';
+} from './metrics.js';
+import { fetchUpstream } from './sportdbClient.js';
 
 export interface ProxyRequest {
   segments: string[];
