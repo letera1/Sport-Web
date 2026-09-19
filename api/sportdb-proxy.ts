@@ -1,10 +1,14 @@
 /**
  * Vercel serverless entry point — the only place the browser can reach SportDB.
- * Everything below `/api/sportdb/` is validated and forwarded by the shared core.
+ *
+ * Reached via a `vercel.json` rewrite from `/api/sportdb/*`, which passes the
+ * remainder of the path as `?path=`. A catch-all filename (`[...path].ts`) was
+ * tried first but Vercel only matched a single segment once `vercel.json`
+ * declared rewrites, so deeper paths never reached the function at all.
  */
 
-import { handleProxyRequest } from '../_lib/proxy.js';
-import { clientIdFrom } from '../_lib/rateLimit.js';
+import { handleProxyRequest } from './_lib/proxy.js';
+import { clientIdFrom } from './_lib/rateLimit.js';
 
 interface VercelRequest {
   method?: string;
@@ -23,18 +27,15 @@ interface VercelResponse {
 const ROUTE_PREFIX = '/api/sportdb/';
 
 /**
- * Resolves the catch-all segments.
+ * Resolves the request path into route segments.
  *
- * `query.path` is the documented source, but when `vercel.json` declares
- * `rewrites` the platform routes this request without injecting the dynamic
- * param, leaving it undefined — every path then looked like an empty route and
- * was rejected as `unknown_endpoint`. The raw URL is always present, so it is
- * used as the fallback.
+ * `?path=` set by the rewrite is authoritative; the raw URL is a fallback for
+ * direct invocations, matching how the Vite dev proxy resolves segments.
  */
 function toSegments(req: VercelRequest): string[] {
   const raw = req.query?.path;
   if (Array.isArray(raw) && raw.length > 0) return raw;
-  if (typeof raw === 'string' && raw) return raw.split('/');
+  if (typeof raw === 'string' && raw) return raw.split('/').filter(Boolean);
 
   const pathname = (req.url ?? '').split('?')[0];
   const start = pathname.indexOf(ROUTE_PREFIX);
