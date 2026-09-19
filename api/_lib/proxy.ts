@@ -11,7 +11,7 @@ import {
   budgetStatus, getFeatureState, getProviderQuota, health, recordCacheHit, recordCacheMiss,
   recordDeduped, recordProviderQuota, recordUpstreamError, recordUpstreamSuccess, snapshot,
 } from './metrics.js';
-import { fetchUpstream } from './sportdbClient.js';
+import { fetchUpstream, isUpstreamFailure } from './sportdbClient.js';
 
 export interface ProxyRequest {
   segments: string[];
@@ -149,7 +149,7 @@ export async function handleProxyRequest(request: ProxyRequest): Promise<ProxyRe
     return fetchUpstream(route.upstreamPath, route.query);
   });
 
-  if (result.ok) {
+  if (!isUpstreamFailure(result)) {
     recordUpstreamSuccess(route.feature, result.latencyMs);
     recordProviderQuota(result.quota);
     const entry = writeCache(cacheKey, result.data, route.ttlMs);
