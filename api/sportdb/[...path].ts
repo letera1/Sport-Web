@@ -20,11 +20,42 @@ interface VercelResponse {
   end(): void;
 }
 
-function toSegments(query: VercelRequest['query']): string[] {
-  const raw = query.path;
-  if (Array.isArray(raw)) return raw;
-  return typeof raw === 'string' && raw ? raw.split('/') : [];
+const ROUTE_PREFIX = '/api/sportdb/';
+
+/**
+ * Resolves the catch-all segments.
+ *
+ * `query.path` is the documented source, but when `vercel.json` declares
+ * `rewrites` the platform routes this request without injecting the dynamic
+ * param, leaving it undefined — every path then looked like an empty route and
+ * was rejected as `unknown_endpoint`. The raw URL is always present, so it is
+ * used as the fallback.
+ */
+function toSegments(req: VercelRequest): string[] {
+  const raw = req.query?.path;
+  if (Array.isArray(raw) && raw.length > 0) return raw;
+  if (typeof raw === 'string' && raw) return raw.split('/');
+
+  const pathname = (req.url ?? '').split('?')[0];
+  const start = pathname.indexOf(ROUTE_PREFIX);
+  if (start === -1) return [];
+
+  return pathname
+    .slice(start + ROUTE_PREFIX.length)
+    .split('/')
+    .filter(Boolean)
+    .map((segment) => {
+      try {
+        return decodeURIComponent(segment);
+      } catch {
+        return segment;
+      }
+    });
 }
+
+/** Decoding happens here rather than in the platform, so re-check traversal. */
+const isSafeSegment = (segment: string): boolean =>
+  segment !== '.' && segment !== '..' && !segment.includes('/') && !segment.includes('\\');
 
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   if (req.method !== 'GET') {
@@ -41,7 +72,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
   }
 
   const result = await handleProxyRequest({
-    segments: toSegments(req.query),
+    segments: toSegments(req).filter(isSafeSegment),
     query,
     clientId: clientIdFrom(req.headers),
   });
