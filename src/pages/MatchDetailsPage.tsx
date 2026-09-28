@@ -83,7 +83,7 @@ const LegacyMatchDetailsPage = () => {
       case 'standings':
         return <MatchStandingsTab match={match} error={error} />;
       default:
-        return <MatchEvents match={match} timeline={timeline} lineup={lineup} error={error} />;
+        return <MatchEvents match={match} timeline={timeline} error={error} />;
     }
   };
 
