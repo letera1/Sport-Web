@@ -60,8 +60,3 @@ export function getConfig(): SportdbConfig {
 
   return cached;
 }
-
-/** Test seam — lets the dev server pick up .env edits without a restart. */
-export function resetConfigCache(): void {
-  cached = null;
-}
