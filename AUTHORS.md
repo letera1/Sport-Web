@@ -6,7 +6,7 @@ This file lists the people who have contributed to the Live Football Scores proj
 
 The following people are responsible for maintaining this project:
 
-- **[Your Name]** - *Project Creator & Lead Developer* - [@yourusername](https://github.com/yourusername)
+- **Letera Tujo** — *Project Creator & Lead Developer* — [@letera1](https://github.com/letera1)
 
 ## 🌟 Contributors
 
@@ -28,11 +28,12 @@ Add contributors here as they contribute:
 
 ## 📚 Special Thanks
 
-- **TheSportsDB** - For providing the free sports API
-- **React Team** - For the amazing React framework
-- **Vite Team** - For the blazing fast build tool
-- **Tailwind CSS** - For the utility-first CSS framework
-- **TypeScript Team** - For type safety and developer experience
+- **TheSportsDB** — for the free sports API
+- **SportDB.dev** — for live scores, full standings and match analytics
+- **React Team** — for the React framework
+- **Vite Team** — for the build tool
+- **Tailwind CSS** — for the utility-first CSS framework
+- **TypeScript Team** — for type safety and developer experience
 
 ## 🤝 How to Become a Contributor
 

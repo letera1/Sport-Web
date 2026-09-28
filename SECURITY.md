@@ -6,11 +6,11 @@ We release patches for security vulnerabilities. Currently supported versions:
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.0.x   | :white_check_mark: |
+| 1.0.x   | :white_check_mark: |
 
 ## 🚨 Reporting a Vulnerability
 
-We take the security of Live Football Scores seriously. If you believe you have found a security vulnerability, please report it to us as described below.
+We take the security of Live Football Scores seriously. If you believe you have found a security vulnerability, please report it as described below.
 
 ### Please Do Not:
 
@@ -19,13 +19,15 @@ We take the security of Live Football Scores seriously. If you believe you have 
 
 ### Please Do:
 
-1. **Email us directly** at [your-email@example.com] with:
+1. **Report it privately** through
+   [GitHub Security Advisories](https://github.com/letera1/Sport-Web/security/advisories/new),
+   including:
    - A description of the vulnerability
    - Steps to reproduce the issue
    - Potential impact of the vulnerability
    - Any suggested fixes (if available)
 
-2. **Allow time for a fix**: We will acknowledge your email within 48 hours and aim to provide a fix within 7 days for critical issues.
+2. **Allow time for a fix**: We will acknowledge the report within 48 hours and aim to provide a fix within 7 days for critical issues.
 
 3. **Coordinate disclosure**: We will work with you to understand and address the issue before any public disclosure.
 
