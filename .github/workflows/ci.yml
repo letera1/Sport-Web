@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# A newer push to the same branch makes an in-flight run obsolete.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  verify:
+    name: Lint, type-check & build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      # Uses `tsc -b` so project references are followed. A plain
+      # `tsc --noEmit` passes unconditionally here, because the root tsconfig
+      # declares no files of its own.
+      - name: Type-check application
+        run: npm run typecheck:app
+
+      # The serverless functions sit outside tsconfig.app.json. Skipping this
+      # once let a broken function reach production while the build stayed green.
+      - name: Type-check serverless functions
+        run: npm run typecheck:api
+
+      - name: Build
+        run: npx vite build
+
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
+
+  secret-scan:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Fail if an env file is tracked
+        run: |
+          if git ls-files --error-unmatch .env 2>/dev/null; then
+            echo "::error::.env is tracked by git. Remove it with 'git rm --cached .env'."
+            exit 1
+          fi
+          echo "No tracked .env file."
+
+      # A server-only credential must never be reachable from the browser bundle.
+      - name: Assert server-only keys stay out of the client
+        run: |
+          if grep -rIlE 'SPORTDB_API_KEY' src/ 2>/dev/null; then
+            echo "::error::SPORTDB_API_KEY is referenced in src/. It must stay under api/."
+            exit 1
+          fi
+          echo "No server-only key references in src/."
