@@ -163,72 +163,30 @@ export const MatchEvents = ({ match, timeline, lineup, error }: MatchEventsProps
   // Build timeline dividers and scores
   const timelineItems: TimelineItem[] = [];
 
-  if (isBasketball && quarters) {
-    // Basketball specific Quarter breakdown
+  if (isFinished || hasScores) {
     timelineItems.push({
       isDivider: true,
-      label: 'End of Game',
+      label: 'Fulltime',
       score: `${match.intHomeScore || 0} - ${match.intAwayScore || 0}`
     });
-
-    const homeQ = quarters.home;
-    const awayQ = quarters.away;
-
-    // Filter events by quarter ranges
-    const filterByMinRange = (minStart: number, minEnd: number) => 
-      allEvents.filter(e => e.minute > minStart && e.minute <= minEnd);
-
-    timelineItems.push(...filterByMinRange(36, 48));
-    timelineItems.push({
-      isDivider: true,
-      label: 'End of Q3',
-      score: `${homeQ[0]+homeQ[1]+homeQ[2]} - ${awayQ[0]+awayQ[1]+awayQ[2]}`
-    });
-
-    timelineItems.push(...filterByMinRange(24, 36));
-    timelineItems.push({
-      isDivider: true,
-      label: 'Halftime (Q2)',
-      score: `${homeQ[0]+homeQ[1]} - ${awayQ[0]+awayQ[1]}`
-    });
-
-    timelineItems.push(...filterByMinRange(12, 24));
-    timelineItems.push({
-      isDivider: true,
-      label: 'End of Q1',
-      score: `${homeQ[0]} - ${awayQ[0]}`
-    });
-
-    timelineItems.push(...filterByMinRange(0, 12));
-    timelineItems.push({ isDivider: true, label: 'Tip Off' });
-
-  } else {
-    // Soccer standard timeline
-    if (isFinished || hasScores) {
-      timelineItems.push({ 
-        isDivider: true, 
-        label: 'Fulltime', 
-        score: `${match.intHomeScore || 0} - ${match.intAwayScore || 0}` 
-      });
-    }
-
-    if (allEvents.length > 0) {
-      const secondHalfEvents = allEvents.filter(e => e.minute > 45);
-      const firstHalfEvents = allEvents.filter(e => e.minute <= 45);
-      
-      timelineItems.push(...secondHalfEvents);
-      
-      if (secondHalfEvents.length > 0 && firstHalfEvents.length > 0) {
-        const homeGoalsCount = allEvents.filter(e => e.team === 'home' && e.type === 'goal' && e.minute <= 45).length;
-        const awayGoalsCount = allEvents.filter(e => e.team === 'away' && e.type === 'goal' && e.minute <= 45).length;
-        timelineItems.push({ isDivider: true, label: 'Halftime', score: `${homeGoalsCount} - ${awayGoalsCount}` });
-      }
-      
-      timelineItems.push(...firstHalfEvents);
-    }
-
-    timelineItems.push({ isDivider: true, label: `Kick Off - ${match.strTime?.slice(0, 5) || '00:00'}` });
   }
+
+  if (allEvents.length > 0) {
+    const secondHalfEvents = allEvents.filter(e => e.minute > 45);
+    const firstHalfEvents = allEvents.filter(e => e.minute <= 45);
+
+    timelineItems.push(...secondHalfEvents);
+
+    if (secondHalfEvents.length > 0 && firstHalfEvents.length > 0) {
+      const homeGoalsCount = allEvents.filter(e => e.team === 'home' && e.type === 'goal' && e.minute <= 45).length;
+      const awayGoalsCount = allEvents.filter(e => e.team === 'away' && e.type === 'goal' && e.minute <= 45).length;
+      timelineItems.push({ isDivider: true, label: 'Halftime', score: `${homeGoalsCount} - ${awayGoalsCount}` });
+    }
+
+    timelineItems.push(...firstHalfEvents);
+  }
+
+  timelineItems.push({ isDivider: true, label: `Kick Off - ${match.strTime?.slice(0, 5) || '00:00'}` });
 
   return (
     <div className="p-4">
