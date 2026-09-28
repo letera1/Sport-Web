@@ -17,13 +17,8 @@ const RedCardIcon = () => <div className="w-2.5 h-3.5 bg-danger rounded-[1px] sh
 const CornerIcon = () => <Flag className="w-3 h-3 text-text-secondary shrink-0" />;
 const SubIcon = () => <ArrowRightLeft className="w-3 h-3 text-accent shrink-0" />;
 const InjuryIcon = () => <User className="w-3 h-3 text-text-secondary shrink-0" />;
-const BasketballIcon = () => (
-  <div className="w-4 h-4 rounded-full border border-orange-500 bg-orange-600/30 flex items-center justify-center text-[8px] font-bold text-orange-500 shrink-0 select-none">
-    🏀
-  </div>
-);
 
-type EventType = 'goal' | 'yellow-card' | 'red-card' | 'corner' | 'sub' | 'injury' | 'basket';
+type EventType = 'goal' | 'yellow-card' | 'red-card' | 'corner' | 'sub' | 'injury';
 
 interface MatchEventItem {
   id: string;
@@ -46,7 +41,6 @@ type TimelineItem = MatchEventItem | Divider;
 const getEventIcon = (type: EventType) => {
   switch (type) {
     case 'goal': return <GoalIcon />;
-    case 'basket': return <BasketballIcon />;
     case 'yellow-card': return <YellowCardIcon />;
     case 'red-card': return <RedCardIcon />;
     case 'corner': return <CornerIcon />;
@@ -84,25 +78,6 @@ export const MatchEvents = ({ match, timeline, lineup, error }: MatchEventsProps
     });
   };
 
-  const isBasketball = match?.strSport === 'Basketball';
-
-  // Parser for Basketball Quarters
-  const quarters = useMemo(() => {
-    if (!match?.strResult || !isBasketball) return null;
-    try {
-      const matches = match.strResult.match(/\d+/g);
-      if (matches && matches.length >= 8) {
-        return {
-          home: matches.slice(0, 4).map(Number),
-          away: matches.slice(4, 8).map(Number)
-        };
-      }
-    } catch (e) {
-      console.error('Error parsing quarter scores:', e);
-    }
-    return null;
-  }, [match?.strResult, isBasketball]);
-
   // Combined events mapping
   const allEvents = useMemo((): MatchEventItem[] => {
     if (!match) return [];
@@ -117,10 +92,10 @@ export const MatchEvents = ({ match, timeline, lineup, error }: MatchEventsProps
         'substitute': 'sub',
         'injury': 'injury',
       };
-      return timeline.map((t, idx) => {
+      return timeline.map((t, idx): MatchEventItem => {
         const isHome = t.strHome === 'Yes';
         const rawType = (t.strTimeline || '').toLowerCase();
-        const type = typeMap[rawType] || (isBasketball ? 'basket' : 'goal');
+        const type = typeMap[rawType] ?? 'goal';
         return {
           id: t.idTimeline || `timeline-${idx}`,
           time: `${t.intTime || 0}'`,
@@ -133,59 +108,7 @@ export const MatchEvents = ({ match, timeline, lineup, error }: MatchEventsProps
       }).sort((a, b) => b.minute - a.minute);
     }
 
-    // 2. Basketball Generated Play-by-Play (fallback if API timeline is empty)
-    if (isBasketball && quarters) {
-      const homePlayers = lineup && lineup.length > 0
-        ? lineup.filter(l => l.strHome === 'Yes').map(l => l.strPlayer || '')
-        : ['Victor Wembanyama', 'De\'Aaron Fox', 'Devin Vassell', 'Keldon Johnson', 'Harrison Barnes'];
-      const awayPlayers = lineup && lineup.length > 0
-        ? lineup.filter(l => l.strHome === 'No').map(l => l.strPlayer || '')
-        : ['Jalen Brunson', 'Josh Hart', 'Karl-Anthony Towns', 'Mikal Bridges', 'OG Anunoby'];
-
-      const actions = [
-        { text: 'made a 3-point jumper', type: 'basket' as EventType },
-        { text: 'made a driving layup', type: 'basket' as EventType },
-        { text: 'scored a slam dunk', type: 'basket' as EventType },
-        { text: 'made a step-back jump shot', type: 'basket' as EventType },
-        { text: 'made a free throw', type: 'basket' as EventType }
-      ];
-
-      const events: MatchEventItem[] = [];
-
-      for (let q = 1; q <= 4; q++) {
-        const baseMin = (q - 1) * 12;
-        // Generate 3 events per team per quarter
-        for (let i = 0; i < 3; i++) {
-          const min = baseMin + Math.floor(Math.random() * 10) + 1;
-          const player = homePlayers[Math.floor(Math.random() * homePlayers.length)];
-          const action = actions[Math.floor(Math.random() * actions.length)];
-          events.push({
-            id: `bball-h-${q}-${i}`,
-            time: `${min}'`,
-            minute: min,
-            team: 'home',
-            type: action.type,
-            player: `${player} ${action.text}`,
-          });
-        }
-        for (let i = 0; i < 3; i++) {
-          const min = baseMin + Math.floor(Math.random() * 10) + 1;
-          const player = awayPlayers[Math.floor(Math.random() * awayPlayers.length)];
-          const action = actions[Math.floor(Math.random() * actions.length)];
-          events.push({
-            id: `bball-a-${q}-${i}`,
-            time: `${min}'`,
-            minute: min,
-            team: 'away',
-            type: action.type,
-            player: `${player} ${action.text}`,
-          });
-        }
-      }
-      return events.sort((a, b) => b.minute - a.minute);
-    }
-
-    // 3. Fallback to parsing text descriptions (classic football fallback)
+    // 2. Fall back to parsing the provider's text description fields
     const homeGoals = parseEvents(match.strHomeGoalDetails, 'home', 'goal');
     const awayGoals = parseEvents(match.strAwayGoalDetails, 'away', 'goal');
     const homeYellow = parseEvents(match.strHomeYellowCards, 'home', 'yellow-card');
@@ -349,7 +272,7 @@ export const MatchEvents = ({ match, timeline, lineup, error }: MatchEventsProps
                 <div className="absolute left-1/2 -translate-x-1/2 z-10">
                   <div className={cn(
                     "min-w-[32px] h-5 px-1.5 rounded-full flex items-center justify-center text-[9px] font-bold shadow-md",
-                    event.type === 'goal' || event.type === 'basket'
+                    event.type === 'goal'
                       ? "bg-accent text-black" 
                       : "bg-surface-hover border border-divider text-text-secondary"
                   )}>
