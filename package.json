@@ -1,16 +1,22 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "live-football-scores",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Live football scores, standings and match analytics built on a quota-aware serverless API proxy.",
+  "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "npm run typecheck:api && vite build",
-    "typecheck:api": "tsc -p api --noEmit",
+    "build": "npm run typecheck && vite build",
+    "preview": "vite preview",
     "lint": "eslint .",
-    "lint:dualite": "eslint --config eslint.dualite.config.js .",
-    "tsc:dualite": "yarn tsc -p tsconfig.dualite.json",
-    "preview": "vite preview"
+    "typecheck": "npm run typecheck:app && npm run typecheck:api",
+    "typecheck:app": "tsc -b --force",
+    "typecheck:api": "tsc -p api --noEmit",
+    "verify": "npm run lint && npm run typecheck && vite build"
   },
   "dependencies": {
     "axios": "^1.9.0",
