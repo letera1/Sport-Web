@@ -77,7 +77,7 @@ const LegacyMatchDetailsPage = () => {
       case 'lineups':
         return <MatchLineups match={match} lineup={lineup} error={error} />;
       case 'events':
-        return <MatchEvents match={match} timeline={timeline} lineup={lineup} error={error} />;
+        return <MatchEvents match={match} timeline={timeline} error={error} />;
       case 'stats':
         return <MatchStats match={match} error={error} />;
       case 'standings':

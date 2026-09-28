@@ -1,6 +1,6 @@
 import { Flag, ArrowRightLeft, User } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { MatchDetails, EventTimeline, EventLineup } from '../types';
+import { MatchDetails, EventTimeline } from '../types';
 import { format, parseISO } from 'date-fns';
 import { isMatchCompleted } from '../lib/utils';
 import { useMemo } from 'react';
@@ -53,11 +53,10 @@ const getEventIcon = (type: EventType) => {
 interface MatchEventsProps {
   match?: MatchDetails | null;
   timeline?: EventTimeline[];
-  lineup?: EventLineup[];
   error?: string | null;
 }
 
-export const MatchEvents = ({ match, timeline, lineup, error }: MatchEventsProps) => {
+export const MatchEvents = ({ match, timeline, error }: MatchEventsProps) => {
   // Parsing text events (for fallback / football text details)
   const parseEvents = (str: string | undefined, team: 'home' | 'away', type: EventType): MatchEventItem[] => {
     if (!str) return [];
@@ -121,7 +120,7 @@ export const MatchEvents = ({ match, timeline, lineup, error }: MatchEventsProps
       ...homeYellow, ...awayYellow,
       ...homeRed, ...awayRed
     ].sort((a, b) => b.minute - a.minute);
-  }, [match, timeline, lineup, isBasketball, quarters]);
+  }, [match, timeline]);
 
   // Show server error if there's an error
   if (error) {
