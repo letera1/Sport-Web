@@ -77,10 +77,12 @@ Unsure where to begin? Look for issues labeled:
 3. **Write meaningful commit messages** (see guidelines below)
 4. **Test your changes** thoroughly
 5. **Update the README.md** if needed
-6. **Ensure your code lints** without errors:
+6. **Run the full verification suite**, which is exactly what CI runs:
    ```bash
-   npm run lint
+   npm run verify
    ```
+   This lints, type-checks the application **and** the serverless functions in
+   `api/`, then builds. It must exit `0` before you open a pull request.
 
 7. **Create a Pull Request** with a clear title and description:
    - Reference any related issues
@@ -133,7 +135,7 @@ src/
 - Use 2 spaces for indentation
 - Use single quotes for strings
 - Add semicolons at the end of statements
-- Run `npm run lint` before committing
+- Run `npm run verify` before committing
 
 ## 📝 Commit Message Guidelines
 
